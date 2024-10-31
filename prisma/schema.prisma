@@ -1,0 +1,238 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+    id                 String               @id @default(cuid())
+    name               String
+    email              String               @unique
+    dateOfBirth        DateTime?
+    membershipStatus   MembershipStatus     @default(ACTIVE)
+    membershipPlan     MembershipPlan       @default(FREE)
+    role               UserRole             @default(USER)
+    authCode           String?
+    authCodeExpiry     DateTime?
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    Account            Account[]
+    Session            Session[]
+    YogaVideoActivity  YogaVideoActivity[]
+    WorkoutActivity    WorkoutActivity[]
+    UserExerciseWeight UserExerciseWeight[]
+}
+
+enum MembershipStatus {
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+    CANCELLED
+}
+
+enum MembershipPlan {
+    FREE
+    BRONZE
+    SILVER
+    GOLD
+}
+
+enum UserRole {
+    USER
+    ADMIN
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model YogaVideo {
+    id           String              @id @default(cuid())
+    title        String
+    description  String
+    type         YogaType
+    props        String[]
+    url          String
+    thumbnailUrl String
+    duration     Int // in seconds
+    createdAt    DateTime            @default(now())
+    updatedAt    DateTime            @updatedAt
+    activities   YogaVideoActivity[]
+}
+
+enum YogaType {
+    MINDFULNESS
+    BUILD
+    EXPLORE
+}
+
+model YogaVideoActivity {
+    id        String    @id @default(cuid())
+    userId    String
+    videoId   String
+    watchedAt DateTime  @default(now())
+    user      User      @relation(fields: [userId], references: [id])
+    yogaVideo YogaVideo @relation(fields: [videoId], references: [id])
+
+    @@unique([userId, videoId, watchedAt])
+}
+
+model Exercise {
+    id                      String                    @id @default(cuid())
+    name                    String
+    thumbnailUrl            String
+    videoUrl                String
+    muscleGroups            String[]
+    equipment               String                    @default("None")
+    type                    ExerciseType
+    mode                    ExerciseMode
+    instructions            String
+    createdAt               DateTime                  @default(now())
+    updatedAt               DateTime                  @updatedAt
+    SetExercise             SetExercise[]
+    WorkoutActivityExercise WorkoutActivityExercise[]
+    UserExerciseWeight      UserExerciseWeight[]
+}
+
+enum ExerciseType {
+    STRENGTH
+    CARDIO
+    FLEXIBILITY
+    BALANCE
+}
+
+enum ExerciseMode {
+    REPS
+    TIME
+    DISTANCE
+}
+
+model Workout {
+    id                 String               @id @default(cuid())
+    name               String
+    description        String?
+    totalLength        Int // in seconds
+    equipment          String[]
+    muscleGroups       String[]
+    sets               Set[]
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    WorkoutActivity    WorkoutActivity[]
+    UserExerciseWeight UserExerciseWeight[]
+}
+
+model Set {
+    id        String        @id @default(cuid())
+    type      SetType
+    rounds    Int
+    rest      Int // in seconds
+    gap       Int? // in seconds, for SUPERSET and TRISET
+    exercises SetExercise[]
+    workout   Workout       @relation(fields: [workoutId], references: [id])
+    workoutId String
+}
+
+model SetExercise {
+    id         String   @id @default(cuid())
+    exercise   Exercise @relation(fields: [exerciseId], references: [id])
+    exerciseId String
+    set        Set      @relation(fields: [setId], references: [id])
+    setId      String
+    targetReps Int
+    order      Int
+}
+
+model WorkoutActivity {
+    id        String               @id @default(cuid())
+    userId    String
+    workoutId String
+    startedAt DateTime
+    endedAt   DateTime?
+    sets      WorkoutActivitySet[]
+    user      User                 @relation(fields: [userId], references: [id])
+    workout   Workout              @relation(fields: [workoutId], references: [id])
+}
+
+model WorkoutActivitySet {
+    id                String                    @id @default(cuid())
+    workoutActivityId String
+    setNumber         Int
+    roundNumber       Int
+    exercises         WorkoutActivityExercise[]
+    workoutActivity   WorkoutActivity           @relation(fields: [workoutActivityId], references: [id])
+
+    @@unique([workoutActivityId, setNumber])
+}
+
+model WorkoutActivityExercise {
+    id                   String             @id @default(cuid())
+    workoutActivityId    String
+    workoutActivitySetId String
+    exerciseId           String
+    weight               Float
+    reps                 Int?
+    time                 Int? // in seconds
+    distance             Float? // in meters
+    workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id])
+    exercise             Exercise           @relation(fields: [exerciseId], references: [id])
+
+    @@unique([workoutActivitySetId, exerciseId])
+}
+
+enum SetType {
+    MULTISET
+    SUPERSET
+    TRISET
+    CIRCUIT
+}
+
+model UserExerciseWeight {
+    id         String   @id @default(cuid())
+    userId     String
+    workoutId  String
+    exerciseId String
+    weight     Float
+    user       User     @relation(fields: [userId], references: [id])
+    workout    Workout  @relation(fields: [workoutId], references: [id])
+    exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+    @@unique([userId, workoutId, exerciseId])
+}

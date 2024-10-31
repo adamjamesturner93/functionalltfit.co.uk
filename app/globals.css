@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    --white: 0 0% 100%;
+    --primary-blue: 225 73% 57%;
+    --primary-orange: 36 98% 50%;
+    --primary-purple: 300 100% 27%;
+    --primary-yellow: 51 100% 50%;
+    --primary-light-grey: 0 0% 96%;
+
+    --slate-900: 221 39% 11%;
+    --slate-800: 215 28% 17%;
+    --slate-700: 217 19% 27%;
+    --slate-600: 215 14% 34%;
+    --slate-500: 220 9% 46%;
+    --slate-400: 218 11% 65%;
+    --slate-300: 216 12% 84%;
+    --slate-200: 220 13% 91%;
+    --slate-100: 220 14% 96%;
+    --slate-50: 210 20% 98%;
+
+    --grey-900: 207 85% 8%;
+    --grey-500: 0 0% 86%;
+    --grey-400: 0 0% 88%;
+    --grey-300: 0 0% 95%;
+    --grey-200: 226 76% 97%;
+
+    --blue-900: 208 83% 21%;
+    --blue-800: 225 73% 57%;
+    --blue-600: 225 70% 69%;
+    --blue-200: 225 35% 91%;
+
+    --orange-900: 36 98% 50%;
+    --orange-600: 36 94% 66%;
+    --orange-300: 36 100% 88%;
+
+    --yellow-900: 36 99% 68%;
+    --yellow-700: 36 94% 66%;
+    --yellow-400: 36 82% 82%;
+
+    --alert-900: 3 76% 51%;
+    --alert-100: 3 90% 96%;
+
+    --purple-900: 300 100% 27%;
+    --purple-500: 300 100% 50%;
+    --purple-300: 225 35% 91%;
+
+    --green-900: 119 95% 31%;
+    --green-500: 119 42% 54%;
+    --green-300: 120 43% 93%;
+
+    --nav-icon: 225 35% 91%;
+    --black-popup: 225 35% 91%;
+    --tab-grey: 206 7% 63%;
+    --tab-black: 207 85% 8%;
+
+    --pink-900: 300 100% 50%;
+  }
+
+  :root {
+    --background: var(--white);
+    --foreground: var(--grey-900);
+
+    --text-primary: var(--grey-900);
+    --text-secondary: var(--grey-500);
+    --text-brand: var(--grey-900);
+    --text-invert: var(--grey-200);
+
+    --disabled: var(--grey-500);
+
+    --border: var(--grey-400);
+    --border-active: var(--primary-purple);
+    --border-secondary: var(--slate-100);
+
+    --surface-logo: var(--grey-900);
+    --surface-white: var(--white);
+    --surface-grey: var(--blue-200);
+
+    --tabs-black: var(--grey-900);
+    --tabs-grey: var(--tab-grey);
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: var(--primary-blue);
+    --primary-foreground: var(--white);
+
+    --secondary: var(--primary-purple);
+    --secondary-foreground: var(--white);
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: var(--primary-orange);
+    --accent-foreground: var(--grey-900);
+
+    --bright: var(--primary-yellow);
+    --bright-foreground: var(--black);
+
+    --destructive: var(--alert-900);
+    --destructive-foreground: var(--white);
+
+    --success: var(--green-900);
+    --success-foreground: var(--black);
+
+    --border: 0 0% 86%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: var(--primary-purple);
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: var(--grey-900);
+    --foreground: var(--grey-200);
+
+    --text-primary: var(--grey-200);
+    --text-secondary: var(--grey-500);
+    --text-brand: var(--grey-200);
+    --text-invert: var(--grey-900);
+    --disabled: var(--grey-500);
+
+    --border: var(--blue-900);
+    --border-active: var(--pink-900);
+
+    --surface-logo: var(--white);
+    --surface-white: var(--grey-900);
+    --surface-grey: var(--slate-800);
+
+    --tabs-black: var(--white);
+    --tabs-grey: var(--slate-500);
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: var(--primary-blue);
+    --primary-foreground: var(--white);
+
+    --secondary: var(--primary-orange);
+    --secondary-foreground: var(--grey-900);
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: var(--primary-purple);
+    --accent-foreground: var(--white);
+
+    --bright: var(--primary-yellow);
+    --bright-foreground: var(--black);
+
+    --destructive: var(--alert-900);
+    --destructive-foreground: var(--white);
+
+    --success: var(--green-900);
+    --success-foreground: var(--black);
+
+    --border: 217.2 32.6% 17.5%;
+    --input: var(--text-primary);
+    --ring: var(--primary-orange);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
