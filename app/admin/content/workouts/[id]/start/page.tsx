@@ -6,16 +6,14 @@ import {
   startWorkout,
   completeWorkout,
   updateWorkoutActivity,
-  updateUserExerciseWeight,
 } from "@/app/admin/actions/workouts";
 import { getCurrentUserId } from "@/lib/auth-utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, Clock, Dumbbell, Repeat } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import WorkoutSummary from "./components/WorkoutSummary";
+import ExerciseCard from "./components/ExerciseCard";
+import WorkoutProgress from "./components/WorkoutProgress";
+import { ExerciseMode } from "@prisma/client";
 
 interface Exercise {
   id: string;
@@ -28,17 +26,20 @@ interface Exercise {
   reps: number;
   time?: number;
   distance?: number;
-  previousWeight: number | null;
-  previousReps: number | null;
-  previousTime?: number | null;
-  previousDistance?: number | null;
   equipment: string;
   muscleGroups: string[];
   type: string;
   thumbnailUrl: string;
   videoUrl: string;
-  mode: string;
+  mode: ExerciseMode;
   instructions: string;
+  previousPerformance: {
+    round: number;
+    weight: number;
+    reps: number;
+    time?: number;
+    distance?: number;
+  }[];
 }
 
 interface Set {
@@ -67,6 +68,8 @@ interface CombinedWorkout {
 interface WorkoutSummary {
   totalDuration: number;
   totalWeightLifted: number;
+  exercisesCompleted: number;
+  weightLiftedImprovement: number | null;
   exercises: {
     id: string;
     exerciseId: string;
@@ -87,6 +90,14 @@ interface WorkoutSummary {
       totalWeight: number;
     };
     nextWorkoutWeight: number;
+    performanceByRound: {
+      round: number;
+      weight: number;
+      reps: number;
+      time?: number;
+      distance?: number;
+    }[];
+    mode: ExerciseMode;
   }[];
 }
 
@@ -100,9 +111,6 @@ export default function WorkoutPage() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [summary, setSummary] = useState<WorkoutSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [weightIncreaseMessages, setWeightIncreaseMessages] = useState<{
-    [key: string]: string;
-  }>({});
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -132,14 +140,37 @@ export default function WorkoutPage() {
     try {
       setIsLoading(true);
       const exercises = workout.sets.flatMap((set) =>
-        set.exercises.map((exercise) => ({
-          id: exercise.id,
-          exerciseId: exercise.exerciseId,
-          weight: exercise.weight,
-          reps: exercise.reps,
-          time: exercise.time,
-          distance: exercise.distance,
-        }))
+        set.exercises.map((exercise) => {
+          const exerciseData: {
+            id: string;
+            exerciseId: string;
+            weight: { [roundNumber: number]: number };
+            reps?: { [roundNumber: number]: number };
+            time?: { [roundNumber: number]: number };
+            distance?: { [roundNumber: number]: number };
+          } = {
+            id: exercise.id,
+            exerciseId: exercise.exerciseId,
+            weight: {},
+          };
+
+          for (let round = 1; round <= set.rounds; round++) {
+            exerciseData.weight[round] = exercise.weight;
+
+            if (exercise.mode === ExerciseMode.REPS) {
+              if (!exerciseData.reps) exerciseData.reps = {};
+              exerciseData.reps[round] = exercise.reps;
+            } else if (exercise.mode === ExerciseMode.TIME) {
+              if (!exerciseData.time) exerciseData.time = {};
+              exerciseData.time[round] = exercise.time || 0;
+            } else if (exercise.mode === ExerciseMode.DISTANCE) {
+              if (!exerciseData.distance) exerciseData.distance = {};
+              exerciseData.distance[round] = exercise.distance || 0;
+            }
+          }
+
+          return exerciseData;
+        })
       );
 
       const result = await completeWorkout(
@@ -174,18 +205,41 @@ export default function WorkoutPage() {
         ...set,
         exercises: set.exercises.map((exercise) =>
           exercise.id === exerciseId
-            ? { ...exercise, [field]: value }
+            ? {
+                ...exercise,
+                [field]: value,
+              }
             : exercise
         ),
       })),
     };
 
     setWorkout(updatedWorkout);
+  };
+
+  const saveCurrentRound = async () => {
+    if (!workout) return;
 
     try {
       await updateWorkoutActivity(
         workout.id,
-        updatedWorkout.sets.flatMap((set) => set.exercises)
+        workout.sets.flatMap((set) =>
+          set.exercises.map((exercise) => ({
+            id: exercise.id,
+            exerciseId: exercise.exerciseId,
+            weight: exercise.weight,
+            reps:
+              exercise.mode === ExerciseMode.REPS ? exercise.reps : undefined,
+            time:
+              exercise.mode === ExerciseMode.TIME ? exercise.time : undefined,
+            distance:
+              exercise.mode === ExerciseMode.DISTANCE
+                ? exercise.distance
+                : undefined,
+            roundNumber: currentRoundIndex + 1,
+            mode: exercise.mode,
+          }))
+        )
       );
     } catch (err) {
       setError(
@@ -196,73 +250,32 @@ export default function WorkoutPage() {
     }
   };
 
-  const handleIncreaseWeight = async (
-    exerciseId: string,
-    currentWeight: number,
-    exerciseName: string
-  ) => {
-    if (!userId || !workout) {
-      setError("User or workout information is missing");
-      return;
-    }
+  const handleNextRound = async () => {
+    await saveCurrentRound();
 
-    const newWeight = Math.ceil((currentWeight * 1.05) / 2.5) * 2.5;
-    try {
-      await updateUserExerciseWeight(
-        workout.workoutId,
-        exerciseId,
-        newWeight,
-        userId
-      );
-      setSummary((prevSummary) => ({
-        ...prevSummary!,
-        exercises: prevSummary!.exercises.map((ex) =>
-          ex.exerciseId === exerciseId
-            ? { ...ex, nextWorkoutWeight: newWeight }
-            : ex
-        ),
-      }));
-      setWeightIncreaseMessages((prev) => ({
-        ...prev,
-        [exerciseId]: `Next time we'll start you on ${newWeight}kg for ${exerciseName}!`,
-      }));
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred while updating the weight"
-      );
+    if (!workout) return;
+
+    const currentSet = workout.sets[currentSetIndex];
+    if (currentRoundIndex < currentSet.rounds - 1) {
+      setCurrentRoundIndex(currentRoundIndex + 1);
+    } else if (currentSetIndex < workout.sets.length - 1) {
+      setCurrentSetIndex(currentSetIndex + 1);
+      setCurrentRoundIndex(0);
+    } else {
+      await handleComplete();
     }
   };
 
-  const getTargetDisplay = (exercise: Exercise) => {
-    console.log(exercise);
-    switch (exercise.mode) {
-      case "REPS":
-        return `${exercise.weight}kg x ${exercise.targetReps} reps`;
-      case "TIME":
-        return `${exercise.targetTime} seconds`;
-      case "DISTANCE":
-        return `${exercise.targetDistance} meters`;
-      default:
-        return "N/A";
-    }
-  };
+  const handlePreviousRound = async () => {
+    await saveCurrentRound();
 
-  const getPreviousPerformance = (exercise: Exercise) => {
-    switch (exercise.mode) {
-      case "REPS":
-        return exercise.previousWeight && exercise.previousReps
-          ? `${exercise.previousWeight}kg x ${exercise.previousReps} reps`
-          : "-";
-      case "TIME":
-        return exercise.previousTime ? `${exercise.previousTime} seconds` : "-";
-      case "DISTANCE":
-        return exercise.previousDistance
-          ? `${exercise.previousDistance} meters`
-          : "-";
-      default:
-        return "-";
+    if (!workout) return;
+
+    if (currentRoundIndex > 0) {
+      setCurrentRoundIndex(currentRoundIndex - 1);
+    } else if (currentSetIndex > 0) {
+      setCurrentSetIndex(currentSetIndex - 1);
+      setCurrentRoundIndex(workout.sets[currentSetIndex - 1].rounds - 1);
     }
   };
 
@@ -304,79 +317,12 @@ export default function WorkoutPage() {
 
   if (isCompleted && summary) {
     return (
-      <Card className="max-w-2xl mx-auto mt-8">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Workout Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between mb-4">
-            <p>
-              Total Duration: {Math.floor(summary.totalDuration / 60)} minutes
-            </p>
-            <p>Total Weight Lifted: {summary.totalWeightLifted} kg</p>
-          </div>
-          <h2 className="text-xl font-semibold mt-4 mb-2">
-            Exercise Breakdown
-          </h2>
-          {summary.exercises.map((exercise) => (
-            <Card key={exercise.id} className="mb-4">
-              <CardContent className="p-4">
-                <h3 className="text-lg font-medium mb-2">{exercise.name}</h3>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <p>
-                    Target: {exercise.targetRounds} x {exercise.targetReps} @{" "}
-                    {exercise.targetWeight}kg
-                  </p>
-                  <p>
-                    Achieved: {exercise.reps} reps @ {exercise.weight}kg
-                  </p>
-                </div>
-                {exercise.targetReached && (
-                  <p className="text-green-600 mb-2">
-                    Congratulations! You reached the target.
-                  </p>
-                )}
-                {exercise.improvement.reps > 0 && (
-                  <p className="text-blue-600 mb-2">
-                    You improved by {exercise.improvement.reps} reps and{" "}
-                    {exercise.improvement.weight} kg!
-                  </p>
-                )}
-                {exercise.targetReached &&
-                  !weightIncreaseMessages[exercise.exerciseId] && (
-                    <Button
-                      onClick={() =>
-                        handleIncreaseWeight(
-                          exercise.exerciseId,
-                          exercise.weight,
-                          exercise.name
-                        )
-                      }
-                      className="mt-2"
-                    >
-                      Increase Weight for Next Time
-                    </Button>
-                  )}
-                {weightIncreaseMessages[exercise.exerciseId] && (
-                  <Alert className="mt-2">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <AlertTitle>Weight Increased</AlertTitle>
-                    <AlertDescription>
-                      {weightIncreaseMessages[exercise.exerciseId]}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-          <Button
-            onClick={() => router.push("/workouts")}
-            className="mt-4 w-full"
-          >
-            Back to Workouts
-          </Button>
-        </CardContent>
-      </Card>
+      <WorkoutSummary
+        summary={summary}
+        onBackToWorkouts={() => router.push("/workouts")}
+        workoutId={workout.workoutId}
+        userId={userId as string}
+      />
     );
   }
 
@@ -386,7 +332,10 @@ export default function WorkoutPage() {
       <Card className="max-w-lg mx-auto mt-8">
         <CardContent>
           <p className="text-center">No sets found in the workout</p>
-          <Button onClick={() => router.push("/workouts")} className="mt-4">
+          <Button
+            onClick={() => router.push("/admin/content/workouts")}
+            className="mt-4"
+          >
             Back to Workouts
           </Button>
         </CardContent>
@@ -400,172 +349,25 @@ export default function WorkoutPage() {
       (totalSets * currentSet.rounds)) *
     100;
 
-  const handleNextRound = () => {
-    if (currentRoundIndex < currentSet.rounds - 1) {
-      setCurrentRoundIndex(currentRoundIndex + 1);
-    } else if (currentSetIndex < workout.sets.length - 1) {
-      setCurrentSetIndex(currentSetIndex + 1);
-      setCurrentRoundIndex(0);
-    } else {
-      handleComplete();
-    }
-  };
-
-  const handlePreviousRound = () => {
-    if (currentRoundIndex > 0) {
-      setCurrentRoundIndex(currentRoundIndex - 1);
-    } else if (currentSetIndex > 0) {
-      setCurrentSetIndex(currentSetIndex - 1);
-      setCurrentRoundIndex(workout.sets[currentSetIndex - 1].rounds - 1);
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">{workout.name}</CardTitle>
-        </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <Progress value={progress} className="w-full" />
-            <p className="text-sm text-gray-500 mt-1">
-              Progress: {progress.toFixed(2)}%
-            </p>
-          </div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">{currentSet.type} Set</h2>
-            <div className="flex items-center">
-              <Repeat className="w-5 h-5 mr-1" />
-              <span>
-                Round {currentRoundIndex + 1} of {currentSet.rounds}
-              </span>
-            </div>
-          </div>
-          <div className="mb-4 p-2 bg-gray-100 rounded-md">
-            <h3 className="text-sm font-medium mb-1">Set Equipment:</h3>
-            <p className="text-sm">
-              {currentSet.equipment ? currentSet.equipment.join(", ") : "None"}
-            </p>
-          </div>
+          <WorkoutProgress
+            workoutName={workout.name}
+            progress={progress}
+            currentSet={currentSet}
+            currentRoundIndex={currentRoundIndex}
+          />
           <div className="grid gap-4">
             {currentSet.exercises.map((exercise) => (
-              <Card key={exercise.id} className="overflow-hidden">
-                <CardContent className="p-4">
-                  <h4 className="text-lg font-medium mb-2">{exercise.name}</h4>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Target
-                      </p>
-                      <p className="text-base">{getTargetDisplay(exercise)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Previous
-                      </p>
-                      <p className="text-base">
-                        {getPreviousPerformance(exercise)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex  gap-4">
-                    {exercise.mode === "REPS" && (
-                      <>
-                        <div className="flex-1">
-                          <Label htmlFor={`weight-${exercise.id}`}>
-                            Weight (kg)
-                          </Label>
-                          <Input
-                            id={`weight-${exercise.id}`}
-                            type="number"
-                            value={exercise.weight}
-                            onChange={(e) =>
-                              handleUpdateExercise(
-                                exercise.id,
-                                "weight",
-                                Number(e.target.value)
-                              )
-                            }
-                            className="mt-1"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <Label htmlFor={`reps-${exercise.id}`}>Reps</Label>
-                          <Input
-                            id={`reps-${exercise.id}`}
-                            type="number"
-                            value={exercise.reps}
-                            onChange={(e) =>
-                              handleUpdateExercise(
-                                exercise.id,
-                                "reps",
-                                Number(e.target.value)
-                              )
-                            }
-                            className="mt-1"
-                          />
-                        </div>
-                      </>
-                    )}
-                    {exercise.mode === "TIME" && (
-                      <div className="flex-1">
-                        <Label htmlFor={`time-${exercise.id}`}>
-                          Time (seconds)
-                        </Label>
-                        <Input
-                          id={`time-${exercise.id}`}
-                          type="number"
-                          value={exercise.time}
-                          onChange={(e) =>
-                            handleUpdateExercise(
-                              exercise.id,
-                              "time",
-                              Number(e.target.value)
-                            )
-                          }
-                          className="mt-1"
-                        />
-                      </div>
-                    )}
-                    {exercise.mode === "DISTANCE" && (
-                      <div className="flex-1">
-                        <Label htmlFor={`distance-${exercise.id}`}>
-                          Distance (meters)
-                        </Label>
-                        <Input
-                          id={`distance-${exercise.id}`}
-                          type="number"
-                          value={exercise.distance}
-                          onChange={(e) =>
-                            handleUpdateExercise(
-                              exercise.id,
-                              "distance",
-                              Number(e.target.value)
-                            )
-                          }
-                          className="mt-1"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                currentRoundIndex={currentRoundIndex}
+                onUpdateExercise={handleUpdateExercise}
+              />
             ))}
-          </div>
-          <div className="mt-4 p-4 bg-gray-100 rounded-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Clock className="w-5 h-5 mr-2" />
-                <span>Rest: {currentSet.rest} seconds</span>
-              </div>
-              {currentSet.gap && (
-                <div className="flex items-center">
-                  <Dumbbell className="w-5 h-5 mr-2" />
-                  <span>Gap: {currentSet.gap} seconds</span>
-                </div>
-              )}
-            </div>
           </div>
           <div className="flex justify-between mt-6">
             <Button

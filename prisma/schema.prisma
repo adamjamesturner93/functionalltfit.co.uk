@@ -181,40 +181,43 @@ model SetExercise {
 }
 
 model WorkoutActivity {
-    id        String               @id @default(cuid())
-    userId    String
-    workoutId String
-    startedAt DateTime
-    endedAt   DateTime?
-    sets      WorkoutActivitySet[]
-    user      User                 @relation(fields: [userId], references: [id])
-    workout   Workout              @relation(fields: [workoutId], references: [id])
+    id                      String                    @id @default(cuid())
+    userId                  String
+    workoutId               String
+    startedAt               DateTime
+    endedAt                 DateTime?
+    sets                    WorkoutActivitySet[]
+    user                    User                      @relation(fields: [userId], references: [id])
+    workout                 Workout                   @relation(fields: [workoutId], references: [id])
+    WorkoutActivityExercise WorkoutActivityExercise[]
 }
 
 model WorkoutActivitySet {
     id                String                    @id @default(cuid())
+    workoutActivity   WorkoutActivity           @relation(fields: [workoutActivityId], references: [id])
     workoutActivityId String
     setNumber         Int
     roundNumber       Int
     exercises         WorkoutActivityExercise[]
-    workoutActivity   WorkoutActivity           @relation(fields: [workoutActivityId], references: [id])
 
-    @@unique([workoutActivityId, setNumber])
+    @@unique([workoutActivityId, setNumber, roundNumber])
 }
 
 model WorkoutActivityExercise {
     id                   String             @id @default(cuid())
+    workoutActivity      WorkoutActivity    @relation(fields: [workoutActivityId], references: [id])
     workoutActivityId    String
+    workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id])
     workoutActivitySetId String
+    exercise             Exercise           @relation(fields: [exerciseId], references: [id])
     exerciseId           String
     weight               Float
     reps                 Int?
-    time                 Int? // in seconds
-    distance             Float? // in meters
-    workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id])
-    exercise             Exercise           @relation(fields: [exerciseId], references: [id])
+    time                 Int?
+    distance             Float?
+    roundNumber          Int
 
-    @@unique([workoutActivitySetId, exerciseId])
+    @@unique([workoutActivitySetId, exerciseId, roundNumber])
 }
 
 enum SetType {

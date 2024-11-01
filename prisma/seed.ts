@@ -1361,7 +1361,7 @@ async function main() {
       const user = allUsers[index % allUsers.length];
       const workout = workouts[index % workouts.length];
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - index * 2); // Each history entry is two days apart
+      startDate.setDate(startDate.getDate() - index * 2);
       const endDate = new Date(
         startDate.getTime() + workout.totalLength * 1000
       );
@@ -1379,7 +1379,7 @@ async function main() {
               setNumber: setIndex + 1,
               roundNumber: 1,
               exercises: {
-                create: set.exercises.map((setExercise) => {
+                create: set.exercises.flatMap((setExercise) => {
                   const exercise = exercises.find(
                     (e) => e.id === setExercise.exerciseId
                   );
@@ -1388,23 +1388,27 @@ async function main() {
                       `Exercise not found: ${setExercise.exerciseId}`
                     );
 
-                  return {
-                    exerciseId: setExercise.exerciseId,
-                    workoutActivityId: id,
-                    weight: Math.floor(Math.random() * 20) + 10, // Random weight between 10 and 30
-                    reps:
-                      Math.floor(Math.random() * 5) +
-                      setExercise.targetReps -
-                      2, // Random reps around target
-                    time:
-                      exercise.mode === ExerciseMode.TIME
-                        ? Math.floor(Math.random() * 30) + 30
-                        : null,
-                    distance:
-                      exercise.mode === ExerciseMode.DISTANCE
-                        ? Math.floor(Math.random() * 1000) + 500
-                        : null,
-                  };
+                  return Array.from({ length: set.rounds }).map(
+                    (_, roundIndex) => ({
+                      exerciseId: setExercise.exerciseId,
+                      workoutActivityId: id,
+                      weight: Math.floor(Math.random() * 20) + 10,
+
+                      reps:
+                        Math.floor(Math.random() * 5) +
+                        setExercise.targetReps -
+                        2,
+                      time:
+                        exercise.mode === "TIME"
+                          ? Math.floor(Math.random() * 30) + 30
+                          : null,
+                      distance:
+                        exercise.mode === "DISTANCE"
+                          ? Math.floor(Math.random() * 1000) + 500
+                          : null,
+                      roundNumber: roundIndex + 1,
+                    })
+                  );
                 }),
               },
             })),
