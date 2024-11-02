@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getUserById } from "@/app/admin/actions/users";
+import { getUserById } from "@/app/actions/users";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EditUserForm } from "./edit-user-form";
@@ -25,13 +25,15 @@ export default async function UserPage({ params }: { params: { id: string } }) {
             </CardHeader>
             <CardContent>
               <p>
-                <strong>Name:</strong> {user.name}
+                <strong className="text-muted">Name:</strong> {user.name}
               </p>
               <p>
-                <strong>Membership Plan:</strong> {user.membershipPlan}
+                <strong className="text-muted">Membership Plan:</strong>{" "}
+                {user.membershipPlan}
               </p>
               <p>
-                <strong>Membership Status:</strong> {user.membershipStatus}
+                <strong className="text-muted">Membership Status:</strong>{" "}
+                {user.membershipStatus}
               </p>
             </CardContent>
           </Card>

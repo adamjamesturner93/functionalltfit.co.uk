@@ -26,8 +26,8 @@ import {
   createWorkout,
   updateWorkout,
   WorkoutWithSets,
-} from "@/app/admin/actions/workouts";
-import { getExercises } from "@/app/admin/actions/exercises";
+} from "@/app/actions/workouts";
+import { getExercises } from "@/app/actions/exercises";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";

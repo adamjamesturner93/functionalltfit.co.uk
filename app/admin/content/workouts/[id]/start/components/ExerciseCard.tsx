@@ -190,11 +190,13 @@ export default function ExerciseCard({
         <h4 className="text-lg font-medium mb-2">{exercise.name}</h4>
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-sm font-medium text-gray-500">Target</p>
+            <p className="text-sm font-medium text-bg-surface-light-grey0">
+              Target
+            </p>
             <p className="text-base">{getTargetDisplay()}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">
+            <p className="text-sm font-medium text-bg-surface-light-grey0">
               Previous (Round {currentRoundIndex + 1})
             </p>
             <p className="text-base">{getPreviousPerformance()}</p>

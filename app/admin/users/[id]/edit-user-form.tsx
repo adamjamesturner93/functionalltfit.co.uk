@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateUser, UserInput } from "@/app/admin/actions/users";
+import { updateUser, UserInput } from "@/app/actions/users";
 import { useToast } from "@/hooks/use-toast";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -79,7 +79,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Name
             </label>
@@ -98,7 +98,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Email
             </label>
@@ -117,7 +117,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Date of Birth
             </label>
@@ -129,7 +129,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
               showYearDropdown
               scrollableYearDropdown
               yearDropdownItemNumber={100}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               placeholderText="Select date of birth"
             />
             {errors.dateOfBirth && (
@@ -148,7 +148,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Membership Status
             </label>
@@ -180,7 +180,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Membership Plan
             </label>
@@ -212,7 +212,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
           <div>
             <label
               htmlFor={field.name}
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-muted"
             >
               Role
             </label>

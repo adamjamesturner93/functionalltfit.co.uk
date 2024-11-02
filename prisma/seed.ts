@@ -87,7 +87,7 @@ async function main() {
         type: YogaType.BUILD,
         props: ["mat"],
         url: "https://example.com/morning-sun-salutations",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 1200, // 20 minutes
       },
     }),
@@ -98,7 +98,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster"],
         url: "https://example.com/gentle-bedtime-yoga",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 900, // 15 minutes
       },
     }),
@@ -109,7 +109,7 @@ async function main() {
         type: YogaType.BUILD,
         props: ["mat", "block"],
         url: "https://example.com/power-vinyasa-flow",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 3600, // 60 minutes
       },
     }),
@@ -120,7 +120,7 @@ async function main() {
         type: YogaType.EXPLORE,
         props: ["mat", "strap", "bolster"],
         url: "https://example.com/yin-yoga-flexibility",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 2700, // 45 minutes
       },
     }),
@@ -131,7 +131,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["mat", "block", "strap"],
         url: "https://example.com/yoga-back-pain-relief",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 1800, // 30 minutes
       },
     }),
@@ -142,7 +142,7 @@ async function main() {
         type: YogaType.BUILD,
         props: ["mat"],
         url: "https://example.com/ashtanga-primary-series",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 5400, // 90 minutes
       },
     }),
@@ -153,7 +153,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster", "blanket", "block"],
         url: "https://example.com/restorative-yoga-stress-relief",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 3600, // 60 minutes
       },
     }),
@@ -164,7 +164,7 @@ async function main() {
         type: YogaType.EXPLORE,
         props: ["mat", "strap"],
         url: "https://example.com/yoga-for-runners",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 2400, // 40 minutes
       },
     }),
@@ -175,7 +175,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["chair"],
         url: "https://example.com/chair-yoga-office-workers",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 900, // 15 minutes
       },
     }),
@@ -186,7 +186,7 @@ async function main() {
         type: YogaType.EXPLORE,
         props: ["mat", "blanket"],
         url: "https://example.com/kundalini-yoga-beginners",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 3600, // 60 minutes
       },
     }),
@@ -197,7 +197,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster", "block"],
         url: "https://example.com/prenatal-yoga-second-trimester",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 2700, // 45 minutes
       },
     }),
@@ -208,7 +208,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster"],
         url: "https://example.com/yoga-better-sleep",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 1800, // 30 minutes
       },
     }),
@@ -219,7 +219,7 @@ async function main() {
         type: YogaType.BUILD,
         props: ["mat"],
         url: "https://example.com/core-strength-vinyasa",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 3600, // 60 minutes
       },
     }),
@@ -230,7 +230,7 @@ async function main() {
         type: YogaType.EXPLORE,
         props: ["mat", "block"],
         url: "https://example.com/yoga-hikers-climbers",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 2700, // 45 minutes
       },
     }),
@@ -241,7 +241,7 @@ async function main() {
         type: YogaType.MINDFULNESS,
         props: ["chair", "strap"],
         url: "https://example.com/gentle-yoga-seniors",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         duration: 1800, // 30 minutes
       },
     }),
@@ -252,7 +252,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Push-up",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/push-up-video",
         muscleGroups: ["Chest", "Shoulders", "Triceps"],
         equipment: "None",
@@ -265,7 +265,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Squat",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/squat-video",
         muscleGroups: ["Quadriceps", "Hamstrings", "Glutes"],
         equipment: "None",
@@ -278,7 +278,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Deadlift",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/deadlift-video",
         muscleGroups: ["Back", "Glutes", "Hamstrings"],
         equipment: "Barbell",
@@ -291,7 +291,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Bench Press",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/bench-press-video",
         muscleGroups: ["Chest", "Shoulders", "Triceps"],
         equipment: "Barbell, Bench",
@@ -304,7 +304,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Pull-up",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/pull-up-video",
         muscleGroups: ["Back", "Biceps"],
         equipment: "Pull-up Bar",
@@ -317,7 +317,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Plank",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/plank-video",
         muscleGroups: ["Core", "Shoulders"],
         equipment: "None",
@@ -330,7 +330,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Lunges",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/lunges-video",
         muscleGroups: ["Quadriceps", "Hamstrings", "Glutes"],
         equipment: "None",
@@ -343,7 +343,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Dumbbell Shoulder Press",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/shoulder-press-video",
         muscleGroups: ["Shoulders", "Triceps"],
         equipment: "Dumbbells",
@@ -356,7 +356,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Russian Twists",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/russian-twists-video",
         muscleGroups: ["Core", "Obliques"],
         equipment: "None",
@@ -369,7 +369,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Burpees",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/burpees-video",
         muscleGroups: ["Full Body"],
         equipment: "None",
@@ -382,7 +382,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Bicycle Crunches",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/bicycle-crunches-video",
         muscleGroups: ["Core", "Obliques"],
         equipment: "None",
@@ -395,7 +395,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Dips",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/dips-video",
         muscleGroups: ["Triceps", "Chest"],
         equipment: "Parallel Bars",
@@ -408,7 +408,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Mountain Climbers",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/mountain-climbers-video",
         muscleGroups: ["Core", "Shoulders", "Legs"],
         equipment: "None",
@@ -421,7 +421,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Kettlebell Swing",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/kettlebell-swing-video",
         muscleGroups: ["Back", "Glutes", "Hamstrings"],
         equipment: "Kettlebell",
@@ -434,7 +434,7 @@ async function main() {
     prisma.exercise.create({
       data: {
         name: "Jump Rope",
-        thumbnailUrl: "/placeholder.svg?height=240&width=320",
+        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
         videoUrl: "https://example.com/jump-rope-video",
         muscleGroups: ["Calves", "Shoulders"],
         equipment: "Jump Rope",
@@ -1454,6 +1454,117 @@ async function main() {
     )
   );
 
+  const programmes = await Promise.all([
+    prisma.programme.create({
+      data: {
+        title: "30-Day Fitness Kickstart",
+        description:
+          "A comprehensive 30-day programme to jumpstart your fitness journey.",
+        thumbnail: "https://loremflickr.com/g/300/300/fitness",
+        sessionsPerWeek: 5,
+        intention: "General Fitness",
+        weeks: 2,
+        activities: {
+          create: [
+            {
+              week: 1,
+              day: 1,
+              activityType: "WORKOUT",
+              workoutId: workouts[0].id,
+            },
+            {
+              week: 1,
+              day: 2,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[0].id,
+            },
+            {
+              week: 1,
+              day: 3,
+              activityType: "WORKOUT",
+              workoutId: workouts[1].id,
+            },
+            {
+              week: 1,
+              day: 4,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[1].id,
+            },
+            {
+              week: 1,
+              day: 5,
+              activityType: "WORKOUT",
+              workoutId: workouts[2].id,
+            },
+            {
+              week: 2,
+              day: 1,
+              activityType: "WORKOUT",
+              workoutId: workouts[0].id,
+            },
+            {
+              week: 2,
+              day: 2,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[0].id,
+            },
+            {
+              week: 2,
+              day: 3,
+              activityType: "WORKOUT",
+              workoutId: workouts[1].id,
+            },
+            {
+              week: 2,
+              day: 4,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[1].id,
+            },
+            {
+              week: 2,
+              day: 5,
+              activityType: "WORKOUT",
+              workoutId: workouts[2].id,
+            },
+          ],
+        },
+      },
+    }),
+    prisma.programme.create({
+      data: {
+        title: "Mobility Mastery",
+        description:
+          "Improve your flexibility and mobility with this 8-week programme.",
+        thumbnail: "https://loremflickr.com/g/300/300/fitness",
+        sessionsPerWeek: 3,
+        intention: "Mobility",
+        weeks: 1,
+        activities: {
+          create: [
+            {
+              week: 1,
+              day: 1,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[2].id,
+            },
+            {
+              week: 1,
+              day: 2,
+              activityType: "WORKOUT",
+              workoutId: workouts[3].id,
+            },
+            {
+              week: 1,
+              day: 3,
+              activityType: "YOGA",
+              yogaVideoId: yogaVideos[3].id,
+            },
+          ],
+        },
+      },
+    }),
+  ]);
+
   console.log(`Seeding completed:
     - ${allUsers.length} users created (1 admin, ${regularUsers.length} regular)
     - ${yogaVideos.length} yoga videos created
@@ -1461,7 +1572,8 @@ async function main() {
     - ${workouts.length} workouts created
     - ${yogaHistories.length} yoga histories created
     - ${workoutHistories.length} workout histories created
-    - ${userExerciseWeights.length} user exercise weights created`);
+    - ${userExerciseWeights.length} user exercise weights created
+    - ${programmes.length} programmes created`);
 }
 
 main()

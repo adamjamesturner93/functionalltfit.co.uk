@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeUser, unauthorizedResponse } from "@/lib/auth-utils";
-import { startWorkout } from "@/app/admin/actions/workouts";
+import { startWorkout } from "@/app/actions/workouts";
 
 export async function POST(
   request: NextRequest,

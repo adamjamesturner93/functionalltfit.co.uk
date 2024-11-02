@@ -28,6 +28,7 @@ model User {
     YogaVideoActivity  YogaVideoActivity[]
     WorkoutActivity    WorkoutActivity[]
     UserExerciseWeight UserExerciseWeight[]
+    UserProgramme      UserProgramme[]
 }
 
 enum MembershipStatus {
@@ -85,17 +86,18 @@ model VerificationToken {
 }
 
 model YogaVideo {
-    id           String              @id @default(cuid())
-    title        String
-    description  String
-    type         YogaType
-    props        String[]
-    url          String
-    thumbnailUrl String
-    duration     Int // in seconds
-    createdAt    DateTime            @default(now())
-    updatedAt    DateTime            @updatedAt
-    activities   YogaVideoActivity[]
+    id                String              @id @default(cuid())
+    title             String
+    description       String
+    type              YogaType
+    props             String[]
+    url               String
+    thumbnailUrl      String
+    duration          Int // in seconds
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+    activities        YogaVideoActivity[]
+    ProgrammeActivity ProgrammeActivity[]
 }
 
 enum YogaType {
@@ -157,6 +159,7 @@ model Workout {
     updatedAt          DateTime             @updatedAt
     WorkoutActivity    WorkoutActivity[]
     UserExerciseWeight UserExerciseWeight[]
+    ProgrammeActivity  ProgrammeActivity[]
 }
 
 model Set {
@@ -238,4 +241,44 @@ model UserExerciseWeight {
     exercise   Exercise @relation(fields: [exerciseId], references: [id])
 
     @@unique([userId, workoutId, exerciseId])
+}
+
+model Programme {
+    id              String   @id @default(cuid())
+    title           String
+    description     String
+    thumbnail       String
+    sessionsPerWeek Int
+    intention       String
+    weeks           Int
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    activities     ProgrammeActivity[]
+    userProgrammes UserProgramme[]
+}
+
+model ProgrammeActivity {
+    id           String     @id @default(cuid())
+    programmeId  String
+    programme    Programme  @relation(fields: [programmeId], references: [id])
+    week         Int
+    day          Int
+    activityType String // "WORKOUT" or "YOGA"
+    workoutId    String?
+    workout      Workout?   @relation(fields: [workoutId], references: [id])
+    yogaVideoId  String?
+    yogaVideo    YogaVideo? @relation(fields: [yogaVideoId], references: [id])
+}
+
+model UserProgramme {
+    id          String    @id @default(cuid())
+    userId      String
+    user        User      @relation(fields: [userId], references: [id])
+    programmeId String
+    programme   Programme @relation(fields: [programmeId], references: [id])
+    startDate   DateTime
+    endDate     DateTime?
+    isActive    Boolean   @default(true)
+    progress    Json // Store progress as a JSON object
 }

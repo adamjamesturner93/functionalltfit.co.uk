@@ -18,10 +18,7 @@ import {
 } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  createYogaVideo,
-  YogaVideoInput,
-} from "@/app/admin/actions/yoga-videos";
+import { createYogaVideo, YogaVideoInput } from "@/app/actions/yoga-videos";
 import { ImageUpload } from "@/components/image-upload";
 import { VideoUpload } from "@/components/video-upload";
 

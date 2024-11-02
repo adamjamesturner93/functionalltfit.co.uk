@@ -17,7 +17,6 @@ interface MultiSelectProps {
   selected: string[];
   onChange: (values: string[]) => void;
   placeholder?: string;
-  className?: string;
 }
 
 export function MultiSelect({
@@ -25,10 +24,17 @@ export function MultiSelect({
   selected,
   onChange,
   placeholder = "Select items...",
-  className = "",
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
+  const triggerRef = React.useRef<HTMLDivElement>(null);
+  const [triggerWidth, setTriggerWidth] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (triggerRef.current) {
+      setTriggerWidth(triggerRef.current.offsetWidth);
+    }
+  }, []);
 
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(search.toLowerCase())
@@ -45,11 +51,14 @@ export function MultiSelect({
     onChange(selected.filter((item) => item !== value));
   };
 
+  console.log({ filteredOptions, selected });
+
   return (
     <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
       <PopoverPrimitive.Trigger asChild>
         <div
-          className={`border border-input px-3 py-2 rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ${className}`}
+          ref={triggerRef}
+          className={`flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
         >
           <div className="flex flex-wrap gap-1">
             {selected.map((value) => {
@@ -78,8 +87,9 @@ export function MultiSelect({
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          className="z-50 w-[200px] p-1 bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-50 p-1 bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
           align="start"
+          style={{ width: `${triggerWidth}px` }}
         >
           <Input
             type="text"

@@ -1,93 +1,415 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import {
   getYogaVideos,
   YogaVideoFilters,
   YogaVideoSortOption,
-} from "@/app/admin/actions/yoga-videos";
+  deleteYogaVideo,
+} from "@/app/actions/yoga-videos";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Pagination } from "@/components/ui/pagination";
-import { Card, CardContent } from "@/components/ui/card";
-import { YogaVideoSearch } from "./yoga-video-search";
-import { YogaVideoTable } from "./yoga-videos-table";
-import { YogaVideoFilters as YogaVideoFiltersComponent } from "./yoga-video-filters";
-import { YogaType } from "@prisma/client";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  ColumnDef,
+  flexRender,
+  FilterFn,
+} from "@tanstack/react-table";
+import { rankItem } from "@tanstack/match-sorter-utils";
+import { useToast } from "@/hooks/use-toast";
+import { YogaVideo, YogaType } from "@prisma/client";
+import { MultiSelect } from "@/components/ui/multi-select";
 
-export default async function YogaVideosPage({
-  searchParams,
-}: {
-  searchParams: {
-    page?: string;
-    search?: string;
-    type?: YogaType;
-    props?: string;
-    duration?: YogaVideoFilters["duration"];
-    sort?: YogaVideoSortOption;
-  };
-}) {
-  const {
-    page: pageNumber,
-    search: searchParam,
-    type: typeParam,
-    props: propsParam,
-    duration: durationParam,
-    sort: sortParam,
-  } = await searchParams;
-  const page = Math.max(1, Number(pageNumber) || 1);
-  const pageSize = 10;
-  const search = searchParam || "";
-  const filters: YogaVideoFilters = {
-    type: typeParam,
-    props: propsParam ? propsParam.split(",") : undefined,
-    duration: durationParam,
-  };
-  const sort = sortParam || "newest";
+const fuzzyFilter: FilterFn<YogaVideo> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value);
+  addMeta({ itemRank });
+  return itemRank.passed;
+};
 
-  const { yogaVideos, total } = await getYogaVideos(
-    page,
-    pageSize,
-    search,
-    filters,
-    sort
+const propOptions = [
+  "Mat",
+  "Blocks",
+  "Straps",
+  "Blanket",
+  "Bolster",
+  "Chair",
+  "Wall",
+];
+
+const durationOptions = [
+  { value: "less15", label: "Less than 15 minutes" },
+  { value: "15to30", label: "15-30 minutes" },
+  { value: "30to45", label: "30-45 minutes" },
+  { value: "45plus", label: "45+ minutes" },
+];
+
+const sortOptions = [
+  { value: "newest", label: "Newest" },
+  { value: "mostViewed", label: "Most Viewed" },
+  { value: "leastViewed", label: "Least Viewed" },
+];
+
+export default function YogaVideosPage() {
+  const [yogaVideos, setYogaVideos] = useState<YogaVideo[]>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [filters, setFilters] = useState<YogaVideoFilters>({});
+  const [sort, setSort] = useState<YogaVideoSortOption>("newest");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchYogaVideos = async () => {
+      const { yogaVideos } = await getYogaVideos(
+        1,
+        1000,
+        globalFilter,
+        filters,
+        sort
+      );
+      setYogaVideos(yogaVideos);
+    };
+    fetchYogaVideos();
+  }, [globalFilter, filters, sort]);
+
+  const columns = useMemo<ColumnDef<YogaVideo>[]>(
+    () => [
+      {
+        accessorKey: "title",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Title
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "type",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Type
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "duration",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Duration
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => `${Math.floor(row.original.duration / 60)} minutes`,
+      },
+      {
+        accessorKey: "props",
+        header: "Props",
+        cell: ({ row }) => row.original.props.join(", "),
+      },
+      {
+        accessorKey: "watchCount",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Views
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          const yogaVideo = row.original;
+
+          const handleDelete = async () => {
+            try {
+              await deleteYogaVideo(yogaVideo.id);
+              toast({ title: "Yoga video deleted successfully" });
+              router.refresh();
+            } catch (error) {
+              console.error(error);
+              toast({
+                title: "Error deleting yoga video",
+                variant: "destructive",
+              });
+            }
+          };
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/admin/content/yoga-videos/${yogaVideo.id}`)
+                  }
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleDelete}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    [router, toast]
   );
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const currentPage = Math.min(page, totalPages);
+  const table = useReactTable({
+    data: yogaVideos,
+    columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const updateFilter = (
+    key: keyof YogaVideoFilters,
+    value: string | string[]
+  ) => {
+    setFilters((prev) => {
+      if (Array.isArray(value)) {
+        if (value.length > 0) {
+          return { ...prev, [key]: value };
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [key]: _, ...rest } = prev;
+          return rest;
+        }
+      } else if (value && value !== "ALL") {
+        return { ...prev, [key]: value };
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      }
+    });
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Yoga Videos</h1>
-        <Link href="/admin/content/yoga-videos/new">
-          <Button>Create New Yoga Video</Button>
-        </Link>
+    <div className="min-h-screen bg-surface">
+      {" "}
+      <div className="container mx-auto py-10">
+        <div className="bg-surface-grey shadow-md rounded-lg overflow-hidden">
+          <div className="p-6 bg-bg-surface-light-grey border-b border-gray-200">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-foreground">
+                Yoga Videos
+              </h1>
+              <Link href="/admin/content/yoga-videos/new">
+                <Button>Create New Yoga Video</Button>
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-4 mb-4">
+              <Input
+                placeholder="Search all columns..."
+                value={globalFilter ?? ""}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                className="max-w-sm"
+              />
+              <Select
+                onValueChange={(value) => updateFilter("type", value)}
+                defaultValue={searchParams.get("type") || "ALL"}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Types</SelectItem>
+                  {Object.values(YogaType).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <MultiSelect
+                options={propOptions.map((prop) => ({
+                  label: prop,
+                  value: prop,
+                }))}
+                selected={filters.props || []}
+                onChange={(value) => updateFilter("props", value)}
+                placeholder="Filter by Props"
+              />
+              <Select
+                onValueChange={(value) => updateFilter("duration", value)}
+                defaultValue={searchParams.get("duration") || "ALL"}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by Duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Durations</SelectItem>
+                  {durationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) => setSort(value as YogaVideoSortOption)}
+                defaultValue={sort}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <div className="flex items-center justify-end space-x-2 p-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       </div>
-      <Card>
-        <CardContent className="mt-6">
-          <div className="space-y-4">
-            <YogaVideoSearch />
-            <YogaVideoFiltersComponent />
-          </div>
-          <div className="mt-6">
-            <YogaVideoTable yogaVideos={yogaVideos} />
-          </div>
-          <div className="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalItems={total}
-              pageSize={pageSize}
-              baseUrl="/admin/content/yoga-videos"
-              searchParams={{
-                search: search || undefined,
-                type: filters.type,
-                props: filters.props?.join(","),
-                duration: filters.duration,
-                sort,
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

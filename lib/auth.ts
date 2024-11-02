@@ -86,7 +86,7 @@ export async function sendAuthCode(email: string, authCode: string) {
     from: "noreply@thechronicyogini.com",
     subject: "Your Authentication Code",
     text: `Your authentication code is: ${authCode}`,
-    html: `<strong>Your authentication code is: ${authCode}</strong>`,
+    html: `<strong className="text-muted">Your authentication code is: ${authCode}</strong>`,
   };
 
   try {

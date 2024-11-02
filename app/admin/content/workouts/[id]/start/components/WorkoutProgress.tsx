@@ -28,7 +28,7 @@ export default function WorkoutProgress({
       </CardHeader>
       <div className="mb-4">
         <Progress value={progress} className="w-full" />
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-bg-surface-light-grey0 mt-1">
           Progress: {progress.toFixed(2)}%
         </p>
       </div>

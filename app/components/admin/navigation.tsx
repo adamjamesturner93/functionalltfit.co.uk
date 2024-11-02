@@ -23,9 +23,9 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="w-64 bg-white shadow-md">
+    <nav className="w-64 bg-surface-grey shadow-md">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold text-foreground">
           FunctionallyFit Admin
         </h1>
       </div>
@@ -38,8 +38,8 @@ export function Navigation() {
                 href={item.href}
                 className={`flex items-center space-x-2 p-2 rounded-md ${
                   pathname === item.href
-                    ? "bg-primary text-white"
-                    : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted hover:bg-muted hover:text-surface-grey"
                 }`}
               >
                 <Icon className="h-5 w-5" />

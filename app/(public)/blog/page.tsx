@@ -195,7 +195,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/5">
         <div className="container px-4 md:px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
             Stay Updated

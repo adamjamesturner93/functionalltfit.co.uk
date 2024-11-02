@@ -23,7 +23,7 @@ import {
   getYogaVideoById,
   YogaVideoInput,
   fetchViewStats,
-} from "@/app/admin/actions/yoga-videos";
+} from "@/app/actions/yoga-videos";
 import { ImageUpload } from "@/components/image-upload";
 import { VideoUpload } from "@/components/video-upload";
 import { del } from "@vercel/blob";

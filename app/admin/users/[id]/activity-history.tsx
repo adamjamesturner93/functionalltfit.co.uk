@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
   getActivityHistory,
   ActivityHistoryItem,
-} from "@/app/admin/actions/activity";
+} from "@/app/actions/activity";
 import { format } from "date-fns";
 import {
   Table,

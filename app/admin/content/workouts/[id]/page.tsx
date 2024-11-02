@@ -1,4 +1,4 @@
-import { getWorkoutById } from "@/app/admin/actions/workouts";
+import { getWorkoutById } from "@/app/actions/workouts";
 import { notFound } from "next/navigation";
 import { WorkoutForm } from "./workout-form";
 

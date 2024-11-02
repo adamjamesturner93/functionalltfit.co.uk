@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -74,10 +75,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
-          <main>{children}</main>
-        </SessionProvider>
-
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider>
+            <main>{children}</main>
+          </SessionProvider>
+        </ThemeProvider>
         <Script src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID" />
         <Script id="google-analytics">
           {`

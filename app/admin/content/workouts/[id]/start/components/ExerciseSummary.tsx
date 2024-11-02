@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExerciseMode } from "@prisma/client";
-import { updateUserExerciseWeight } from "@/app/admin/actions/workouts";
+import { updateUserExerciseWeight } from "@/app/actions/workouts";
 
 interface ExerciseSummaryProps {
   exercise: {

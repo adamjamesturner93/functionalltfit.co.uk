@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getExercises } from "@/app/admin/actions/exercises";
+import { getExercises } from "@/app/actions/exercises";
 
 type Exercise = {
   id: string;

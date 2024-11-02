@@ -6,7 +6,7 @@ import {
   startWorkout,
   completeWorkout,
   updateWorkoutActivity,
-} from "@/app/admin/actions/workouts";
+} from "@/app/actions/workouts";
 import { getCurrentUserId } from "@/lib/auth-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

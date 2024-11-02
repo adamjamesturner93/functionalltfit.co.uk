@@ -1,4 +1,4 @@
-import { getExerciseById } from "@/app/admin/actions/exercises";
+import { getExerciseById } from "@/app/actions/exercises";
 import { notFound } from "next/navigation";
 import { ExerciseForm } from "./exercise-form";
 
