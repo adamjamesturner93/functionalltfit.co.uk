@@ -10,8 +10,12 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Don't require authentication for auth endpoints
-  if (pathname.startsWith("/api/auth")) {
+  // Don't require authentication for auth endpoints or mux-upload
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/mux") ||
+    pathname.startsWith("/api/upload-image")
+  ) {
     return NextResponse.next();
   }
 

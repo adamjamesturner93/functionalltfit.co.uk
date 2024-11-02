@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
+    console.error(error.response.body);
     return NextResponse.json(
       { message: "Error sending auth code", error },
       { status: 500 }

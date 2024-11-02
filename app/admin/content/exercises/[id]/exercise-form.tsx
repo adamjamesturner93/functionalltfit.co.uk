@@ -105,170 +105,182 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Exercise Details</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => <Input {...field} id="name" />}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => <Textarea {...field} id="description" />}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="muscleGroups">Muscle Groups</Label>
-            <Controller
-              name="muscleGroups"
-              control={control}
-              render={({ field }) => (
-                <MultiSelect
-                  options={muscleGroups}
-                  selected={field.value}
-                  onChange={field.onChange}
-                  placeholder="Select muscle groups"
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => <Input {...field} id="name" />}
                 />
-              )}
-            />
-            {errors.muscleGroups && (
-              <p className="text-red-500 text-sm">
-                {errors.muscleGroups.message}
-              </p>
-            )}
-          </div>
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="equipment">Equipment</Label>
-            <Controller
-              name="equipment"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select equipment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {equipmentOptions.map((equipment) => (
-                      <SelectItem key={equipment} value={equipment}>
-                        {equipment}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.equipment && (
-              <p className="text-red-500 text-sm">{errors.equipment.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="type">Type</Label>
-            <Controller
-              name="type"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select exercise type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(ExerciseType).map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="mode">Mode</Label>
-            <Controller
-              name="mode"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select exercise mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(ExerciseMode).map((mode) => (
-                      <SelectItem key={mode} value={mode}>
-                        {mode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="instructions">Instructions</Label>
-            <Controller
-              name="instructions"
-              control={control}
-              render={({ field }) => <Textarea {...field} id="instructions" />}
-            />
-            {errors.instructions && (
-              <p className="text-red-500 text-sm">
-                {errors.instructions.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="thumbnailUrl">Thumbnail Image</Label>
-            <Controller
-              name="thumbnailUrl"
-              control={control}
-              render={({ field }) => (
-                <ImageUpload
-                  onImageUpload={(url) => field.onChange(url)}
-                  initialImage={field.value}
+              <div>
+                <Label htmlFor="muscleGroups">Muscle Groups</Label>
+                <Controller
+                  name="muscleGroups"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      options={muscleGroups}
+                      selected={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select muscle groups"
+                    />
+                  )}
                 />
-              )}
-            />
-            {errors.thumbnailUrl && (
-              <p className="text-red-500 text-sm">
-                {errors.thumbnailUrl.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="videoUrl">Video</Label>
-            <Controller
-              name="videoUrl"
-              control={control}
-              render={({ field }) => (
-                <VideoUpload
-                  onVideoUpload={(url) => field.onChange(url)}
-                  initialVideo={field.value}
+                {errors.muscleGroups && (
+                  <p className="text-red-500 text-sm">
+                    {errors.muscleGroups.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="type">Type</Label>
+                <Controller
+                  name="type"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select exercise type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(ExerciseType).map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
+              </div>
+              <div>
+                <Label htmlFor="mode">Mode</Label>
+                <Controller
+                  name="mode"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select exercise mode" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(ExerciseMode).map((mode) => (
+                          <SelectItem key={mode} value={mode}>
+                            {mode}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="equipment">Equipment</Label>
+                <Controller
+                  name="equipment"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select equipment" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {equipmentOptions.map((equipment) => (
+                          <SelectItem key={equipment} value={equipment}>
+                            {equipment}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.equipment && (
+                  <p className="text-red-500 text-sm">
+                    {errors.equipment.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea {...field} id="description" />
+                  )}
+                />
+              </div>
+              <div>
+                <Label htmlFor="instructions">Instructions</Label>
+                <Controller
+                  name="instructions"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea {...field} id="instructions" />
+                  )}
+                />
+                {errors.instructions && (
+                  <p className="text-red-500 text-sm">
+                    {errors.instructions.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-4">
+            <div>
+              <Label htmlFor="thumbnailUrl">Thumbnail Image</Label>
+              <Controller
+                name="thumbnailUrl"
+                control={control}
+                render={({ field }) => (
+                  <ImageUpload
+                    onImageUpload={(url) => field.onChange(url)}
+                    initialImage={field.value}
+                  />
+                )}
+              />
+              {errors.thumbnailUrl && (
+                <p className="text-red-500 text-sm">
+                  {errors.thumbnailUrl.message}
+                </p>
               )}
-            />
-            {errors.videoUrl && (
-              <p className="text-red-500 text-sm">{errors.videoUrl.message}</p>
-            )}
+            </div>
+            <div>
+              <Label htmlFor="videoUrl">Video</Label>
+              <Controller
+                name="videoUrl"
+                control={control}
+                render={({ field }) => (
+                  <VideoUpload
+                    onVideoUpload={(url) => field.onChange(url)}
+                    initialVideo={field.value}
+                  />
+                )}
+              />
+              {errors.videoUrl && (
+                <p className="text-red-500 text-sm">
+                  {errors.videoUrl.message}
+                </p>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

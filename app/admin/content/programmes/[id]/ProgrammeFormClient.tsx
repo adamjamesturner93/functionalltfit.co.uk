@@ -53,7 +53,7 @@ export default function ProgrammeFormClient({
   const isNewProgramme = id === "new";
   const [sameAsWeekOne, setSameAsWeekOne] = useState(false);
 
-  const defaultValues = useMemo(() => {
+  const defaultValues: ProgrammeFormData = useMemo(() => {
     if (initialProgramme) {
       return {
         ...initialProgramme,
@@ -79,7 +79,7 @@ export default function ProgrammeFormClient({
 
   const { control, handleSubmit, watch, setValue } = useForm<ProgrammeFormData>(
     {
-      resolver: zodResolver(programmeSchema.omit({ id: true })),
+      resolver: zodResolver(programmeSchema),
       defaultValues,
     }
   );
@@ -215,28 +215,6 @@ export default function ProgrammeFormClient({
               )}
             />
           </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label>Thumbnail</Label>
-            <Controller
-              name="thumbnail"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <ImageUpload
-                    onImageUpload={(url: string) => field.onChange(url)}
-                    initialImage={field.value}
-                  />
-                  {error && (
-                    <p className="text-red-500 text-sm mt-1">{error.message}</p>
-                  )}
-                </>
-              )}
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="sessionsPerWeek">Sessions per Week</Label>
@@ -303,6 +281,27 @@ export default function ProgrammeFormClient({
             </div>
           </div>
         </div>
+
+        <div className="space-y-4">
+          <div>
+            <Label>Thumbnail</Label>
+            <Controller
+              name="thumbnail"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <ImageUpload
+                    onImageUpload={(url: string) => field.onChange(url)}
+                    initialImage={field.value}
+                  />
+                  {error && (
+                    <p className="text-red-500 text-sm mt-1">{error.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -344,7 +343,7 @@ export default function ProgrammeFormClient({
                           control={control}
                           render={({ field }) => (
                             <Select
-                              onValueChange={(value) => {
+                              onValueChange={(value: "WORKOUT" | "YOGA") => {
                                 field.onChange(value);
                                 setValue(
                                   `activities.${fieldIndex}.workoutId`,

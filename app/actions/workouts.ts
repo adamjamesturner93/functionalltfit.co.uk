@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Workout, SetType, Prisma, ExerciseMode } from "@prisma/client";
+import { autoUpdateActivityCompletion } from "./programmes";
 
 export interface WorkoutWithCount extends Workout {
   _count: {
@@ -233,22 +234,6 @@ export async function deleteWorkout(id: string): Promise<Workout> {
 
 export async function startWorkout(workoutId: string, userId: string) {
   try {
-    // First, verify that the user exists
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log({ userId });
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
-    console.log("*********");
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -316,6 +301,7 @@ export async function startWorkout(workoutId: string, userId: string) {
       id: workoutActivity.id,
       workoutId: workout.id,
       name: workout.name,
+
       description: workout.description,
       totalLength: workout.totalLength,
       equipment: workout.equipment,
@@ -662,6 +648,8 @@ export async function completeWorkout(
           100
         : null;
 
+    await autoUpdateActivityCompletion(userId, "WORKOUT", workoutId);
+
     return {
       summary: {
         totalDuration,
@@ -676,6 +664,7 @@ export async function completeWorkout(
     throw error;
   }
 }
+
 export async function updateWorkoutActivity(
   workoutActivityId: string,
   exercises: {
@@ -818,8 +807,9 @@ export async function updateUserExerciseWeight(
     });
 
     console.log(
-      `Updated weight for user ${userId}, workout ${workoutId}, exercise ${exerciseId} to ${newWeight}`
+      `Updated weight for user ${userId}, workout ${workoutId}, exercise ${exerciseId}: ${newWeight}`
     );
+
     return updatedWeight;
   } catch (error) {
     console.error("Error updating user exercise weight:", error);

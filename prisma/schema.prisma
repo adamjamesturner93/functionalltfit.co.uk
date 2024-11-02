@@ -91,7 +91,8 @@ model YogaVideo {
     description       String
     type              YogaType
     props             String[]
-    url               String
+    muxPlaybackId     String // Add this line
+    muxAssetId        String // Add this line
     thumbnailUrl      String
     duration          Int // in seconds
     createdAt         DateTime            @default(now())
@@ -269,6 +270,7 @@ model ProgrammeActivity {
     workout      Workout?   @relation(fields: [workoutId], references: [id])
     yogaVideoId  String?
     yogaVideo    YogaVideo? @relation(fields: [yogaVideoId], references: [id])
+    completed    Boolean    @default(false)
 }
 
 model UserProgramme {

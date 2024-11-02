@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import sgMail from "@sendgrid/mail";
+import { formatAuthCodeEmail } from "./formatAuthCodeEmail";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -50,6 +51,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
   session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
   jwt: {
     maxAge: 60 * 60 * 24 * 30, // 30 days
@@ -81,13 +85,7 @@ export function generateAuthCode(): string {
 }
 
 export async function sendAuthCode(email: string, authCode: string) {
-  const msg = {
-    to: email,
-    from: "noreply@thechronicyogini.com",
-    subject: "Your Authentication Code",
-    text: `Your authentication code is: ${authCode}`,
-    html: `<strong className="text-muted">Your authentication code is: ${authCode}</strong>`,
-  };
+  const msg = formatAuthCodeEmail(email, authCode);
 
   try {
     await sgMail.send(msg);

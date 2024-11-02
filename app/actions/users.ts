@@ -25,6 +25,7 @@ export async function getUsers(
 
   const searchTerms = search.split(" ").filter(Boolean);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
   if (searchTerms.length > 0) {

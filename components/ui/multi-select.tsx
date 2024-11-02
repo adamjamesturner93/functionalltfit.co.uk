@@ -51,8 +51,6 @@ export function MultiSelect({
     onChange(selected.filter((item) => item !== value));
   };
 
-  console.log({ filteredOptions, selected });
-
   return (
     <PopoverPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
       <PopoverPrimitive.Trigger asChild>

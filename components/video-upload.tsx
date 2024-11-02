@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Upload, X } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import MuxUploader from "@mux/mux-uploader-react";
 
 interface VideoUploadProps {
-  onVideoUpload: (url: string) => void;
+  onVideoUpload: (
+    muxPlaybackId: string,
+    muxAssetId: string,
+    duration: number
+  ) => void;
   initialVideo?: string;
 }
 
@@ -15,60 +19,63 @@ export function VideoUpload({ onVideoUpload, initialVideo }: VideoUploadProps) {
   const [video, setVideo] = useState<string | null>(initialVideo || null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadUrl, setUploadUrl] = useState<string | null>(null);
+  const [uploadId, setUploadId] = useState<string | null>(null);
 
-  const handleVideoUpload = useCallback(
-    async (file: File) => {
-      setUploading(true);
-      setError(null);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
+  useEffect(() => {
+    const fetchUploadUrl = async () => {
       try {
-        const response = await fetch("/api/upload-video", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to upload video");
-        }
-
+        const response = await fetch("/api/mux/get-upload-url");
         const data = await response.json();
-        setVideo(data.url);
-        onVideoUpload(data.url);
+
+        setUploadUrl(data.url);
+        setUploadId(data.id);
       } catch (error) {
-        console.error("Error uploading video:", error);
-        setError("Failed to upload video. Please try again.");
-      } finally {
-        setUploading(false);
+        console.error("Error fetching upload URL:", error);
+        setError("Failed to initialize upload. Please try again.");
       }
-    },
-    [onVideoUpload]
-  );
+    };
+
+    fetchUploadUrl();
+  }, []);
+
+  const handleUploadComplete = useCallback(async () => {
+    setUploading(false);
+    if (!uploadId) {
+      setError("Upload ID not found. Please try again.");
+      return;
+    }
+    try {
+      const response = await fetch("/api/mux/upload-complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uploadId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const { muxPlaybackId, muxAssetId, duration } = await response.json();
+      setVideo(muxPlaybackId);
+      onVideoUpload(muxPlaybackId, muxAssetId, duration);
+    } catch (error) {
+      console.error("Error completing upload:", error);
+      setError("Failed to complete upload. Please try again.");
+    }
+  }, [uploadId, onVideoUpload]);
 
   const handleRemoveVideo = () => {
     setVideo(null);
-    onVideoUpload("");
+    onVideoUpload("", "", 0);
     setError(null);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        handleVideoUpload(file);
-      }
-    },
-    [handleVideoUpload]
-  );
+  if (!uploadUrl) {
+    return <div>Loading uploader...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -78,8 +85,12 @@ export function VideoUpload({ onVideoUpload, initialVideo }: VideoUploadProps) {
         </Alert>
       )}
       {video ? (
-        <div className="relative w-full">
-          <video src={video} controls className="w-full rounded-md" />
+        <div className="relative w-full aspect-video">
+          <video
+            src={`https://stream.mux.com/${video}.m3u8`}
+            controls
+            className="w-full h-full rounded-xl object-cover bg-[#0A0A0A]"
+          />
           <Button
             variant="destructive"
             size="icon"
@@ -90,35 +101,31 @@ export function VideoUpload({ onVideoUpload, initialVideo }: VideoUploadProps) {
           </Button>
         </div>
       ) : (
-        <div
-          className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center"
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
+        <MuxUploader
+          endpoint={uploadUrl}
+          onUploadStart={() => setUploading(true)}
+          onSuccess={handleUploadComplete}
+          onError={(err) => {
+            console.error("Upload error:", err);
+            setError(
+              `Failed to upload video: ${
+                (err as unknown as Error).message || "Unknown error"
+              }`
+            );
+            setUploading(false);
+          }}
+          className="bg-background"
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-1 text-sm text-gray-600">
-            Click to upload or drag and drop
-          </p>
-        </div>
+          <Button
+            type="button"
+            variant="secondary"
+            className="h-12 px-8 text-lg bg-white text-black hover:bg-gray-100"
+            disabled={uploading}
+          >
+            {uploading ? "Uploading..." : "Upload a video"}
+          </Button>
+        </MuxUploader>
       )}
-      <Input
-        type="file"
-        accept="video/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            handleVideoUpload(file);
-          }
-        }}
-        disabled={uploading}
-        className="hidden"
-        id="video-upload"
-      />
-      <label htmlFor="video-upload">
-        <Button asChild disabled={uploading}>
-          <span>{uploading ? "Uploading..." : "Upload Video"}</span>
-        </Button>
-      </label>
     </div>
   );
 }

@@ -23,16 +23,15 @@ export async function POST(request: Request) {
     }
 
     const authCode = generateAuthCode();
-    const authCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    const authCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     const user: User = await prisma.user.create({
       data: {
         name,
         email,
         authCode,
-        authCodeExpires,
+        authCodeExpiry,
         role: "USER",
-        membershipType: "Free",
       },
     });
 

@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Clock, Dumbbell } from "lucide-react";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export async function generateMetadata({
   params,
@@ -92,7 +93,9 @@ export default async function WorkoutPage({
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Start Workout</Button>
+          <Button asChild className="w-full">
+            <Link href={`/workouts/${id}/start`}>Start Workout</Link>
+          </Button>
         </CardFooter>
       </Card>
     </div>

@@ -86,8 +86,10 @@ async function main() {
         description: "Start your day with energizing sun salutations",
         type: YogaType.BUILD,
         props: ["mat"],
-        url: "https://example.com/morning-sun-salutations",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 1200, // 20 minutes
       },
     }),
@@ -97,8 +99,10 @@ async function main() {
         description: "Relax and unwind with this calming bedtime routine",
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster"],
-        url: "https://example.com/gentle-bedtime-yoga",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 900, // 15 minutes
       },
     }),
@@ -108,8 +112,10 @@ async function main() {
         description: "Challenge yourself with this dynamic vinyasa sequence",
         type: YogaType.BUILD,
         props: ["mat", "block"],
-        url: "https://example.com/power-vinyasa-flow",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 3600, // 60 minutes
       },
     }),
@@ -119,8 +125,10 @@ async function main() {
         description: "Improve flexibility with long-held, passive poses",
         type: YogaType.EXPLORE,
         props: ["mat", "strap", "bolster"],
-        url: "https://example.com/yin-yoga-flexibility",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 2700, // 45 minutes
       },
     }),
@@ -130,8 +138,10 @@ async function main() {
         description: "Gentle stretches and poses to alleviate back pain",
         type: YogaType.MINDFULNESS,
         props: ["mat", "block", "strap"],
-        url: "https://example.com/yoga-back-pain-relief",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 1800, // 30 minutes
       },
     }),
@@ -141,8 +151,10 @@ async function main() {
         description: "Traditional Ashtanga yoga primary series practice",
         type: YogaType.BUILD,
         props: ["mat"],
-        url: "https://example.com/ashtanga-primary-series",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 5400, // 90 minutes
       },
     }),
@@ -152,8 +164,10 @@ async function main() {
         description: "Deeply relaxing practice to reduce stress and anxiety",
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster", "blanket", "block"],
-        url: "https://example.com/restorative-yoga-stress-relief",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 3600, // 60 minutes
       },
     }),
@@ -163,8 +177,10 @@ async function main() {
         description: "Stretch and strengthen key muscles for runners",
         type: YogaType.EXPLORE,
         props: ["mat", "strap"],
-        url: "https://example.com/yoga-for-runners",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 2400, // 40 minutes
       },
     }),
@@ -174,8 +190,10 @@ async function main() {
         description: "Simple yoga exercises you can do at your desk",
         type: YogaType.MINDFULNESS,
         props: ["chair"],
-        url: "https://example.com/chair-yoga-office-workers",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 900, // 15 minutes
       },
     }),
@@ -185,8 +203,10 @@ async function main() {
         description: "Introduction to Kundalini yoga practice",
         type: YogaType.EXPLORE,
         props: ["mat", "blanket"],
-        url: "https://example.com/kundalini-yoga-beginners",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 3600, // 60 minutes
       },
     }),
@@ -196,8 +216,10 @@ async function main() {
         description: "Safe and nurturing yoga practice for expecting mothers",
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster", "block"],
-        url: "https://example.com/prenatal-yoga-second-trimester",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 2700, // 45 minutes
       },
     }),
@@ -207,8 +229,10 @@ async function main() {
         description: "Calming sequences to prepare your body for rest",
         type: YogaType.MINDFULNESS,
         props: ["mat", "bolster"],
-        url: "https://example.com/yoga-better-sleep",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 1800, // 30 minutes
       },
     }),
@@ -218,8 +242,10 @@ async function main() {
         description: "Build core strength with this challenging vinyasa flow",
         type: YogaType.BUILD,
         props: ["mat"],
-        url: "https://example.com/core-strength-vinyasa",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 3600, // 60 minutes
       },
     }),
@@ -229,8 +255,10 @@ async function main() {
         description: "Improve flexibility and balance for outdoor enthusiasts",
         type: YogaType.EXPLORE,
         props: ["mat", "block"],
-        url: "https://example.com/yoga-hikers-climbers",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 2700, // 45 minutes
       },
     }),
@@ -240,8 +268,10 @@ async function main() {
         description: "Safe, low-impact yoga practice for older adults",
         type: YogaType.MINDFULNESS,
         props: ["chair", "strap"],
-        url: "https://example.com/gentle-yoga-seniors",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
+        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
+        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
+        thumbnailUrl:
+          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
         duration: 1800, // 30 minutes
       },
     }),

@@ -49,13 +49,14 @@ const post: BlogPost = {
   ],
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PageParams {
   params: {
     slug: string;
   };
 }
 
-export const generateMetadata = ({ params }: PageParams): Metadata => {
+export const generateMetadata = (): Metadata => {
   // In a real application, you would fetch the post data based on the slug
   // const post = await getPost(params.slug)
 
@@ -86,7 +87,7 @@ export const generateMetadata = ({ params }: PageParams): Metadata => {
   };
 };
 
-export default function BlogPost({ params }: PageParams) {
+export default function BlogPost() {
   // In a real application, you would fetch the post data based on the slug
   // const post = await getPost(params.slug)
 

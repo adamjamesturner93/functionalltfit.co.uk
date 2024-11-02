@@ -34,26 +34,50 @@ export function ThemeProvider({
   disableTransitionOnChange = false,
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {
     const root = window.document.documentElement;
 
-    root.removeAttribute(attribute);
+    // Get the stored theme or use the system preference
+    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
+      ? "dark"
+      : "light";
 
-    if (theme === "system" && enableSystem) {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.setAttribute(attribute, systemTheme);
-      return;
+    let initialTheme: Theme;
+    if (storedTheme) {
+      initialTheme = storedTheme;
+    } else if (enableSystem) {
+      initialTheme = "system";
+    } else {
+      initialTheme = systemTheme;
     }
 
-    root.setAttribute(attribute, theme);
+    setTheme(initialTheme);
+
+    // Apply the initial theme
+    if (initialTheme === "system") {
+      root.setAttribute(attribute, systemTheme);
+    } else {
+      root.setAttribute(attribute, initialTheme);
+    }
+  }, [storageKey, attribute, enableSystem]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
+      ? "dark"
+      : "light";
+
+    if (theme === "system" && enableSystem) {
+      root.setAttribute(attribute, systemTheme);
+    } else {
+      root.setAttribute(attribute, theme);
+    }
 
     if (disableTransitionOnChange) {
       root.classList.add("disable-transitions");
@@ -65,9 +89,9 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
     },
   };
 

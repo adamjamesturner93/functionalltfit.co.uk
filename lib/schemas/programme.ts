@@ -1,24 +1,33 @@
 import { z } from "zod";
 
+export const activityTypeEnum = z.enum(["WORKOUT", "YOGA"]);
+
 export const activitySchema = z.object({
-  week: z.number().int().min(1),
-  day: z.number().int().min(1),
-  activityType: z.enum(["WORKOUT", "YOGA"]),
+  id: z.string().optional(),
+  week: z.number(),
+  day: z.number(),
+  activityType: activityTypeEnum,
   workoutId: z.string().nullable(),
   yogaVideoId: z.string().nullable(),
+  programmeId: z.string().optional(),
 });
 
 export const programmeSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  thumbnail: z.string().url("Invalid thumbnail URL"),
-  sessionsPerWeek: z.number().int().min(2).max(5),
-  intention: z.string().min(1, "Intention is required"),
-  weeks: z.number().int().min(2).max(8),
+  title: z.string(),
+  description: z.string(),
+  thumbnail: z.string(),
+  sessionsPerWeek: z.number(),
+  intention: z.string(),
+  weeks: z.number(),
   activities: z.array(activitySchema),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 export type Activity = z.infer<typeof activitySchema>;
 export type Programme = z.infer<typeof programmeSchema>;
-export type ProgrammeFormData = Omit<Programme, "id">;
+export type ProgrammeFormData = Omit<
+  Programme,
+  "id" | "createdAt" | "updatedAt"
+>;

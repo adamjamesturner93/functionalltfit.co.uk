@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: "http://localhost:3000", // Change this to your production URL when deploying
   },
   images: {
+    unoptimized: process.env.NODE_ENV !== "production",
     remotePatterns: [
       {
         protocol: "https",
@@ -13,6 +14,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "example.com",
+      },
+      {
+        protocol: "https",
+        hostname: "tmzhbryqsuuzspwa.public.blob.vercel-storage.com",
       },
     ],
   },

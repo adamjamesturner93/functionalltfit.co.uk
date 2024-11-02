@@ -2,14 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { YogaType, YogaVideo } from "@prisma/client";
+import { YogaType, YogaVideo, Prisma } from "@prisma/client";
+import { autoUpdateActivityCompletion } from "./programmes";
+import { Mux } from "@mux/mux-node";
+
+const { video } = new Mux({
+  tokenId: process.env.MUX_TOKEN_ID!,
+  tokenSecret: process.env.MUX_TOKEN_SECRET!,
+});
 
 export type YogaVideoInput = {
   title: string;
   description: string;
   type: YogaType;
   props: string[];
-  url: string;
+  muxPlaybackId: string;
+  muxAssetId: string;
   thumbnailUrl: string;
   duration: number;
 };
@@ -34,8 +42,7 @@ export async function getYogaVideos(
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: any = {};
+  const where: Prisma.YogaVideoWhereInput = {};
 
   if (search) {
     where.OR = [
@@ -71,20 +78,12 @@ export async function getYogaVideos(
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let orderBy: any;
-
-  switch (sort) {
-    case "newest":
-      orderBy = { createdAt: "desc" };
-      break;
-    case "mostViewed":
-      orderBy = { activities: { _count: "desc" } };
-      break;
-    case "leastViewed":
-      orderBy = { activities: { _count: "asc" } };
-      break;
-  }
+  const orderBy: Prisma.YogaVideoOrderByWithRelationInput =
+    sort === "newest"
+      ? { createdAt: "desc" }
+      : sort === "mostViewed"
+      ? { activities: { _count: "desc" } }
+      : { activities: { _count: "asc" } };
 
   const [yogaVideos, total] = await Promise.all([
     prisma.yogaVideo.findMany({
@@ -134,11 +133,86 @@ export async function updateYogaVideo(
   return yogaVideo;
 }
 
+export async function deleteMuxAsset(assetId: string) {
+  try {
+    await video.assets.delete(assetId);
+  } catch (error) {
+    console.error("Error deleting Mux asset:", error);
+    throw new Error("Failed to delete Mux asset");
+  }
+}
+
 export async function deleteYogaVideo(id: string) {
+  const yogaVideo = await prisma.yogaVideo.findUnique({ where: { id } });
+  if (yogaVideo) {
+    await deleteMuxAsset(yogaVideo.muxAssetId);
+  }
   await prisma.yogaVideo.delete({ where: { id } });
   revalidatePath("/admin/content/yoga-videos");
 }
 
+export async function completeYogaVideo(userId: string, yogaVideoId: string) {
+  try {
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if the yoga video exists
+    const yogaVideo = await prisma.yogaVideo.findUnique({
+      where: { id: yogaVideoId },
+    });
+
+    if (!yogaVideo) {
+      throw new Error("Yoga video not found");
+    }
+
+    // Create a new yoga video activity
+    await prisma.yogaVideoActivity.create({
+      data: {
+        userId,
+        videoId: yogaVideoId,
+        watchedAt: new Date(),
+      },
+    });
+
+    await autoUpdateActivityCompletion(userId, "YOGA", yogaVideoId);
+
+    revalidatePath("/dashboard");
+    revalidatePath("/yoga");
+
+    return { success: true, message: "Yoga video completed successfully" };
+  } catch (error) {
+    console.error("Error completing yoga video:", error);
+    throw error;
+  }
+}
+
+export async function getYogaVideoCompletions(
+  userId: string,
+  yogaVideoId: string
+) {
+  try {
+    const completions = await prisma.yogaVideoActivity.findMany({
+      where: {
+        userId,
+        videoId: yogaVideoId,
+      },
+      orderBy: {
+        watchedAt: "desc",
+      },
+    });
+
+    return completions;
+  } catch (error) {
+    console.error("Error fetching yoga video completions:", error);
+    throw error;
+  }
+}
 export async function fetchViewStats(
   id: string,
   timeFrame: "week" | "month" | "6months"
@@ -173,7 +247,6 @@ export async function fetchViewStats(
       },
     });
 
-    // Create a map to combine views for the same date
     const viewsByDate = new Map<string, number>();
 
     viewStats.forEach((stat) => {
@@ -182,7 +255,6 @@ export async function fetchViewStats(
       viewsByDate.set(date, currentViews + stat._count.id);
     });
 
-    // Convert the map back to an array of objects
     const formattedStats = Array.from(viewsByDate.entries()).map(
       ([date, views]) => ({
         date,
@@ -190,10 +262,8 @@ export async function fetchViewStats(
       })
     );
 
-    // Sort by date
     formattedStats.sort((a, b) => a.date.localeCompare(b.date));
 
-    // Fill in missing dates with zero views
     const filledStats = fillMissingDates(formattedStats, startDate, new Date());
 
     return filledStats;
@@ -203,7 +273,6 @@ export async function fetchViewStats(
   }
 }
 
-// Helper function to fill in missing dates with zero views
 function fillMissingDates(
   stats: { date: string; views: number }[],
   startDate: Date,
@@ -213,7 +282,6 @@ function fillMissingDates(
   const currentDate = new Date(startDate);
   const end = new Date(endDate);
 
-  // Create a map of existing stats for easy lookup
   const statsMap = new Map(stats.map((stat) => [stat.date, stat.views]));
 
   while (currentDate <= end) {

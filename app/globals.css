@@ -183,3 +183,42 @@
   padding: 12px;
   background-color: var(--background);
 }
+
+/* MuxUploader styles */
+.mux-uploader {
+  --mux-uploader-primary-color: theme("colors.primary.DEFAULT");
+  --mux-uploader-secondary-color: theme("colors.secondary.DEFAULT");
+  --mux-uploader-font-family: theme("fontFamily.sans");
+  --mux-uploader-border-radius: theme("borderRadius.md");
+}
+
+/* Ensure the MuxUploader fits within its container */
+.mux-uploader {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Style the file input to match your design */
+.mux-uploader input[type="file"] {
+  display: none;
+}
+
+/* Style the progress bar */
+.mux-uploader progress {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: var(--mux-uploader-border-radius);
+  overflow: hidden;
+}
+
+.mux-uploader progress::-webkit-progress-bar {
+  background-color: theme("colors.gray.200");
+}
+
+.mux-uploader progress::-webkit-progress-value {
+  background-color: var(--mux-uploader-primary-color);
+}
+
+.mux-uploader progress::-moz-progress-bar {
+  background-color: var(--mux-uploader-primary-color);
+}

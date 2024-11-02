@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
 
@@ -79,13 +78,13 @@ export function ImageUpload({ onImageUpload, initialImage }: ImageUploadProps) {
         </Alert>
       )}
       {image ? (
-        <div className="relative w-full h-48">
+        <div className="relative w-full aspect-video">
           <Image
             src={image}
             alt="Uploaded image"
-            layout="fill"
-            objectFit="cover"
-            className="rounded-md"
+            fill
+            className="rounded-xl object-cover"
+            loader={({ src }) => src}
           />
           <Button
             variant="destructive"
@@ -98,34 +97,45 @@ export function ImageUpload({ onImageUpload, initialImage }: ImageUploadProps) {
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center"
+          className="rounded-xl border border-input bg-background text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 p-8 text-center"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-1 text-sm text-gray-600">
-            Click to upload or drag and drop
-          </p>
+          <div className="mx-auto flex flex-col items-center gap-6">
+            <Upload className="h-8 w-8 text-muted-foreground" />
+            <div className="text-xl font-medium text-white">
+              Drop an image file here to upload
+            </div>
+            <div className="text-base text-muted-foreground">or</div>
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file);
+                  }
+                }}
+                disabled={uploading}
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-12 px-8 text-lg bg-white text-black hover:bg-gray-100"
+                disabled={uploading}
+                onClick={() => {
+                  document.getElementById("image-upload")?.click();
+                }}
+              >
+                {uploading ? "Uploading..." : "Upload an image"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
-      <Input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            handleImageUpload(file);
-          }
-        }}
-        disabled={uploading}
-        className="hidden"
-        id="image-upload"
-      />
-      <label htmlFor="image-upload">
-        <Button asChild disabled={uploading}>
-          <span>{uploading ? "Uploading..." : "Upload Image"}</span>
-        </Button>
-      </label>
     </div>
   );
 }
