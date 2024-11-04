@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   startWorkout,
@@ -10,106 +10,61 @@ import {
 import { getCurrentUserId } from "@/lib/auth-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import WorkoutSummary from "./components/WorkoutSummary";
-import ExerciseCard from "./components/ExerciseCard";
-import WorkoutProgress from "./components/WorkoutProgress";
+import { WorkoutExercise } from "./workout-exercise";
+import { WorkoutProgress } from "./workout-progress";
+import { WorkoutSummary } from "./workout-summary";
+import { SetRest } from "./set-rest";
 import { ExerciseMode } from "@prisma/client";
+import { Progress } from "@/components/ui/progress";
+import { Clock } from "lucide-react";
 
 interface Exercise {
   id: string;
   exerciseId: string;
   name: string;
-  targetReps: number;
-  targetDistance?: number;
-  targetTime?: number;
+  mode: ExerciseMode;
   weight: number;
   reps: number;
   time?: number;
   distance?: number;
   equipment: string;
-  muscleGroups: string[];
-  type: string;
-  thumbnailUrl: string;
-  videoUrl: string;
-  mode: ExerciseMode;
+  targetReps: number;
+  targetTime?: number;
+  targetDistance?: number;
   instructions: string;
-  previousPerformance: {
-    round: number;
-    weight: number;
-    reps: number;
-    time?: number;
-    distance?: number;
-  }[];
+  videoUrl: string;
+  thumbnailUrl: string;
 }
 
 interface Set {
-  id: string;
   type: string;
   rounds: number;
   rest: number;
-  gap: number | null;
+  gap: number;
   exercises: Exercise[];
-  equipment: string[];
 }
 
-interface CombinedWorkout {
+interface Workout {
   id: string;
   workoutId: string;
   name: string;
-  description: string | null;
-  totalLength: number;
-  equipment: string[];
-  muscleGroups: string[];
-  startedAt: string;
-  endedAt: string | null;
   sets: Set[];
-}
-
-interface WorkoutSummary {
-  totalDuration: number;
-  totalWeightLifted: number;
-  exercisesCompleted: number;
-  weightLiftedImprovement: number | null;
-  exercises: {
-    id: string;
-    exerciseId: string;
-    name: string;
-    weight: number;
-    reps: number;
-    targetReps: number;
-    targetRounds: number;
-    targetWeight: number;
-    time?: number;
-    distance?: number;
-    targetReached: boolean;
-    improvement: {
-      reps: number;
-      weight: number;
-      time: number;
-      distance: number;
-      totalWeight: number;
-    };
-    nextWorkoutWeight: number;
-    performanceByRound: {
-      round: number;
-      weight: number;
-      reps: number;
-      time?: number;
-      distance?: number;
-    }[];
-    mode: ExerciseMode;
-  }[];
 }
 
 export default function WorkoutPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [workout, setWorkout] = useState<CombinedWorkout | null>(null);
+  const [workout, setWorkout] = useState<Workout | null>(null);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [isResting, setIsResting] = useState(false);
+  const [isGap, setIsGap] = useState(false);
+  const [isSetRest, setIsSetRest] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [summary, setSummary] = useState<WorkoutSummary | null>(null);
+  const [summary, setSummary] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -123,7 +78,7 @@ export default function WorkoutPage() {
           throw new Error("User not authenticated");
         }
         const combinedWorkout = await startWorkout(id as string, currentUserId);
-        setWorkout(combinedWorkout);
+        setWorkout(combinedWorkout as unknown as Workout);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -134,6 +89,69 @@ export default function WorkoutPage() {
     begin();
   }, [id]);
 
+  const moveToNextExercise = useCallback(() => {
+    if (!workout) return;
+    const currentSet = workout.sets[currentSetIndex];
+    if (currentExerciseIndex < currentSet.exercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    } else {
+      moveToNextRound();
+    }
+  }, [workout, currentSetIndex, currentExerciseIndex]);
+
+  const moveToNextRound = useCallback(() => {
+    if (!workout) return;
+    if (currentRoundIndex < workout.sets[currentSetIndex].rounds - 1) {
+      setCurrentRoundIndex(currentRoundIndex + 1);
+      setCurrentExerciseIndex(0);
+      setIsResting(true);
+      setTimeLeft(workout.sets[currentSetIndex].rest);
+    } else {
+      startSetRest();
+    }
+  }, [workout, currentSetIndex, currentRoundIndex]);
+
+  const startSetRest = useCallback(() => {
+    if (!workout) return;
+    if (currentSetIndex < workout.sets.length - 1) {
+      setIsSetRest(true);
+      setTimeLeft(workout.sets[currentSetIndex].rest * 2); // Longer rest between sets
+    } else {
+      handleComplete();
+    }
+  }, [workout, currentSetIndex]);
+
+  const moveToNextSet = useCallback(() => {
+    setCurrentSetIndex(currentSetIndex + 1);
+    setCurrentRoundIndex(0);
+    setCurrentExerciseIndex(0);
+  }, [currentSetIndex]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if ((isResting || isGap || isSetRest) && timeLeft > 0) {
+      timer = setTimeout(() => setTimeLeft((time) => time - 1), 1000);
+    } else if (timeLeft === 0) {
+      if (isResting) {
+        setIsResting(false);
+      } else if (isGap) {
+        setIsGap(false);
+        moveToNextExercise();
+      } else if (isSetRest) {
+        setIsSetRest(false);
+        moveToNextSet();
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [
+    isResting,
+    isGap,
+    isSetRest,
+    timeLeft,
+    moveToNextExercise,
+    moveToNextSet,
+  ]);
+
   const handleComplete = async () => {
     if (!workout || !userId) return;
 
@@ -141,30 +159,22 @@ export default function WorkoutPage() {
       setIsLoading(true);
       const exercises = workout.sets.flatMap((set) =>
         set.exercises.map((exercise) => {
-          const exerciseData: {
-            id: string;
-            exerciseId: string;
-            weight: { [roundNumber: number]: number };
-            reps?: { [roundNumber: number]: number };
-            time?: { [roundNumber: number]: number };
-            distance?: { [roundNumber: number]: number };
-          } = {
+          const exerciseData: Record<string, any> = {
             id: exercise.id,
             exerciseId: exercise.exerciseId,
             weight: {},
+            reps: {},
+            time: {},
+            distance: {},
           };
 
           for (let round = 1; round <= set.rounds; round++) {
             exerciseData.weight[round] = exercise.weight;
-
             if (exercise.mode === ExerciseMode.REPS) {
-              if (!exerciseData.reps) exerciseData.reps = {};
               exerciseData.reps[round] = exercise.reps;
             } else if (exercise.mode === ExerciseMode.TIME) {
-              if (!exerciseData.time) exerciseData.time = {};
               exerciseData.time[round] = exercise.time || 0;
             } else if (exercise.mode === ExerciseMode.DISTANCE) {
-              if (!exerciseData.distance) exerciseData.distance = {};
               exerciseData.distance[round] = exercise.distance || 0;
             }
           }
@@ -194,8 +204,12 @@ export default function WorkoutPage() {
 
   const handleUpdateExercise = async (
     exerciseId: string,
-    field: "weight" | "reps" | "time" | "distance",
-    value: number
+    performance: {
+      weight: number;
+      reps?: number;
+      time?: number;
+      distance?: number;
+    }
   ) => {
     if (!workout) return;
 
@@ -207,7 +221,7 @@ export default function WorkoutPage() {
           exercise.id === exerciseId
             ? {
                 ...exercise,
-                [field]: value,
+                ...performance,
               }
             : exercise
         ),
@@ -215,32 +229,32 @@ export default function WorkoutPage() {
     };
 
     setWorkout(updatedWorkout);
-  };
-
-  const saveCurrentRound = async () => {
-    if (!workout) return;
 
     try {
-      await updateWorkoutActivity(
-        workout.id,
-        workout.sets.flatMap((set) =>
-          set.exercises.map((exercise) => ({
-            id: exercise.id,
-            exerciseId: exercise.exerciseId,
-            weight: exercise.weight,
-            reps:
-              exercise.mode === ExerciseMode.REPS ? exercise.reps : undefined,
-            time:
-              exercise.mode === ExerciseMode.TIME ? exercise.time : undefined,
-            distance:
-              exercise.mode === ExerciseMode.DISTANCE
-                ? exercise.distance
-                : undefined,
-            roundNumber: currentRoundIndex + 1,
-            mode: exercise.mode,
-          }))
-        )
-      );
+      await updateWorkoutActivity(workout.id, [
+        {
+          id: exerciseId,
+          exerciseId,
+          ...performance,
+          roundNumber: currentRoundIndex + 1,
+          mode:
+            workout.sets[currentSetIndex].exercises.find(
+              (e) => e.id === exerciseId
+            )?.mode || "REPS",
+        },
+      ]);
+
+      // Start gap timer if there's a gap and it's not the last exercise
+      const currentSet = workout.sets[currentSetIndex];
+      if (
+        currentSet.gap &&
+        currentExerciseIndex < currentSet.exercises.length - 1
+      ) {
+        setIsGap(true);
+        setTimeLeft(currentSet.gap);
+      } else {
+        moveToNextExercise();
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -250,40 +264,24 @@ export default function WorkoutPage() {
     }
   };
 
-  const handleNextRound = async () => {
-    await saveCurrentRound();
-
-    if (!workout) return;
-
-    const currentSet = workout.sets[currentSetIndex];
-    if (currentRoundIndex < currentSet.rounds - 1) {
-      setCurrentRoundIndex(currentRoundIndex + 1);
-    } else if (currentSetIndex < workout.sets.length - 1) {
-      setCurrentSetIndex(currentSetIndex + 1);
-      setCurrentRoundIndex(0);
-    } else {
-      await handleComplete();
+  const handleSkipRest = () => {
+    if (isResting) {
+      setIsResting(false);
+    } else if (isSetRest) {
+      setIsSetRest(false);
+      moveToNextSet();
+    } else if (isGap) {
+      setIsGap(false);
+      moveToNextExercise();
     }
-  };
-
-  const handlePreviousRound = async () => {
-    await saveCurrentRound();
-
-    if (!workout) return;
-
-    if (currentRoundIndex > 0) {
-      setCurrentRoundIndex(currentRoundIndex - 1);
-    } else if (currentSetIndex > 0) {
-      setCurrentSetIndex(currentSetIndex - 1);
-      setCurrentRoundIndex(workout.sets[currentSetIndex - 1].rounds - 1);
-    }
+    setTimeLeft(0);
   };
 
   if (error) {
     return (
       <Card className="max-w-lg mx-auto mt-8">
         <CardContent>
-          <p className="text-red-500">Error: {error}</p>
+          <p className="text-destructive">Error: {error}</p>
           <Button onClick={() => router.push("/workouts")} className="mt-4">
             Back to Workouts
           </Button>
@@ -327,24 +325,28 @@ export default function WorkoutPage() {
   }
 
   const currentSet = workout.sets[currentSetIndex];
-  if (!currentSet) {
-    return (
-      <Card className="max-w-lg mx-auto mt-8">
-        <CardContent>
-          <p className="text-center">No sets found in the workout</p>
-          <Button onClick={() => router.push("/workouts")} className="mt-4">
-            Back to Workouts
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const currentExercise = currentSet.exercises[currentExerciseIndex];
 
-  const totalSets = workout.sets.length;
-  const progress =
-    ((currentSetIndex * currentSet.rounds + currentRoundIndex) /
-      (totalSets * currentSet.rounds)) *
-    100;
+  const totalExercises = workout.sets.reduce(
+    (total, set) => total + set.exercises.length * set.rounds,
+    0
+  );
+  const completedExercises =
+    workout.sets
+      .slice(0, currentSetIndex)
+      .reduce((total, set) => total + set.exercises.length * set.rounds, 0) +
+    currentSet.exercises.length * currentRoundIndex +
+    currentExerciseIndex;
+  const progress = (completedExercises / totalExercises) * 100;
+
+  const nextSetEquipment =
+    currentSetIndex < workout.sets.length - 1
+      ? [
+          ...new Set(
+            workout.sets[currentSetIndex + 1].exercises.map((e) => e.equipment)
+          ),
+        ]
+      : [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -355,32 +357,49 @@ export default function WorkoutPage() {
             progress={progress}
             currentSet={currentSet}
             currentRoundIndex={currentRoundIndex}
+            currentExerciseIndex={currentExerciseIndex}
           />
-          <div className="grid gap-4">
-            {currentSet.exercises.map((exercise) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                currentRoundIndex={currentRoundIndex}
-                onUpdateExercise={handleUpdateExercise}
+          {isResting ? (
+            <div className="text-center py-8">
+              <h3 className="text-2xl font-bold mb-4">Rest Time</h3>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Clock className="h-6 w-6" />
+                <p className="text-4xl font-mono">{timeLeft}s</p>
+              </div>
+              <Progress
+                value={(1 - timeLeft / currentSet.rest) * 100}
+                className="w-full mb-4"
               />
-            ))}
-          </div>
-          <div className="flex justify-between mt-6">
-            <Button
-              onClick={handlePreviousRound}
-              disabled={currentSetIndex === 0 && currentRoundIndex === 0}
-              variant="outline"
-            >
-              Previous Round
-            </Button>
-            <Button onClick={handleNextRound}>
-              {currentSetIndex === workout.sets.length - 1 &&
-              currentRoundIndex === currentSet.rounds - 1
-                ? "Complete Workout"
-                : "Next Round"}
-            </Button>
-          </div>
+              <Button onClick={handleSkipRest}>Skip Rest</Button>
+            </div>
+          ) : isGap ? (
+            <div className="text-center py-8">
+              <h3 className="text-2xl font-bold mb-4">Gap Time</h3>
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Clock className="h-6 w-6" />
+                <p className="text-4xl font-mono">{timeLeft}s</p>
+              </div>
+              <Progress
+                value={(1 - timeLeft / currentSet.gap) * 100}
+                className="w-full mb-4"
+              />
+              <Button onClick={handleSkipRest}>Skip Gap</Button>
+            </div>
+          ) : isSetRest ? (
+            <SetRest
+              restTime={timeLeft}
+              nextSetEquipment={nextSetEquipment}
+              onSkipRest={handleSkipRest}
+            />
+          ) : (
+            <WorkoutExercise
+              key={`${currentExercise.id}-${currentRoundIndex}`}
+              exercise={currentExercise}
+              currentRound={currentRoundIndex + 1}
+              totalRounds={currentSet.rounds}
+              onComplete={handleUpdateExercise}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
         props: true,
         duration: true,
         thumbnailUrl: true,
-        url: true,
       },
     });
 

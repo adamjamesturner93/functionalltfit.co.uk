@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { YogaType, YogaVideo, Prisma } from "@prisma/client";
 import { autoUpdateActivityCompletion } from "./programmes";
+
 import { Mux } from "@mux/mux-node";
 
 const { video } = new Mux({
@@ -180,6 +181,7 @@ export async function completeYogaVideo(userId: string, yogaVideoId: string) {
       },
     });
 
+    // Update the programme activity if it's part of a programme
     await autoUpdateActivityCompletion(userId, "YOGA", yogaVideoId);
 
     revalidatePath("/dashboard");
@@ -213,6 +215,7 @@ export async function getYogaVideoCompletions(
     throw error;
   }
 }
+
 export async function fetchViewStats(
   id: string,
   timeFrame: "week" | "month" | "6months"
@@ -247,6 +250,7 @@ export async function fetchViewStats(
       },
     });
 
+    // Create a map to combine views for the same date
     const viewsByDate = new Map<string, number>();
 
     viewStats.forEach((stat) => {
@@ -255,6 +259,7 @@ export async function fetchViewStats(
       viewsByDate.set(date, currentViews + stat._count.id);
     });
 
+    // Convert the map back to an array of objects
     const formattedStats = Array.from(viewsByDate.entries()).map(
       ([date, views]) => ({
         date,
@@ -262,8 +267,10 @@ export async function fetchViewStats(
       })
     );
 
+    // Sort by date
     formattedStats.sort((a, b) => a.date.localeCompare(b.date));
 
+    // Fill in missing dates with zero views
     const filledStats = fillMissingDates(formattedStats, startDate, new Date());
 
     return filledStats;
@@ -273,25 +280,45 @@ export async function fetchViewStats(
   }
 }
 
+// Helper function to fill in missing dates with zero views
 function fillMissingDates(
   stats: { date: string; views: number }[],
   startDate: Date,
   endDate: Date
 ) {
-  const filledStats: { date: string; views: number }[] = [];
+  const filledStats = [];
   const currentDate = new Date(startDate);
-  const end = new Date(endDate);
 
-  const statsMap = new Map(stats.map((stat) => [stat.date, stat.views]));
-
-  while (currentDate <= end) {
+  while (currentDate <= endDate) {
     const dateString = currentDate.toISOString().split("T")[0];
-    filledStats.push({
-      date: dateString,
-      views: statsMap.get(dateString) || 0,
-    });
+    const existingStat = stats.find((stat) => stat.date === dateString);
+
+    if (existingStat) {
+      filledStats.push(existingStat);
+    } else {
+      filledStats.push({ date: dateString, views: 0 });
+    }
+
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
   return filledStats;
+}
+
+export async function getYogaFilterOptions() {
+  const yogaTypes = Object.values(YogaType);
+
+  const props = await prisma.yogaVideo.findMany({
+    select: {
+      props: true,
+    },
+    distinct: ["props"],
+  });
+
+  const uniqueProps = Array.from(new Set(props.flatMap((p) => p.props)));
+
+  return {
+    types: yogaTypes,
+    props: uniqueProps,
+  };
 }

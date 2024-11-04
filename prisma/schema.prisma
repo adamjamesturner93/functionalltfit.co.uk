@@ -14,6 +14,7 @@ datasource db {
 model User {
     id                 String               @id @default(cuid())
     name               String
+    image              String?
     email              String               @unique
     dateOfBirth        DateTime?
     membershipStatus   MembershipStatus     @default(ACTIVE)
@@ -29,6 +30,60 @@ model User {
     WorkoutActivity    WorkoutActivity[]
     UserExerciseWeight UserExerciseWeight[]
     UserProgramme      UserProgramme[]
+    preferences        Preferences?
+    HealthData         HealthData[]
+    BodyMeasurement    BodyMeasurement[]
+    Goal               Goal[]
+    savedWorkouts      UserWorkoutSave[]
+}
+
+enum Unit {
+    IMPERIAL
+    METRIC
+}
+
+model Preferences {
+    id         String @id @default(cuid())
+    userId     String @unique
+    user       User   @relation(fields: [userId], references: [id])
+    lengthUnit Unit   @default(METRIC)
+    weightUnit Unit   @default(METRIC)
+}
+
+model HealthData {
+    id                     String   @id @default(cuid())
+    userId                 String
+    user                   User     @relation(fields: [userId], references: [id])
+    date                   DateTime
+    weight                 Float
+    bloodPressureSystolic  Int?
+    bloodPressureDiastolic Int?
+    restingHeartRate       Int?
+    sleepHours             Float?
+    stressLevel            Int?
+    createdAt              DateTime @default(now())
+    updatedAt              DateTime @updatedAt
+
+    @@index([userId, date])
+}
+
+model BodyMeasurement {
+    id        String   @id @default(cuid())
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    date      DateTime
+    weight    Float
+    calve     Float?
+    thigh     Float?
+    waist     Float?
+    hips      Float?
+    butt      Float?
+    chest     Float?
+    arm       Float?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId, date])
 }
 
 enum MembershipStatus {
@@ -161,6 +216,7 @@ model Workout {
     WorkoutActivity    WorkoutActivity[]
     UserExerciseWeight UserExerciseWeight[]
     ProgrammeActivity  ProgrammeActivity[]
+    savedBy            UserWorkoutSave[]
 }
 
 model Set {
@@ -271,6 +327,7 @@ model ProgrammeActivity {
     yogaVideoId  String?
     yogaVideo    YogaVideo? @relation(fields: [yogaVideoId], references: [id])
     completed    Boolean    @default(false)
+    completedAt  DateTime?  @default(now())
 }
 
 model UserProgramme {
@@ -283,4 +340,53 @@ model UserProgramme {
     endDate     DateTime?
     isActive    Boolean   @default(true)
     progress    Json // Store progress as a JSON object
+}
+
+enum GoalPeriod {
+    WEEK
+    MONTH
+}
+
+enum GoalType {
+    WEIGHT
+    YOGA_SESSIONS
+    WORKOUT_SESSIONS
+    TOTAL_SESSIONS
+    CUSTOM
+    EXERCISE_WEIGHT
+    EXERCISE_REPS
+    EXERCISE_DISTANCE
+}
+
+model Goal {
+    id          String      @id @default(cuid())
+    userId      String
+    type        GoalType
+    target      Float
+    current     Float       @default(0)
+    period      GoalPeriod?
+    startDate   DateTime    @default(now())
+    endDate     DateTime?
+    isActive    Boolean     @default(true)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    title       String? // For custom goals
+    description String? // For custom goals
+    exerciseId  String? // For exercise-specific goals
+    user        User        @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+}
+
+model UserWorkoutSave {
+    id        String   @id @default(cuid())
+    userId    String
+    workoutId String
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, workoutId])
+    @@index([userId])
+    @@index([workoutId])
 }

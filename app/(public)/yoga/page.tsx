@@ -1,71 +1,142 @@
-import { getYogaVideos } from "@/app/actions/yoga-videos";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
+import { Suspense } from "react";
 import { Metadata } from "next";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { getYogaVideos, YogaVideoFilters } from "@/app/actions/yoga-videos";
+import { YogaFilters } from "./yoga-filters";
+import { YogaCard } from "./yoga-card";
+import { YogaCardSkeleton } from "./yoga-card-skeleton";
+import { Pagination } from "@/components/ui/pagination";
+import { YogaType } from "@prisma/client";
 
 export const metadata: Metadata = {
-  title: "Yoga Videos | Functional Fitness",
+  title: "Yoga Videos | FunctionallyFit",
   description:
-    "Explore our collection of yoga videos for mindfulness, strength building, and body exploration.",
+    "Explore our collection of yoga videos for mindfulness, strength building, and flexibility.",
 };
 
-export default async function YogaPage() {
-  const { yogaVideos } = await getYogaVideos();
+export default async function YogaPage({
+  searchParams,
+}: {
+  searchParams: {
+    page?: string;
+    search?: string;
+    type?: string;
+    props?: string;
+    minDuration?: string;
+    maxDuration?: string;
+  };
+}) {
+  const page = Number(searchParams.page) || 1;
+  const pageSize = 9;
+  const search = searchParams.search || "";
+  const filters: YogaVideoFilters = {
+    type: searchParams.type as YogaType | undefined,
+    props: searchParams.props ? searchParams.props.split(",") : undefined,
+    duration: getDurationFilter(
+      searchParams.minDuration,
+      searchParams.maxDuration
+    ),
+  };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-4xl font-bold mb-8 text-center">Yoga Videos</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {yogaVideos.map((video) => (
-          <Link href={`/yoga/${video.id}`} key={video.id} className="group">
-            <Card className="h-full transition-shadow hover:shadow-lg">
-              <CardHeader className="p-0">
-                <div className="relative aspect-video">
-                  <Image
-                    src={video.thumbnailUrl}
-                    alt={video.title}
-                    fill
-                    className="object-cover rounded-t-lg"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <CardTitle className="text-xl mb-2 group-hover:text-primary transition-colors">
-                  {video.title}
-                </CardTitle>
-                <p className="text-muted-foreground line-clamp-2 mb-4">
-                  {video.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline">{video.type}</Badge>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Clock className="mr-1 h-4 w-4" />
-                    {Math.floor(video.duration / 60)} min
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <div className="flex flex-wrap gap-2">
-                  {video.props.map((prop) => (
-                    <Badge key={prop} variant="secondary">
-                      {prop}
-                    </Badge>
-                  ))}
-                </div>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+    <div className="container mx-auto p-6 space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Yoga Videos</h1>
+          <p className="text-muted-foreground">
+            Discover mindful movement practices for every level
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <form action="/yoga" method="GET" className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              name="search"
+              placeholder="Search videos..."
+              className="pl-8"
+              defaultValue={search}
+              aria-label="Search yoga videos"
+            />
+          </form>
+          <YogaFilters />
+        </div>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Suspense
+          fallback={Array(pageSize)
+            .fill(null)
+            .map((_, i) => (
+              <YogaCardSkeleton key={i} />
+            ))}
+        >
+          <YogaVideoList
+            page={page}
+            pageSize={pageSize}
+            search={search}
+            filters={filters}
+          />
+        </Suspense>
       </div>
     </div>
   );
+}
+
+async function YogaVideoList({
+  page,
+  pageSize,
+  search,
+  filters,
+}: {
+  page: number;
+  pageSize: number;
+  search: string;
+  filters: YogaVideoFilters;
+}) {
+  const { yogaVideos, total } = await getYogaVideos(
+    page,
+    pageSize,
+    search,
+    filters
+  );
+
+  if (yogaVideos.length === 0) {
+    return (
+      <p className="text-center col-span-full">
+        No yoga videos found. Try adjusting your search or filters.
+      </p>
+    );
+  }
+
+  return (
+    <>
+      {yogaVideos.map((video) => (
+        <YogaCard key={video.id} {...video} />
+      ))}
+      <div className="col-span-full mt-6">
+        <Pagination
+          totalItems={total}
+          pageSize={pageSize}
+          currentPage={page}
+          baseUrl="/yoga"
+        />
+      </div>
+    </>
+  );
+}
+
+function getDurationFilter(
+  minDuration?: string,
+  maxDuration?: string
+): YogaVideoFilters["duration"] {
+  if (minDuration && maxDuration) {
+    const min = parseInt(minDuration);
+    const max = parseInt(maxDuration);
+    if (max <= 15) return "less15";
+    if (min >= 45) return "45plus";
+    if (min >= 30 && max <= 45) return "30to45";
+    if (min >= 15 && max <= 30) return "15to30";
+  }
+  return undefined;
 }

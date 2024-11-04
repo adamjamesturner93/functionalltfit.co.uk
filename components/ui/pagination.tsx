@@ -8,7 +8,7 @@ interface PaginationProps {
   totalItems: number;
   pageSize: number;
   baseUrl: string;
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export function Pagination({
@@ -16,7 +16,7 @@ export function Pagination({
   totalItems,
   pageSize,
   baseUrl,
-  searchParams,
+  searchParams = {},
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 

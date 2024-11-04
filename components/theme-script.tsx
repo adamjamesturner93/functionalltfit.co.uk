@@ -14,7 +14,9 @@ export function ThemeScript() {
                         ? 'dark'
                         : 'light';
             }
-            document.documentElement.setAttribute('data-theme', getThemePreference());
+            const theme = getThemePreference();
+            document.documentElement.classList.add(theme);
+            document.documentElement.setAttribute('data-theme', theme);
           })();
         `,
       }}

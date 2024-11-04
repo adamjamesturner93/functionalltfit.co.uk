@@ -29,7 +29,7 @@ export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
-  attribute = "data-theme",
+  attribute = "class",
   enableSystem = true,
   disableTransitionOnChange = false,
   ...props
@@ -38,44 +38,17 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-
-    // Get the stored theme or use the system preference
-    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
-      ? "dark"
-      : "light";
-
-    let initialTheme: Theme;
-    if (storedTheme) {
-      initialTheme = storedTheme;
-    } else if (enableSystem) {
-      initialTheme = "system";
-    } else {
-      initialTheme = systemTheme;
-    }
-
-    setTheme(initialTheme);
-
-    // Apply the initial theme
-    if (initialTheme === "system") {
-      root.setAttribute(attribute, systemTheme);
-    } else {
-      root.setAttribute(attribute, initialTheme);
-    }
-  }, [storageKey, attribute, enableSystem]);
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
-      ? "dark"
-      : "light";
+    root.classList.remove("light", "dark");
 
     if (theme === "system" && enableSystem) {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      root.classList.add(systemTheme);
       root.setAttribute(attribute, systemTheme);
     } else {
+      root.classList.add(theme);
       root.setAttribute(attribute, theme);
     }
 

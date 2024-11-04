@@ -2,98 +2,154 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
-  Video,
   Dumbbell,
-  Calendar,
+  GlassWater,
+  Heart,
   LayoutDashboard,
-  Settings,
   LogOut,
+  Settings,
+  UserIcon,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { User } from "@prisma/client";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/workouts", label: "Workouts", icon: Dumbbell },
-  { href: "/yoga", label: "Yoga", icon: Video },
-  { href: "/programmes", label: "Programmes", icon: Calendar },
+interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
+const navItems: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Workouts",
+    href: "/workouts",
+    icon: Dumbbell,
+  },
+  {
+    title: "Yoga",
+    href: "/yoga",
+    icon: GlassWater,
+  },
+  {
+    title: "Programmes",
+    href: "/programmes",
+    icon: Heart,
+  },
 ];
 
-export function Navigation() {
+const bottomNavItems: NavItem[] = [
+  {
+    title: "Profile",
+    href: "/profile",
+    icon: UserIcon,
+  },
+];
+
+export function Navigation({ user }: { user: User }) {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
-    <nav className="w-64 bg-surface-grey shadow-md flex flex-col">
-      <div className="p-4">
-        <h1 className="text-2xl font-bold text-foreground">FunctionallyFit</h1>
+    <div className="flex h-screen flex-col gap-4 border-r bg-card/50 backdrop-blur w-64">
+      <div className="flex h-14 items-center border-b px-4">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 font-semibold"
+        >
+          <Heart className="h-6 w-6 text-primary" />
+          <span>FunctionallyFit</span>
+        </Link>
       </div>
-      <ul className="space-y-2 p-4 flex-grow">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={`flex items-center space-x-2 p-2 rounded-md ${
-                  pathname === item.href
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted hover:bg-muted hover:text-surface-grey"
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-      <div className="p-4 border-t border-gray-700">
-        {status === "authenticated" && session?.user ? (
-          <div className="flex flex-col space-y-4">
-            <Link href="/profile" className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={session.user.image || undefined}
-                  alt={session.user.name || ""}
-                />
-                <AvatarFallback>
-                  {session.user.name?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm text-foreground">
-                {session.user.name}
-              </span>
-            </Link>
-            <div className="flex items-center space-x-2">
-              <Link href="/settings" className="flex-1">
-                <Button variant="outline" className="w-full">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
+      <ScrollArea className="flex-1 px-2">
+        <div className="space-y-2 py-2">
+          <div className="px-2">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Main
+            </h2>
+            <div className="space-y-1">
+              {navItems.map((item) => (
+                <Button
+                  key={item.href}
+                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    pathname === item.href &&
+                      "bg-primary/10 font-medium text-primary"
+                  )}
+                  asChild
+                >
+                  <Link href={item.href}>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.title}
+                    {item.badge && (
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto bg-primary/10 text-primary"
+                      >
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
                 </Button>
-              </Link>
-              <form action="/api/auth/signout" method="post" className="flex-1">
-                <Button type="submit" variant="outline" className="w-full">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Log Out
-                </Button>
-              </form>
+              ))}
             </div>
           </div>
-        ) : null}
+          <div className="px-2">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Settings
+            </h2>
+            <div className="space-y-1">
+              {bottomNavItems.map((item) => (
+                <Button
+                  key={item.href}
+                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    pathname === item.href &&
+                      "bg-primary/10 font-medium text-primary"
+                  )}
+                  asChild
+                >
+                  <Link href={item.href}>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.title}
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+      <div className="border-t p-4">
+        <div className="flex items-center gap-4">
+          <Avatar>
+            <AvatarImage src="/placeholder-user.jpg" alt="User avatar" />
+            <AvatarFallback>AT</AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <p className="text-sm font-medium">{user?.name}</p>
+            <p className="text-xs text-muted-foreground">
+              {user?.membershipPlan} Plan
+            </p>
+          </div>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/logout">
+              <LogOut className="h-4 w-4" />
+              <span className="sr-only">Log out</span>
+            </Link>
+          </Button>
+        </div>
       </div>
-    </nav>
+    </div>
   );
 }

@@ -94,7 +94,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
             type: set.type,
             rounds: set.rounds,
             rest: set.rest,
-            gap: set.gap!,
+            gap: set.gap ? set.gap : 0,
             exercises: set.exercises.map((exercise, index) => ({
               exerciseId: exercise.exerciseId,
               targetReps: exercise.targetReps,
