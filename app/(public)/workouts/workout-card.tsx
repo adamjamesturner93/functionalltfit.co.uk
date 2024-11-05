@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 interface WorkoutCardProps {
   id: string;
   name: string;
   description: string | null;
+  thumbnail: string;
   totalLength: number;
   equipment: string[];
   muscleGroups: string[];
@@ -34,10 +36,21 @@ export function WorkoutCard({
   onSaveToggle,
 }: WorkoutCardProps) {
   return (
-    <Card className="group relative bg-background border-border h-full flex flex-col">
+    <Card className="group hover:shadow-lg transition-all overflow-hidden flex flex-col">
+      <div className="relative aspect-video">
+        <Image
+          src={
+            "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png"
+          }
+          alt={""}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+        />
+      </div>
+
       <CardHeader className="space-y-1 flex-grow">
-        <div className="flex items-start justify-between">
-          <CardTitle className="line-clamp-1">{name}</CardTitle>
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-xl line-clamp-1">{name}</CardTitle>
           <Badge variant="secondary" className="ml-2 shrink-0">
             {Math.floor(totalLength / 60)} min
           </Badge>

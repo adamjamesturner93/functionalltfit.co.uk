@@ -1,6 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { PlayCircle } from "lucide-react";
+import { PlayCircle, BookmarkIcon } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,7 +13,20 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { YogaVideo } from "@prisma/client";
+import { toggleYogaVideoSave } from "@/app/actions/yoga-videos";
+import { useToast } from "@/hooks/use-toast";
+
+interface YogaCardProps {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  thumbnailUrl: string;
+  type: string;
+  props: string[];
+  isSaved: boolean;
+  userId: string | null;
+}
 
 export function YogaCard({
   id,
@@ -20,7 +36,36 @@ export function YogaCard({
   thumbnailUrl,
   type,
   props,
-}: YogaVideo) {
+  isSaved: initialIsSaved,
+  userId,
+}: YogaCardProps) {
+  const [isSaved, setIsSaved] = useState(initialIsSaved);
+  const { toast } = useToast();
+
+  const handleToggleSave = async () => {
+    if (!userId) return;
+
+    // Optimistic update
+    setIsSaved(!isSaved);
+
+    try {
+      await toggleYogaVideoSave(id, userId);
+      toast({
+        description: `Yoga video ${
+          isSaved ? "removed from" : "added to"
+        } saved videos`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        description: `Failed to update saved yoga videos`,
+        variant: "default",
+      });
+      setIsSaved(isSaved);
+    }
+  };
+
   return (
     <Card className="group hover:shadow-lg transition-all overflow-hidden flex flex-col">
       <div className="relative aspect-video">
@@ -56,9 +101,31 @@ export function YogaCard({
             </Badge>
           ))}
         </div>
-        <Button className="w-full" asChild>
-          <Link href={`/yoga/${id}`}>Start Practice</Link>
-        </Button>
+        <div className="flex justify-between items-center">
+          <Button className="w-full mr-2" asChild>
+            <Link href={`/yoga/${id}`}>Start Practice</Link>
+          </Button>
+          {userId && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleSave}
+              className={
+                isSaved
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-primary"
+              }
+            >
+              <BookmarkIcon
+                className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`}
+              />
+              <span className="sr-only">
+                {isSaved ? "Unsave yoga video" : "Save yoga video"}
+              </span>
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -205,6 +205,36 @@ export async function getWorkouts(
   };
 }
 
+export async function getWorkoutById(id: string, userId?: string | null) {
+  const workout = await prisma.workout.findUnique({
+    where: { id },
+    include: {
+      sets: {
+        include: {
+          exercises: {
+            include: {
+              exercise: true,
+            },
+          },
+        },
+      },
+      savedBy: userId
+        ? {
+            where: { userId },
+          }
+        : false,
+    },
+  });
+
+  if (!workout) return null;
+
+  return {
+    ...workout,
+    isSaved: userId ? workout.savedBy.length > 0 : false,
+    savedBy: undefined, // Remove savedBy from the response
+  };
+}
+
 export async function toggleWorkoutSave(workoutId: string, userId: string) {
   const existingSave = await prisma.userWorkoutSave.findUnique({
     where: {
@@ -231,25 +261,7 @@ export async function toggleWorkoutSave(workoutId: string, userId: string) {
   }
 
   revalidatePath("/workouts");
-}
-
-export async function getWorkoutById(
-  id: string
-): Promise<WorkoutWithSets | null> {
-  return prisma.workout.findUnique({
-    where: { id },
-    include: {
-      sets: {
-        include: {
-          exercises: {
-            include: {
-              exercise: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  revalidatePath(`/workouts/${workoutId}`);
 }
 
 export async function createWorkout(data: WorkoutInput): Promise<Workout> {

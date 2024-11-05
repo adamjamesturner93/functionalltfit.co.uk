@@ -20,6 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
 import { getYogaFilterOptions } from "@/app/actions/yoga-videos";
 import { YogaType } from "@prisma/client";
 
@@ -43,6 +44,9 @@ export function YogaFilters() {
     (searchParams.get("type") as YogaType) || "all"
   );
   const [props, setProps] = useState(searchParams.get("props") || "all");
+  const [savedOnly, setSavedOnly] = useState(
+    searchParams.get("saved") === "true"
+  );
 
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     types: [],
@@ -68,6 +72,8 @@ export function YogaFilters() {
       else params.delete("type");
       if (props && props !== "all") params.set("props", props);
       else params.delete("props");
+      if (savedOnly) params.set("saved", "true");
+      else params.delete("saved");
 
       router.push(`/yoga?${params.toString()}`);
     });
@@ -78,6 +84,7 @@ export function YogaFilters() {
     setMaxDuration("");
     setType("all");
     setProps("all");
+    setSavedOnly(false);
     startTransition(() => {
       router.push("/yoga");
     });
@@ -166,6 +173,19 @@ export function YogaFilters() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="saved-only"
+              checked={savedOnly}
+              onCheckedChange={(checked) => setSavedOnly(checked as boolean)}
+            />
+            <label
+              htmlFor="saved-only"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show only saved videos
+            </label>
           </div>
         </div>
         <div className="flex justify-end gap-2">

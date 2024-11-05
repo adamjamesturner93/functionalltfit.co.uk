@@ -1,178 +1,172 @@
-import { auth } from "@/lib/auth";
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { Dumbbell, GlassWater } from "lucide-react";
-import { Metadata } from "next";
 import {
-  getProgramme,
-  getUserProgramme,
-  startProgramme,
-  leaveProgramme,
-} from "@/app/actions/programmes";
-import { getWorkoutById } from "@/app/actions/workouts";
-import { getYogaVideoById } from "@/app/actions/yoga-videos";
+  ArrowLeft,
+  Clock,
+  Calendar,
+  Dumbbell,
+  Target,
+  BarChart,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getProgramme, getUserProgramme } from "@/app/actions/programmes";
+import { getCurrentUserId } from "@/lib/auth-utils";
+import { ProgrammeActions } from "./programme-actions";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
-  const { id } = await params;
+interface Props {
+  params: {
+    id: string;
+  };
+}
 
-  const programme = await getProgramme(id);
+export default async function ProgrammePage({ params }: Props) {
+  const userId = await getCurrentUserId();
+  const [programme, activeProgramme] = await Promise.all([
+    getProgramme(params.id, userId!),
+    userId ? getUserProgramme(userId) : null,
+  ]);
+
   if (!programme) {
-    return {
-      title: "Programme Not Found | FunctionallyFit",
-    };
-  }
-  return {
-    title: `${programme.title} | FunctionallyFit`,
-    description: programme.description,
-    openGraph: {
-      title: `${programme.title} | FunctionallyFit`,
-      description: programme.description,
-      type: "website",
-      url: `https://functionallyfit.com/programmes/${id}`,
-    },
-  };
-}
-
-interface ActivityWithDetails {
-  week: number;
-  day: number;
-  activityType: "WORKOUT" | "YOGA";
-  workoutId: string | null;
-  yogaVideoId: string | null;
-  name: string;
-}
-
-interface PageProps {
-  params: { id: string };
-}
-
-export default async function ProgrammePage({ params }: PageProps) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login");
+    return <div>Programme not found</div>;
   }
 
-  const userId = session.user.id;
-  const { id } = await params;
-
-  const programme = await getProgramme(id);
-  if (!programme) {
-    notFound();
-  }
-
-  const userProgramme = await getUserProgramme(userId);
-
-  const isActiveProgramme = userProgramme?.programme.id === id;
-
-  const equipmentSet = new Set<string>();
-
-  const activitiesWithDetails: ActivityWithDetails[] = await Promise.all(
-    programme.activities.map(async (activity) => {
-      if (activity.activityType === "WORKOUT" && activity.workoutId) {
-        const workout = await getWorkoutById(activity.workoutId);
-        if (workout) {
-          workout.equipment.forEach((item) => equipmentSet.add(item));
-          return { ...activity, name: workout.name };
-        }
-      } else if (activity.activityType === "YOGA" && activity.yogaVideoId) {
-        const yogaVideo = await getYogaVideoById(activity.yogaVideoId);
-        if (yogaVideo) {
-          return { ...activity, name: yogaVideo.title };
-        }
-      }
-      return { ...activity, name: "Unknown Activity" };
-    })
-  );
-
-  const equipment = Array.from(equipmentSet);
-
-  const handleStartProgramme = async () => {
-    "use server";
-    await startProgramme(userId, id);
-  };
-
-  const handleLeaveProgramme = async () => {
-    "use server";
-    await leaveProgramme(userId, id);
-  };
+  const isActive = activeProgramme?.programme.id === params.id;
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-6">
-        <Image
-          src={programme.thumbnail}
-          alt={programme.title}
-          width={600}
-          height={400}
-          className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <Link
+          href="/programmes"
+          className="flex items-center text-sm text-muted-foreground hover:text-primary"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Programmes
+        </Link>
+        <ProgrammeActions
+          programmeId={params.id}
+          userId={userId}
+          isSaved={programme.isSaved}
+          isActive={isActive}
         />
       </div>
-      <h1 className="text-3xl font-bold mb-4">{programme.title}</h1>
-      <p className="text-muted-foreground mb-4">{programme.description}</p>
-      <div className="mb-6">
-        <p>
-          <strong className="text-muted-foreground">Intention:</strong>{" "}
-          {programme.intention}
-        </p>
-        <p>
-          <strong className="text-muted-foreground">Sessions per week:</strong>{" "}
-          {programme.sessionsPerWeek}
-        </p>
-        <p>
-          <strong className="text-muted-foreground">Duration:</strong>{" "}
-          {programme.weeks} weeks
-        </p>
+
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">{programme.title}</h1>
+        <p className="text-muted-foreground">{programme.description}</p>
       </div>
-      <Card className="mb-6">
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-4">
+            <Calendar className="h-6 w-6 text-primary mb-2" />
+            <p className="text-sm font-medium">{programme.weeks} weeks</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-4">
+            <Clock className="h-6 w-6 text-primary mb-2" />
+            <p className="text-sm font-medium">
+              {programme.sessionsPerWeek} sessions/week
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-4">
+            <Target className="h-6 w-6 text-primary mb-2" />
+            <p className="text-sm font-medium">{programme.intention}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-4">
+            <BarChart className="h-6 w-6 text-primary mb-2" />
+            <p className="text-sm font-medium">
+              {programme.activities.some((a) => a.activityType === "WORKOUT") &&
+              programme.activities.some((a) => a.activityType === "YOGA")
+                ? "Mixed"
+                : programme.activities[0]?.activityType || "N/A"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
         <CardHeader>
-          <CardTitle>Equipment Needed</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Dumbbell className="h-5 w-5" />
+            Equipment Needed
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="list-disc list-inside">
-            {equipment.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
+          <div className="flex flex-wrap gap-2">
+            {programme.activities.some(
+              (a) => a.workout?.equipment?.length || 0 > 0
+            ) ? (
+              Array.from(
+                new Set(
+                  programme.activities
+                    .flatMap((a) => a.workout?.equipment || [])
+                    .filter(Boolean)
+                )
+              ).map((equipment) => (
+                <Badge key={equipment} variant="secondary">
+                  {equipment}
+                </Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground">
+                No equipment required
+              </span>
+            )}
+          </div>
         </CardContent>
       </Card>
-      <h2 className="text-2xl font-semibold mb-4">Weekly Schedule</h2>
-      {Array.from({ length: programme.weeks }).map((_, weekIndex) => (
-        <Card key={weekIndex} className="mb-6">
-          <CardHeader>
-            <CardTitle>Week {weekIndex + 1}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activitiesWithDetails
+
+      <div className="space-y-8">
+        {Array.from({ length: programme.weeks }, (_, weekIndex) => (
+          <div key={weekIndex} className="space-y-4">
+            <h2 className="text-xl font-semibold">Week {weekIndex + 1}</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {programme.activities
                 .filter((activity) => activity.week === weekIndex + 1)
                 .sort((a, b) => a.day - b.day)
                 .map((activity) => (
-                  <Card key={`${activity.week}-${activity.day}`}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        {activity.activityType === "WORKOUT" ? (
-                          <Dumbbell className="mr-2" />
-                        ) : (
-                          <GlassWater className="mr-2" />
+                  <Card key={activity.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline">Day {activity.day}</Badge>
+                        {isActive && activity.completed && (
+                          <Badge variant="secondary">Completed</Badge>
                         )}
-                        Day {activity.day}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>{activity.name}</p>
-                      <Button asChild variant="link" className="p-0 mt-2">
+                      </div>
+                      <h3 className="font-medium mb-1">
+                        {activity.workout?.name || activity.yogaVideo?.title}
+                      </h3>
+                      <div className="flex items-center text-sm text-muted-foreground mb-4">
+                        <span className="capitalize mr-2">
+                          {activity.activityType.toLowerCase()}
+                        </span>
+                        <span>•</span>
+                        <span className="ml-2">
+                          {activity.activityType === "WORKOUT" &&
+                          activity.workout
+                            ? `${Math.floor(
+                                activity.workout.totalLength / 60
+                              )} mins`
+                            : activity.activityType === "YOGA" &&
+                              activity.yogaVideo
+                            ? `${Math.floor(
+                                activity.yogaVideo.duration / 60
+                              )} mins`
+                            : "Duration not available"}
+                        </span>
+                      </div>
+                      <Button variant="outline" className="w-full" asChild>
                         <Link
                           href={
                             activity.activityType === "WORKOUT"
-                              ? `/workouts/${activity.workoutId}`
-                              : `/yoga/${activity.yogaVideoId}`
+                              ? `/workouts/${activity.workout?.id}`
+                              : `/yoga/${activity.yogaVideo?.id}`
                           }
                         >
                           View Details
@@ -182,20 +176,9 @@ export default async function ProgrammePage({ params }: PageProps) {
                   </Card>
                 ))}
             </div>
-          </CardContent>
-        </Card>
-      ))}
-      {isActiveProgramme ? (
-        <form action={handleLeaveProgramme}>
-          <Button type="submit" variant="destructive">
-            Leave Programme
-          </Button>
-        </form>
-      ) : (
-        <form action={handleStartProgramme}>
-          <Button type="submit">Start Programme</Button>
-        </form>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

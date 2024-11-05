@@ -1,105 +1,119 @@
 import { Suspense } from "react";
-import { getProgrammes } from "@/app/actions/programmes";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Metadata } from "next";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { getProgrammes } from "@/app/actions/programmes";
+import { getCurrentUserId } from "@/lib/auth-utils";
+import { ProgrammeCard } from "./programme-card";
+import { ProgrammeFilters } from "./programme-filters";
+import { Pagination } from "@/components/ui/pagination";
 
 export const metadata: Metadata = {
   title: "Fitness Programmes | FunctionallyFit",
   description:
     "Explore our range of fitness programmes designed to help you achieve your health and fitness goals.",
-  openGraph: {
-    title: "Fitness Programmes | FunctionallyFit",
-    description:
-      "Explore our range of fitness programmes designed to help you achieve your health and fitness goals.",
-    type: "website",
-    url: "https://functionallyfit.com/programmes",
-  },
 };
+
+type SearchParams = Record<string, string | string[] | undefined>;
 
 export default async function ProgrammesPage({
   searchParams,
 }: {
-  searchParams: { search?: string; filter?: string };
+  searchParams: SearchParams;
 }) {
-  const { search: searchParam, filter: filterParam } = await searchParams;
-  const search = searchParam || "";
-  const filter = filterParam || "all";
+  const page = Number(searchParams.page) || 1;
+  const pageSize = 9;
+  const search =
+    typeof searchParams.search === "string" ? searchParams.search : "";
+  const userId = await getCurrentUserId();
 
-  const programmes = await getProgrammes(search, filter);
+  const filters = {
+    intention:
+      typeof searchParams.intention === "string"
+        ? searchParams.intention
+        : undefined,
+    length:
+      typeof searchParams.length === "string" ? searchParams.length : undefined,
+    minSessions:
+      typeof searchParams.minSessions === "string"
+        ? parseInt(searchParams.minSessions)
+        : undefined,
+    maxSessions:
+      typeof searchParams.maxSessions === "string"
+        ? parseInt(searchParams.maxSessions)
+        : undefined,
+    saved: searchParams.saved === "true",
+  };
+
+  const { programmes, total } = await getProgrammes(
+    page,
+    pageSize,
+    search,
+    filters,
+    userId!
+  );
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Fitness Programmes</h1>
-      <div className="flex gap-4 mb-6">
-        <form className="flex gap-4 w-full">
-          <Input
-            name="search"
-            placeholder="Search programmes..."
-            defaultValue={search}
-            className="max-w-sm"
-          />
-          <Select name="filter" defaultValue={filter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by intention" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All intentions</SelectItem>
-              <SelectItem value="strength">Strength</SelectItem>
-              <SelectItem value="cardio">Cardio</SelectItem>
-              <SelectItem value="flexibility">Flexibility</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button type="submit">Apply Filters</Button>
-        </form>
+    <div className="container mx-auto p-6 space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Fitness Programmes
+          </h1>
+          <p className="text-muted-foreground">
+            Choose from our collection of pre-built programmes
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <form className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              name="search"
+              placeholder="Search programmes..."
+              className="pl-8"
+              defaultValue={search}
+              aria-label="Search programmes"
+            />
+          </form>
+          <ProgrammeFilters />
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Suspense fallback={<div>Loading programmes...</div>}>
-          {programmes.map((programme) => (
-            <Card key={programme.id}>
-              <CardHeader>
-                <Image
-                  src={programme.thumbnail}
-                  alt={programme.title}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover rounded-t-lg"
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Suspense
+          fallback={Array(pageSize)
+            .fill(null)
+            .map((_, i) => (
+              <div
+                key={i}
+                className="h-64 bg-gray-200 animate-pulse rounded-lg"
+              ></div>
+            ))}
+        >
+          {programmes.length === 0 ? (
+            <p className="text-center col-span-full">
+              No programmes found. Try adjusting your search or filters.
+            </p>
+          ) : (
+            <>
+              {programmes.map((programme) => (
+                <ProgrammeCard
+                  key={programme.id}
+                  {...programme}
+                  userId={userId}
                 />
-              </CardHeader>
-              <CardContent>
-                <CardTitle className="mb-2">{programme.title}</CardTitle>
-                <p className="text-muted-foreground mb-2">
-                  {programme.intention}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {programme.sessionsPerWeek} sessions per week
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button asChild className="w-full">
-                  <Link href={`/programmes/${programme.id}`}>
-                    View Programme
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+              ))}
+              <div className="col-span-full mt-6">
+                <Pagination
+                  totalItems={total}
+                  pageSize={pageSize}
+                  currentPage={page}
+                  baseUrl="/programmes"
+                  searchParams={searchParams}
+                />
+              </div>
+            </>
+          )}
         </Suspense>
       </div>
     </div>

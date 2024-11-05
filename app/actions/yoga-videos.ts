@@ -27,19 +27,24 @@ export type YogaVideoFilters = {
   type?: YogaType;
   props?: string[];
   duration?: "less15" | "15to30" | "30to45" | "45plus";
+  savedOnly?: boolean;
 };
 
 export type YogaVideoSortOption = "newest" | "mostViewed" | "leastViewed";
 
-export type YogaVideoWithWatchCount = YogaVideo & { watchCount: number };
+export type YogaVideoWithWatchCountAndSaved = YogaVideo & {
+  watchCount: number;
+  isSaved: boolean;
+};
 
 export async function getYogaVideos(
   page: number = 1,
   pageSize: number = 10,
   search: string = "",
   filters: YogaVideoFilters = {},
-  sort: YogaVideoSortOption = "newest"
-): Promise<{ yogaVideos: YogaVideoWithWatchCount[]; total: number }> {
+  sort: YogaVideoSortOption = "newest",
+  userId?: string | null
+): Promise<{ yogaVideos: YogaVideoWithWatchCountAndSaved[]; total: number }> {
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
@@ -69,6 +74,7 @@ export async function getYogaVideos(
         break;
       case "15to30":
         where.duration = { gte: 15 * 60, lt: 30 * 60 };
+
         break;
       case "30to45":
         where.duration = { gte: 30 * 60, lt: 45 * 60 };
@@ -77,6 +83,14 @@ export async function getYogaVideos(
         where.duration = { gte: 45 * 60 };
         break;
     }
+  }
+
+  if (filters.savedOnly && userId) {
+    where.savedBy = {
+      some: {
+        userId: userId,
+      },
+    };
   }
 
   const orderBy: Prisma.YogaVideoOrderByWithRelationInput =
@@ -96,6 +110,12 @@ export async function getYogaVideos(
         _count: {
           select: { activities: true },
         },
+        savedBy: userId
+          ? {
+              where: { userId },
+              select: { id: true },
+            }
+          : false,
       },
     }),
     prisma.yogaVideo.count({ where }),
@@ -105,15 +125,38 @@ export async function getYogaVideos(
     yogaVideos: yogaVideos.map((video) => ({
       ...video,
       watchCount: video._count.activities,
+      isSaved: userId ? video.savedBy.length > 0 : false,
+      savedBy: undefined, // Remove savedBy from the response
     })),
     total,
   };
 }
-
-export async function getYogaVideoById(id: string): Promise<YogaVideo | null> {
-  return prisma.yogaVideo.findUnique({
+export async function getYogaVideoById(
+  id: string,
+  userId?: string | null
+): Promise<YogaVideoWithWatchCountAndSaved | null> {
+  const yogaVideo = await prisma.yogaVideo.findUnique({
     where: { id },
+    include: {
+      _count: {
+        select: { activities: true },
+      },
+      savedBy: userId
+        ? {
+            where: { userId },
+            select: { id: true },
+          }
+        : false,
+    },
   });
+
+  if (!yogaVideo) return null;
+
+  return {
+    ...yogaVideo,
+    watchCount: yogaVideo._count.activities,
+    isSaved: userId ? yogaVideo.savedBy.length > 0 : false,
+  };
 }
 
 export async function createYogaVideo(data: YogaVideoInput) {
@@ -321,4 +364,33 @@ export async function getYogaFilterOptions() {
     types: yogaTypes,
     props: uniqueProps,
   };
+}
+
+export async function toggleYogaVideoSave(yogaVideoId: string, userId: string) {
+  const existingSave = await prisma.userYogaVideoSave.findUnique({
+    where: {
+      userId_yogaVideoId: {
+        userId,
+        yogaVideoId,
+      },
+    },
+  });
+
+  if (existingSave) {
+    await prisma.userYogaVideoSave.delete({
+      where: {
+        id: existingSave.id,
+      },
+    });
+  } else {
+    await prisma.userYogaVideoSave.create({
+      data: {
+        userId,
+        yogaVideoId,
+      },
+    });
+  }
+
+  revalidatePath("/yoga");
+  revalidatePath(`/yoga/${yogaVideoId}`);
 }

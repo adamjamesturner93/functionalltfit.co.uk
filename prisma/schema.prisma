@@ -35,6 +35,8 @@ model User {
     BodyMeasurement    BodyMeasurement[]
     Goal               Goal[]
     savedWorkouts      UserWorkoutSave[]
+    savedYogaVideos    UserYogaVideoSave[]
+    savedProgrammes    UserProgrammeSave[]
 }
 
 enum Unit {
@@ -154,6 +156,7 @@ model YogaVideo {
     updatedAt         DateTime            @updatedAt
     activities        YogaVideoActivity[]
     ProgrammeActivity ProgrammeActivity[]
+    savedBy           UserYogaVideoSave[]
 }
 
 enum YogaType {
@@ -207,6 +210,7 @@ model Workout {
     id                 String               @id @default(cuid())
     name               String
     description        String?
+    thumbnail          String               @default("/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png")
     totalLength        Int // in seconds
     equipment          String[]
     muscleGroups       String[]
@@ -313,6 +317,7 @@ model Programme {
 
     activities     ProgrammeActivity[]
     userProgrammes UserProgramme[]
+    savedBy        UserProgrammeSave[]
 }
 
 model ProgrammeActivity {
@@ -389,4 +394,30 @@ model UserWorkoutSave {
     @@unique([userId, workoutId])
     @@index([userId])
     @@index([workoutId])
+}
+
+model UserYogaVideoSave {
+    id          String    @id @default(cuid())
+    userId      String
+    yogaVideoId String
+    createdAt   DateTime  @default(now())
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    yogaVideo   YogaVideo @relation(fields: [yogaVideoId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, yogaVideoId])
+    @@index([userId])
+    @@index([yogaVideoId])
+}
+
+model UserProgrammeSave {
+    id          String    @id @default(cuid())
+    userId      String
+    programmeId String
+    createdAt   DateTime  @default(now())
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, programmeId])
+    @@index([userId])
+    @@index([programmeId])
 }

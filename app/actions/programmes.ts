@@ -7,7 +7,7 @@ import {
   ProgrammeFormData,
   Programme,
 } from "@/lib/schemas/programme";
-import { ProgrammeActivity, UserProgramme, Prisma } from "@prisma/client";
+import { Prisma, ProgrammeActivity, UserProgramme } from "@prisma/client";
 
 export type ProgrammeActivityWithName = Omit<
   ProgrammeActivity,
@@ -26,9 +26,155 @@ export type UserProgrammeWithProgress = Omit<UserProgramme, "progress"> & {
   progress: number;
 };
 
+export type ProgrammeWithActivitiesAndSaved = Prisma.ProgrammeGetPayload<{
+  include: {
+    activities: {
+      include: {
+        workout: {
+          select: {
+            id: true;
+            name: true;
+            totalLength: true;
+            equipment: true;
+          };
+        };
+        yogaVideo: {
+          select: {
+            id: true;
+            title: true;
+            duration: true;
+            props: true;
+          };
+        };
+      };
+    };
+    savedBy: {
+      where: {
+        userId: string;
+      };
+      select: {
+        id: true;
+      };
+    };
+  };
+}> & {
+  isSaved: boolean;
+};
+
+export async function getProgramme(
+  id: string,
+  userId?: string
+): Promise<ProgrammeWithActivitiesAndSaved | null> {
+  const programme = await prisma.programme.findUnique({
+    where: { id },
+    include: {
+      activities: {
+        include: {
+          workout: {
+            select: {
+              id: true,
+              name: true,
+              totalLength: true,
+              equipment: true,
+            },
+          },
+          yogaVideo: {
+            select: {
+              id: true,
+              title: true,
+              duration: true,
+              props: true,
+            },
+          },
+        },
+      },
+      savedBy: userId
+        ? {
+            where: { userId },
+            select: { id: true },
+          }
+        : false,
+    },
+  });
+
+  if (!programme) return null;
+
+  return {
+    ...programme,
+    isSaved: userId ? programme.savedBy.length > 0 : false,
+    activities: programme.activities.map((activity) => ({
+      ...activity,
+      name: activity.workout?.name || activity.yogaVideo?.title || "",
+    })),
+  };
+}
+
+export async function toggleProgrammeSave(programmeId: string, userId: string) {
+  const existingSave = await prisma.userProgrammeSave.findUnique({
+    where: {
+      userId_programmeId: {
+        userId,
+        programmeId,
+      },
+    },
+  });
+
+  if (existingSave) {
+    await prisma.userProgrammeSave.delete({
+      where: {
+        id: existingSave.id,
+      },
+    });
+  } else {
+    await prisma.userProgrammeSave.create({
+      data: {
+        userId,
+        programmeId,
+      },
+    });
+  }
+
+  revalidatePath("/programmes");
+  revalidatePath(`/programmes/${programmeId}`);
+}
+
+export async function getUniqueIntentions(): Promise<string[]> {
+  const intentions = await prisma.programme.findMany({
+    select: {
+      intention: true,
+    },
+    distinct: ["intention"],
+  });
+
+  return intentions.map((i) => i.intention);
+}
+
+export async function getUniqueLengths(): Promise<string[]> {
+  const lengths = await prisma.programme.findMany({
+    select: {
+      weeks: true,
+    },
+    distinct: ["weeks"],
+    orderBy: {
+      weeks: "asc",
+    },
+  });
+
+  return lengths.map((l) => `${l.weeks} weeks`);
+}
+
 export async function getProgrammes(
+  page: number = 1,
+  pageSize: number = 9,
   search: string = "",
-  filter: string = "all"
+  filters: {
+    intention?: string;
+    length?: string;
+    minSessions?: number;
+    maxSessions?: number;
+    saved?: boolean;
+  } = {},
+  userId?: string
 ) {
   const where: Prisma.ProgrammeWhereInput = {
     ...(search && {
@@ -37,35 +183,54 @@ export async function getProgrammes(
         { description: { contains: search, mode: "insensitive" } },
       ],
     }),
-    ...(filter !== "all" && { intention: filter }),
+    ...(filters.intention &&
+      filters.intention !== "all" && {
+        intention: { equals: filters.intention, mode: "insensitive" },
+      }),
+    ...(filters.length &&
+      filters.length !== "all" && {
+        weeks: parseInt(filters.length.split(" ")[0]),
+      }),
+    ...(filters.minSessions && {
+      sessionsPerWeek: { gte: filters.minSessions },
+    }),
+    ...(filters.maxSessions && {
+      sessionsPerWeek: { lte: filters.maxSessions },
+    }),
+    ...(filters.saved &&
+      userId && {
+        savedBy: {
+          some: {
+            userId,
+          },
+        },
+      }),
   };
 
-  return prisma.programme.findMany({ where });
-}
-export async function getProgramme(
-  id: string
-): Promise<ProgrammeWithActivities | null> {
-  const programme = await prisma.programme.findUnique({
-    where: { id },
-    include: {
-      activities: {
-        include: {
-          workout: true,
-          yogaVideo: true,
-        },
+  const [programmes, total] = await Promise.all([
+    prisma.programme.findMany({
+      where,
+      include: {
+        savedBy: userId
+          ? {
+              where: { userId },
+              select: { id: true },
+            }
+          : false,
       },
-    },
-  });
-
-  if (!programme) return null;
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.programme.count({ where }),
+  ]);
 
   return {
-    ...programme,
-    activities: programme.activities.map((activity) => ({
-      ...activity,
-      activityType: activity.activityType as "WORKOUT" | "YOGA",
-      name: activity.workout?.name || activity.yogaVideo?.title || "",
+    programmes: programmes.map((programme) => ({
+      ...programme,
+      isSaved: userId ? programme.savedBy.length > 0 : false,
+      savedBy: undefined,
     })),
+    total,
   };
 }
 

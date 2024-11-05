@@ -8,6 +8,7 @@ import { YogaCard } from "./yoga-card";
 import { YogaCardSkeleton } from "./yoga-card-skeleton";
 import { Pagination } from "@/components/ui/pagination";
 import { YogaType } from "@prisma/client";
+import { getCurrentUserId } from "@/lib/auth-utils";
 
 export const metadata: Metadata = {
   title: "Yoga Videos | FunctionallyFit",
@@ -25,6 +26,7 @@ export default async function YogaPage({
     props?: string;
     minDuration?: string;
     maxDuration?: string;
+    saved?: string;
   };
 }) {
   const page = Number(searchParams.page) || 1;
@@ -37,7 +39,10 @@ export default async function YogaPage({
       searchParams.minDuration,
       searchParams.maxDuration
     ),
+    savedOnly: searchParams.saved === "true",
   };
+
+  const userId = await getCurrentUserId();
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -76,6 +81,7 @@ export default async function YogaPage({
             pageSize={pageSize}
             search={search}
             filters={filters}
+            userId={userId}
           />
         </Suspense>
       </div>
@@ -88,17 +94,21 @@ async function YogaVideoList({
   pageSize,
   search,
   filters,
+  userId,
 }: {
   page: number;
   pageSize: number;
   search: string;
   filters: YogaVideoFilters;
+  userId: string | null;
 }) {
   const { yogaVideos, total } = await getYogaVideos(
     page,
     pageSize,
     search,
-    filters
+    filters,
+    "newest",
+    userId
   );
 
   if (yogaVideos.length === 0) {
@@ -112,7 +122,18 @@ async function YogaVideoList({
   return (
     <>
       {yogaVideos.map((video) => (
-        <YogaCard key={video.id} {...video} />
+        <YogaCard
+          key={video.id}
+          id={video.id}
+          title={video.title}
+          description={video.description}
+          duration={video.duration}
+          thumbnailUrl={video.thumbnailUrl}
+          type={video.type}
+          props={video.props}
+          isSaved={video.isSaved}
+          userId={userId}
+        />
       ))}
       <div className="col-span-full mt-6">
         <Pagination
