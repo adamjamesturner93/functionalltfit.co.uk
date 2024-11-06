@@ -1,37 +1,59 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 
+interface QuickStatsCardProps {
+  title: string;
+  value: string | number;
+  unit?: string;
+  icon: LucideIcon;
+  trend?: {
+    value: number;
+    label: string;
+  };
+  iconColor?: "primary" | "blue" | "green";
+}
+
 export function QuickStatsCard({
   title,
   value,
+  unit,
   icon: Icon,
   trend,
-}: {
-  title: string;
-  value: string;
-  icon: LucideIcon;
-  trend?: { value: number; label: string };
-}) {
+  iconColor = "primary",
+}: QuickStatsCardProps) {
+  const colorClasses = {
+    primary: "bg-primary/10 text-primary",
+    blue: "bg-blue-500/10 text-blue-500",
+    green: "bg-green-500/10 text-green-500",
+  };
+
   return (
-    <Card className="transition-all hover:shadow-lg">
+    <Card className="bg-card transition-all hover:bg-accent/50">
       <CardContent className="p-6">
-        <div className="flex items-center gap-4">
-          <div className="rounded-full bg-primary/10 p-3">
-            <Icon className="h-6 w-6 text-primary" />
+        <div className="space-y-4">
+          <div className={`rounded-full ${colorClasses[iconColor]} p-3 w-fit`}>
+            <Icon className="h-6 w-6" />
           </div>
-          <div>
+          <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold">{value}</h3>
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-1">
+                <h3 className="text-4xl font-bold tracking-tight">{value}</h3>
+                {unit && (
+                  <span className="text-xl font-medium text-muted-foreground">
+                    {unit}
+                  </span>
+                )}
+              </div>
               {trend && (
-                <span
+                <p
                   className={`text-sm ${
                     trend.value >= 0 ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {trend.value >= 0 ? "+" : ""}
+                  {trend.value > 0 && "+"}
                   {trend.value}% {trend.label}
-                </span>
+                </p>
               )}
             </div>
           </div>

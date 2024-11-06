@@ -1,16 +1,17 @@
 import { getWorkoutSummary } from "@/app/actions/workouts";
 
-import { getCurrentUserId } from "@/lib/auth-utils";
 import { notFound } from "next/navigation";
-import { WorkoutSummary } from "../start/workout-summary";
+import { WorkoutSummary } from "./workout-summary";
+import { getCurrentUser } from "@/app/actions/profile";
 
 export default async function WorkoutSummaryPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const userId = await getCurrentUserId();
-  if (!userId) {
+  const user = await getCurrentUser();
+
+  if (!user) {
     notFound();
   }
 
@@ -23,7 +24,11 @@ export default async function WorkoutSummaryPage({
     <WorkoutSummary
       summary={summary}
       workoutActivityId={params.id}
-      userId={userId}
+      userId={user.id}
+      userPreferences={{
+        lengthUnit: user.preferences?.lengthUnit || "METRIC",
+        weightUnit: user.preferences?.weightUnit || "METRIC",
+      }}
     />
   );
 }

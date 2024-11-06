@@ -4,7 +4,15 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Unit } from "@prisma/client";
-import { profileSchema } from "@/lib/schemas/profile";
+
+const profileSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  dateOfBirth: z.string().optional(),
+  weightUnit: z.nativeEnum(Unit),
+  lengthUnit: z.nativeEnum(Unit),
+  image: z.string().optional(),
+});
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
@@ -28,8 +36,8 @@ export async function getCurrentUser() {
     dateOfBirth: user.dateOfBirth
       ? user.dateOfBirth.toISOString().split("T")[0]
       : undefined,
-    lengthUnit: user.preferences?.lengthUnit || Unit.METRIC,
     weightUnit: user.preferences?.weightUnit || Unit.METRIC,
+    lengthUnit: user.preferences?.lengthUnit || Unit.METRIC,
     image: user.image || undefined,
   };
 }
@@ -44,8 +52,8 @@ export async function updateProfile(formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     dateOfBirth: formData.get("dateOfBirth"),
-    lengthUnit: formData.get("lengthUnit"),
     weightUnit: formData.get("weightUnit"),
+    lengthUnit: formData.get("lengthUnit"),
     image: formData.get("image"),
   });
 
@@ -53,7 +61,7 @@ export async function updateProfile(formData: FormData) {
     return { error: "Invalid fields" };
   }
 
-  const { name, email, dateOfBirth, lengthUnit, weightUnit, image } =
+  const { name, email, dateOfBirth, weightUnit, lengthUnit, image } =
     validatedFields.data;
 
   try {
@@ -66,8 +74,8 @@ export async function updateProfile(formData: FormData) {
         image,
         preferences: {
           upsert: {
-            create: { lengthUnit, weightUnit },
-            update: { lengthUnit, weightUnit },
+            create: { weightUnit, lengthUnit },
+            update: { weightUnit, lengthUnit },
           },
         },
       },
@@ -102,7 +110,6 @@ export async function uploadProfileImage(formData: FormData) {
 
     const { url } = await uploadResponse.json();
 
-    // Update the user's profile image URL in the database
     await prisma.user.update({
       where: { id: session.user.id },
       data: { image: url },

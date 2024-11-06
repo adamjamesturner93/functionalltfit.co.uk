@@ -8,13 +8,13 @@ import {
   updateWorkoutActivity,
 } from "@/app/actions/workouts";
 import { getCurrentUserId } from "@/lib/auth-utils";
+import { getCurrentUser } from "@/app/actions/profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { WorkoutExercise } from "./workout-exercise";
 import { WorkoutProgress } from "./workout-progress";
-import { WorkoutSummary } from "./workout-summary";
 import { SetRest } from "./set-rest";
-import { ExerciseMode } from "@prisma/client";
+import { ExerciseMode, Unit } from "@prisma/client";
 import { Progress } from "@/components/ui/progress";
 import { Clock } from "lucide-react";
 
@@ -51,6 +51,15 @@ interface Workout {
   sets: Set[];
 }
 
+interface ExercisePerformance {
+  id: string;
+  exerciseId: string;
+  weight: { [roundNumber: number]: number };
+  reps?: { [roundNumber: number]: number };
+  time?: { [roundNumber: number]: number };
+  distance?: { [roundNumber: number]: number };
+}
+
 export default function WorkoutPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -63,10 +72,15 @@ export default function WorkoutPage() {
   const [isSetRest, setIsSetRest] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [summary, setSummary] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userPreferences, setUserPreferences] = useState<{
+    weightUnit: Unit;
+    lengthUnit: Unit;
+  }>({
+    weightUnit: Unit.METRIC,
+    lengthUnit: Unit.METRIC,
+  });
 
   useEffect(() => {
     const begin = async () => {
@@ -77,6 +91,11 @@ export default function WorkoutPage() {
         if (!currentUserId) {
           throw new Error("User not authenticated");
         }
+        const user = await getCurrentUser();
+        setUserPreferences({
+          weightUnit: user?.weightUnit || Unit.METRIC,
+          lengthUnit: user?.lengthUnit || Unit.METRIC,
+        });
         const combinedWorkout = await startWorkout(id as string, currentUserId);
         setWorkout(combinedWorkout as unknown as Workout);
       } catch (err) {
@@ -89,27 +108,49 @@ export default function WorkoutPage() {
     begin();
   }, [id]);
 
-  const moveToNextExercise = useCallback(() => {
-    if (!workout) return;
-    const currentSet = workout.sets[currentSetIndex];
-    if (currentExerciseIndex < currentSet.exercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
-    } else {
-      moveToNextRound();
-    }
-  }, [workout, currentSetIndex, currentExerciseIndex]);
+  const handleComplete = useCallback(async () => {
+    if (!workout || !userId) return;
 
-  const moveToNextRound = useCallback(() => {
-    if (!workout) return;
-    if (currentRoundIndex < workout.sets[currentSetIndex].rounds - 1) {
-      setCurrentRoundIndex(currentRoundIndex + 1);
-      setCurrentExerciseIndex(0);
-      setIsResting(true);
-      setTimeLeft(workout.sets[currentSetIndex].rest);
-    } else {
-      startSetRest();
+    try {
+      setIsLoading(true);
+      const exercises: ExercisePerformance[] = workout.sets.flatMap((set) =>
+        set.exercises.map((exercise) => {
+          const exerciseData: ExercisePerformance = {
+            id: exercise.id,
+            exerciseId: exercise.exerciseId,
+            weight: {},
+            reps: {},
+            time: {},
+            distance: {},
+          };
+
+          for (let round = 1; round <= set.rounds; round++) {
+            exerciseData.weight[round] = exercise.weight;
+            if (exercise.mode === ExerciseMode.REPS) {
+              exerciseData.reps![round] = exercise.reps;
+            } else if (exercise.mode === ExerciseMode.TIME) {
+              exerciseData.time![round] = exercise.time || 0;
+            } else if (exercise.mode === ExerciseMode.DISTANCE) {
+              exerciseData.distance![round] = exercise.distance || 0;
+            }
+          }
+
+          return exerciseData;
+        })
+      );
+
+      await completeWorkout(workout.id, workout.workoutId, exercises, userId);
+      router.push("/workouts");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while completing the workout"
+      );
+    } finally {
+      setIsLoading(false);
     }
-  }, [workout, currentSetIndex, currentRoundIndex]);
+  }, [workout, userId, router]);
 
   const startSetRest = useCallback(() => {
     if (!workout) return;
@@ -119,13 +160,35 @@ export default function WorkoutPage() {
     } else {
       handleComplete();
     }
-  }, [workout, currentSetIndex]);
+  }, [workout, currentSetIndex, handleComplete]);
+
+  const moveToNextRound = useCallback(() => {
+    if (!workout) return;
+    if (currentRoundIndex < workout.sets[currentSetIndex].rounds - 1) {
+      setCurrentRoundIndex((prevIndex) => prevIndex + 1);
+      setCurrentExerciseIndex(0);
+      setIsResting(true);
+      setTimeLeft(workout.sets[currentSetIndex].rest);
+    } else {
+      startSetRest();
+    }
+  }, [workout, currentRoundIndex, currentSetIndex, startSetRest]);
+
+  const moveToNextExercise = useCallback(() => {
+    if (!workout) return;
+    const currentSet = workout.sets[currentSetIndex];
+    if (currentExerciseIndex < currentSet.exercises.length - 1) {
+      setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
+    } else {
+      moveToNextRound();
+    }
+  }, [workout, currentSetIndex, currentExerciseIndex, moveToNextRound]);
 
   const moveToNextSet = useCallback(() => {
-    setCurrentSetIndex(currentSetIndex + 1);
+    setCurrentSetIndex((prevIndex) => prevIndex + 1);
     setCurrentRoundIndex(0);
     setCurrentExerciseIndex(0);
-  }, [currentSetIndex]);
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -151,56 +214,6 @@ export default function WorkoutPage() {
     moveToNextExercise,
     moveToNextSet,
   ]);
-
-  const handleComplete = async () => {
-    if (!workout || !userId) return;
-
-    try {
-      setIsLoading(true);
-      const exercises = workout.sets.flatMap((set) =>
-        set.exercises.map((exercise) => {
-          const exerciseData: Record<string, any> = {
-            id: exercise.id,
-            exerciseId: exercise.exerciseId,
-            weight: {},
-            reps: {},
-            time: {},
-            distance: {},
-          };
-
-          for (let round = 1; round <= set.rounds; round++) {
-            exerciseData.weight[round] = exercise.weight;
-            if (exercise.mode === ExerciseMode.REPS) {
-              exerciseData.reps[round] = exercise.reps;
-            } else if (exercise.mode === ExerciseMode.TIME) {
-              exerciseData.time[round] = exercise.time || 0;
-            } else if (exercise.mode === ExerciseMode.DISTANCE) {
-              exerciseData.distance[round] = exercise.distance || 0;
-            }
-          }
-
-          return exerciseData;
-        })
-      );
-
-      const result = await completeWorkout(
-        workout.id,
-        workout.workoutId,
-        exercises,
-        userId
-      );
-      setIsCompleted(true);
-      setSummary(result.summary);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred while completing the workout"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleUpdateExercise = async (
     exerciseId: string,
@@ -240,7 +253,7 @@ export default function WorkoutPage() {
           mode:
             workout.sets[currentSetIndex].exercises.find(
               (e) => e.id === exerciseId
-            )?.mode || "REPS",
+            )?.mode || ExerciseMode.REPS,
         },
       ]);
 
@@ -310,17 +323,6 @@ export default function WorkoutPage() {
           </Button>
         </CardContent>
       </Card>
-    );
-  }
-
-  if (isCompleted && summary) {
-    return (
-      <WorkoutSummary
-        summary={summary}
-        onBackToWorkouts={() => router.push("/workouts")}
-        workoutId={workout.workoutId}
-        userId={userId as string}
-      />
     );
   }
 
@@ -398,6 +400,7 @@ export default function WorkoutPage() {
               currentRound={currentRoundIndex + 1}
               totalRounds={currentSet.rounds}
               onComplete={handleUpdateExercise}
+              userPreferences={userPreferences}
             />
           )}
         </CardContent>

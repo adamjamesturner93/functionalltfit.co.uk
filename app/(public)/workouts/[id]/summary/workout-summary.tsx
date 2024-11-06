@@ -29,17 +29,24 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { WorkoutSummary as WorkoutSummaryType } from "@/app/actions/workouts";
+import { Unit } from "@prisma/client";
+import { formatWeight } from "@/lib/unit-conversion";
 
 interface WorkoutSummaryProps {
   summary: WorkoutSummaryType;
   workoutActivityId: string;
   userId: string;
+  userPreferences: {
+    weightUnit: Unit;
+    lengthUnit: Unit;
+  };
 }
 
 export function WorkoutSummary({
   summary,
   workoutActivityId,
   userId,
+  userPreferences,
 }: WorkoutSummaryProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
@@ -79,7 +86,10 @@ export function WorkoutSummary({
     ctx.font = "40px system-ui";
     const stats = [
       `Duration: ${Math.round(workoutData.totalDuration / 60)} minutes`,
-      `Total Weight: ${workoutData.totalWeightLifted.toFixed(1)} kg`,
+      `Total Weight: ${formatWeight(
+        workoutData.totalWeightLifted,
+        userPreferences.weightUnit
+      )}`,
       `Exercises: ${workoutData.exercisesCompleted}`,
       `Personal Bests: ${
         workoutData.exercises.filter(
@@ -198,7 +208,10 @@ export function WorkoutSummary({
     setIncreasedWeights((prev) => ({ ...prev, [exerciseId]: true }));
     toast({
       title: "Weight Increased",
-      description: `The weight for this exercise has been increased to ${newWeight}kg.`,
+      description: `The weight for this exercise has been increased to ${formatWeight(
+        newWeight,
+        userPreferences.weightUnit
+      )}.`,
     });
   };
 
@@ -239,7 +252,10 @@ export function WorkoutSummary({
               <Weight className="h-6 w-6 mx-auto text-slate-400" />
               <div className="text-sm text-slate-400">Weight Lifted</div>
               <div className="text-2xl font-bold">
-                {summary.totalWeightLifted.toFixed(1)}kg
+                {formatWeight(
+                  summary.totalWeightLifted,
+                  userPreferences.weightUnit
+                )}
               </div>
             </CardContent>
           </Card>
@@ -308,7 +324,10 @@ export function WorkoutSummary({
                                 {increasedWeights[exercise.exerciseId] ? (
                                   <p className="text-sm text-indigo-400">
                                     Weight increased to{" "}
-                                    {exercise.nextWorkoutWeight}kg
+                                    {formatWeight(
+                                      exercise.nextWorkoutWeight,
+                                      userPreferences.weightUnit
+                                    )}
                                   </p>
                                 ) : (
                                   <Button
@@ -320,7 +339,11 @@ export function WorkoutSummary({
                                     }
                                     className="bg-indigo-600 hover:bg-indigo-700"
                                   >
-                                    Increase to {exercise.nextWorkoutWeight}kg
+                                    Increase to{" "}
+                                    {formatWeight(
+                                      exercise.nextWorkoutWeight,
+                                      userPreferences.weightUnit
+                                    )}
                                     <ChevronRight className="h-4 w-4 ml-2" />
                                   </Button>
                                 )}
@@ -364,8 +387,11 @@ export function WorkoutSummary({
                             </span>
                             <div className="space-x-2">
                               <span>
-                                {round.weight}kg × {round.reps}{" "}
-                                {exercise.mode.toLowerCase()}
+                                {formatWeight(
+                                  round.weight,
+                                  userPreferences.weightUnit
+                                )}{" "}
+                                × {round.reps} {exercise.mode.toLowerCase()}
                               </span>
                               <span className="text-slate-500">
                                 (Target: {exercise.targetReps}{" "}
@@ -379,8 +405,11 @@ export function WorkoutSummary({
                             <span className="text-slate-400">Average</span>
                             <div className="space-x-2">
                               <span>
-                                {exercise.weight}kg × {exercise.reps}{" "}
-                                {exercise.mode.toLowerCase()}
+                                {formatWeight(
+                                  exercise.weight,
+                                  userPreferences.weightUnit
+                                )}{" "}
+                                × {exercise.reps} {exercise.mode.toLowerCase()}
                               </span>
                               <span className="text-slate-500">
                                 (Target: {exercise.targetReps}{" "}

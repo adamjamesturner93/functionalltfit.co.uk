@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { ExerciseMode } from "@prisma/client";
+import { ExerciseMode, Unit } from "@prisma/client";
 import {
   Info,
   Dumbbell,
@@ -18,6 +18,11 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  convertWeight,
+  convertDistance,
+  formatDistance,
+} from "@/lib/unit-conversion";
 
 interface Exercise {
   id: string;
@@ -50,6 +55,10 @@ interface WorkoutExerciseProps {
       distance?: number;
     }
   ) => void;
+  userPreferences: {
+    weightUnit: Unit;
+    lengthUnit: Unit;
+  };
 }
 
 export function WorkoutExercise({
@@ -57,6 +66,7 @@ export function WorkoutExercise({
   currentRound,
   totalRounds,
   onComplete,
+  userPreferences,
 }: WorkoutExerciseProps) {
   const [weight, setWeight] = useState(exercise.weight);
   const [reps, setReps] = useState(exercise.reps);
@@ -108,11 +118,23 @@ export function WorkoutExercise({
 
   const handleComplete = () => {
     onComplete(exercise.id, {
-      weight,
+      weight:
+        userPreferences.weightUnit === Unit.IMPERIAL
+          ? weight / 2.20462
+          : weight,
       ...(exercise.mode === ExerciseMode.REPS && { reps }),
       ...(exercise.mode === ExerciseMode.TIME && { time }),
-      ...(exercise.mode === ExerciseMode.DISTANCE && { distance }),
+      ...(exercise.mode === ExerciseMode.DISTANCE && {
+        distance:
+          userPreferences.lengthUnit === Unit.IMPERIAL
+            ? distance * 1609.34
+            : distance * 1000,
+      }),
     });
+  };
+
+  const roundToNearestHalf = (value: number) => {
+    return Math.round(value * 2) / 2;
   };
 
   return (
@@ -161,7 +183,10 @@ export function WorkoutExercise({
                 `${exercise.targetReps} reps`}
               {exercise.mode === ExerciseMode.TIME && `${exercise.targetTime}s`}
               {exercise.mode === ExerciseMode.DISTANCE &&
-                `${exercise.targetDistance}m`}
+                formatDistance(
+                  exercise.targetDistance || 0,
+                  userPreferences.lengthUnit
+                )}
             </div>
           </div>
           <div className="space-y-2">
@@ -176,13 +201,24 @@ export function WorkoutExercise({
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="weight" className="text-sm text-slate-400">
-              Weight (kg)
+              Weight (
+              {userPreferences.weightUnit === Unit.IMPERIAL ? "lbs" : "kg"})
             </Label>
             <Input
               id="weight"
               type="number"
-              value={weight}
-              onChange={(e) => setWeight(Number(e.target.value))}
+              value={roundToNearestHalf(
+                convertWeight(weight, userPreferences.weightUnit)
+              )}
+              onChange={(e) => {
+                const newWeight = parseFloat(e.target.value);
+                setWeight(
+                  userPreferences.weightUnit === Unit.IMPERIAL
+                    ? newWeight / 2.20462
+                    : newWeight
+                );
+              }}
+              step={userPreferences.weightUnit === Unit.IMPERIAL ? 0.5 : 0.25}
               className="text-lg bg-slate-950 border-slate-800 focus:ring-indigo-500"
             />
           </div>
@@ -261,13 +297,22 @@ export function WorkoutExercise({
           {exercise.mode === ExerciseMode.DISTANCE && (
             <div className="space-y-2">
               <Label htmlFor="distance" className="text-sm text-slate-400">
-                Distance (meters)
+                Distance (
+                {userPreferences.lengthUnit === Unit.IMPERIAL ? "miles" : "km"})
               </Label>
               <Input
                 id="distance"
                 type="number"
-                value={distance}
-                onChange={(e) => setDistance(Number(e.target.value))}
+                value={convertDistance(distance, userPreferences.lengthUnit)}
+                onChange={(e) => {
+                  const newDistance = parseFloat(e.target.value);
+                  setDistance(
+                    userPreferences.lengthUnit === Unit.IMPERIAL
+                      ? newDistance / 0.621371
+                      : newDistance
+                  );
+                }}
+                step={0.1}
                 className="text-lg bg-slate-950 border-slate-800 focus:ring-indigo-500"
               />
             </div>
