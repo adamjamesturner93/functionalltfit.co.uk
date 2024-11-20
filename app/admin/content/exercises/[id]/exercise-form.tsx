@@ -1,40 +1,38 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Exercise, ExerciseType, ExerciseMode } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from 'next/navigation';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Exercise, ExerciseType, ExerciseMode } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { createExercise, updateExercise } from "@/app/actions/exercises";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ImageUpload } from "@/components/image-upload";
-import { VideoUpload } from "@/components/video-upload";
+} from '@/components/ui/select';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { createExercise, updateExercise } from '@/app/actions/exercises';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { ImageUpload } from '@/components/image-upload';
+import { VideoUpload } from '@/components/video-upload';
 
 const exerciseSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  muscleGroups: z
-    .array(z.string())
-    .min(1, "At least one muscle group is required"),
-  equipment: z.string().min(1, "Equipment is required"),
+  muscleGroups: z.array(z.string()).min(1, 'At least one muscle group is required'),
+  equipment: z.string().min(1, 'Equipment is required'),
   type: z.nativeEnum(ExerciseType),
   mode: z.nativeEnum(ExerciseMode),
-  instructions: z.string().min(1, "Instructions are required"),
-  thumbnailUrl: z.string().min(1, "Thumbnail image is required"),
-  videoUrl: z.string().min(1, "Video is required"),
+  instructions: z.string().min(1, 'Instructions are required'),
+  thumbnailUrl: z.string().min(1, 'Thumbnail image is required'),
+  videoUrl: z.string().min(1, 'Video is required'),
 });
 
 type ExerciseInput = z.infer<typeof exerciseSchema>;
@@ -44,25 +42,25 @@ interface ExerciseFormProps {
 }
 
 const muscleGroups = [
-  { label: "Chest", value: "Chest" },
-  { label: "Back", value: "Back" },
-  { label: "Shoulders", value: "Shoulders" },
-  { label: "Biceps", value: "Biceps" },
-  { label: "Triceps", value: "Triceps" },
-  { label: "Legs", value: "Legs" },
-  { label: "Core", value: "Core" },
-  { label: "Full Body", value: "Full Body" },
+  { label: 'Chest', value: 'Chest' },
+  { label: 'Back', value: 'Back' },
+  { label: 'Shoulders', value: 'Shoulders' },
+  { label: 'Biceps', value: 'Biceps' },
+  { label: 'Triceps', value: 'Triceps' },
+  { label: 'Legs', value: 'Legs' },
+  { label: 'Core', value: 'Core' },
+  { label: 'Full Body', value: 'Full Body' },
 ];
 
 const equipmentOptions = [
-  "None",
-  "Dumbbells",
-  "Barbell",
-  "Kettlebell",
-  "Resistance Bands",
-  "Bodyweight",
-  "Machine",
-  "Other",
+  'None',
+  'Dumbbells',
+  'Barbell',
+  'Kettlebell',
+  'Resistance Bands',
+  'Bodyweight',
+  'Machine',
+  'Other',
 ];
 
 export function ExerciseForm({ exercise }: ExerciseFormProps) {
@@ -76,15 +74,15 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
   } = useForm<ExerciseInput>({
     resolver: zodResolver(exerciseSchema),
     defaultValues: exercise || {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       muscleGroups: [],
-      equipment: "None",
+      equipment: 'None',
       type: ExerciseType.STRENGTH,
       mode: ExerciseMode.REPS,
-      instructions: "",
-      thumbnailUrl: "",
-      videoUrl: "",
+      instructions: '',
+      thumbnailUrl: '',
+      videoUrl: '',
     },
   });
 
@@ -92,15 +90,15 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
     try {
       if (exercise) {
         await updateExercise(exercise.id, data);
-        toast({ title: "Exercise updated successfully" });
+        toast({ title: 'Exercise updated successfully' });
       } else {
         await createExercise(data);
-        toast({ title: "Exercise created successfully" });
+        toast({ title: 'Exercise created successfully' });
       }
-      router.push("/admin/content/exercises");
+      router.push('/admin/content/exercises');
     } catch (error) {
       console.error(error);
-      toast({ title: "Error saving exercise", variant: "destructive" });
+      toast({ title: 'Error saving exercise', variant: 'destructive' });
     }
   };
 
@@ -111,7 +109,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
           <CardTitle>Exercise Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Name</Label>
@@ -120,9 +118,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                   control={control}
                   render={({ field }) => <Input {...field} id="name" />}
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-sm">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
               </div>
 
               <div>
@@ -140,9 +136,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                   )}
                 />
                 {errors.muscleGroups && (
-                  <p className="text-red-500 text-sm">
-                    {errors.muscleGroups.message}
-                  </p>
+                  <p className="text-sm text-red-500">{errors.muscleGroups.message}</p>
                 )}
               </div>
               <div>
@@ -211,9 +205,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                   )}
                 />
                 {errors.equipment && (
-                  <p className="text-red-500 text-sm">
-                    {errors.equipment.message}
-                  </p>
+                  <p className="text-sm text-red-500">{errors.equipment.message}</p>
                 )}
               </div>
               <div>
@@ -221,9 +213,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => (
-                    <Textarea {...field} id="description" />
-                  )}
+                  render={({ field }) => <Textarea {...field} id="description" />}
                 />
               </div>
               <div>
@@ -231,14 +221,10 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                 <Controller
                   name="instructions"
                   control={control}
-                  render={({ field }) => (
-                    <Textarea {...field} id="instructions" />
-                  )}
+                  render={({ field }) => <Textarea {...field} id="instructions" />}
                 />
                 {errors.instructions && (
-                  <p className="text-red-500 text-sm">
-                    {errors.instructions.message}
-                  </p>
+                  <p className="text-sm text-red-500">{errors.instructions.message}</p>
                 )}
               </div>
             </div>
@@ -258,9 +244,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                 )}
               />
               {errors.thumbnailUrl && (
-                <p className="text-red-500 text-sm">
-                  {errors.thumbnailUrl.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.thumbnailUrl.message}</p>
               )}
             </div>
             <div>
@@ -275,11 +259,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                   />
                 )}
               />
-              {errors.videoUrl && (
-                <p className="text-red-500 text-sm">
-                  {errors.videoUrl.message}
-                </p>
-              )}
+              {errors.videoUrl && <p className="text-sm text-red-500">{errors.videoUrl.message}</p>}
             </div>
           </div>
         </CardContent>

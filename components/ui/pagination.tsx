@@ -1,7 +1,7 @@
-import React from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PaginationProps {
   currentPage: number;
@@ -20,7 +20,7 @@ export function Pagination({
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  const createPageUrl = (page: number) => {
+  const createPageUrl = async (page: number) => {
     const params = new URLSearchParams();
 
     // Add all existing search params
@@ -33,7 +33,7 @@ export function Pagination({
     });
 
     // Add or update the page param
-    params.set("page", page.toString());
+    params.set('page', page.toString());
 
     return `${baseUrl}?${params.toString()}`;
   };
@@ -43,7 +43,7 @@ export function Pagination({
 
   const PreviousButton = () => (
     <Button variant="outline" size="sm" disabled={isPreviousDisabled}>
-      <ChevronLeft className="h-4 w-4 mr-2" />
+      <ChevronLeft className="mr-2 h-4 w-4" />
       Previous
     </Button>
   );
@@ -51,12 +51,12 @@ export function Pagination({
   const NextButton = () => (
     <Button variant="outline" size="sm" disabled={isNextDisabled}>
       Next
-      <ChevronRight className="h-4 w-4 ml-2" />
+      <ChevronRight className="ml-2 h-4 w-4" />
     </Button>
   );
 
   return (
-    <div className="flex justify-center items-center space-x-2">
+    <div className="flex items-center justify-center space-x-2">
       {isPreviousDisabled ? (
         <PreviousButton />
       ) : (

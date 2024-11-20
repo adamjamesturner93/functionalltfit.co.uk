@@ -1,14 +1,8 @@
-"use client";
+'use client';
 
-import { Plus, ChevronRight } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Plus, ChevronRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { GoalCard } from "./goal-card";
-import { AddGoalForm } from "./add-goal-form";
-import { Goal } from "@prisma/client";
+} from '@/components/ui/dialog';
+import { GoalCard } from './goal-card';
+import { AddGoalForm } from './add-goal-form';
+import { Goal } from '@prisma/client';
 
-import Link from "next/link";
+import Link from 'next/link';
 
 type GoalsSectionProps = {
   goals: Goal[];
@@ -31,7 +25,7 @@ export function GoalsSection({ goals }: GoalsSectionProps) {
   const activeGoals = goals.filter((goal) => goal.isActive);
 
   return (
-    <Card className="bg-card/50 backdrop-blur hover:bg-card/60 transition-colors">
+    <Card className="bg-card/50 backdrop-blur transition-colors hover:bg-card/60">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <CardTitle className="text-2xl">Goals</CardTitle>
@@ -48,14 +42,9 @@ export function GoalsSection({ goals }: GoalsSectionProps) {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add New Goal</DialogTitle>
-                <DialogDescription>
-                  Set a new goal to track your progress
-                </DialogDescription>
+                <DialogDescription>Set a new goal to track your progress</DialogDescription>
               </DialogHeader>
-              <AddGoalForm
-                maxActiveGoals={5}
-                currentActiveGoals={activeGoals.length}
-              />
+              <AddGoalForm maxActiveGoals={5} currentActiveGoals={activeGoals.length} />
             </DialogContent>
           </Dialog>
           <Button variant="ghost" size="icon" asChild>
@@ -69,7 +58,7 @@ export function GoalsSection({ goals }: GoalsSectionProps) {
       <CardContent>
         <div className="space-y-2">
           {activeGoals.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <p className="py-4 text-center text-muted-foreground">
               No goals found. Add a goal to start tracking your progress!
             </p>
           ) : (

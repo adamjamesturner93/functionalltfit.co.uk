@@ -1,13 +1,9 @@
-import { getYogaVideoById } from "@/app/actions/yoga-videos";
-import YogaVideoFormClient from "./yoga-video-form-client";
+import { getYogaVideoById } from '@/app/actions/yoga-videos';
+import YogaVideoFormClient from './yoga-video-form-client';
 
-export default async function YogaVideoFormPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function YogaVideoFormPage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const isNewYogaVideo = id === "new";
+  const isNewYogaVideo = id === 'new';
 
   let initialYogaVideo = null;
   if (!isNewYogaVideo) {

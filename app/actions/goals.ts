@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { GoalType, GoalPeriod } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { GoalType, GoalPeriod } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 const MAX_ACTIVE_GOALS = 5;
 
@@ -30,7 +30,7 @@ const goalSchema = z.object({
 export async function addGoal(data: z.infer<typeof goalSchema>) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -42,7 +42,7 @@ export async function addGoal(data: z.infer<typeof goalSchema>) {
     });
 
     if (activeGoals >= MAX_ACTIVE_GOALS) {
-      return { error: "Maximum number of active goals reached" };
+      return { error: 'Maximum number of active goals reached' };
     }
 
     const validatedData = goalSchema.parse(data);
@@ -52,7 +52,7 @@ export async function addGoal(data: z.infer<typeof goalSchema>) {
     if (validatedData.type === GoalType.WEIGHT) {
       const latestMeasurement = await prisma.bodyMeasurement.findFirst({
         where: { userId: session.user.id },
-        orderBy: { date: "desc" },
+        orderBy: { date: 'desc' },
       });
       current = latestMeasurement?.weight || 0;
     }
@@ -72,11 +72,11 @@ export async function addGoal(data: z.infer<typeof goalSchema>) {
       },
     });
 
-    revalidatePath("/dashboard");
+    revalidatePath('/dashboard');
     return { success: true };
   } catch (error) {
-    console.error("Error adding goal:", error);
-    return { error: "Failed to add goal" };
+    console.error('Error adding goal:', error);
+    return { error: 'Failed to add goal' };
   }
 }
 
@@ -87,7 +87,7 @@ export async function getActiveGoals(userId: string) {
       isActive: true,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
   });
 }
@@ -97,14 +97,14 @@ export async function getAllGoals(userId: string) {
     where: {
       userId,
     },
-    orderBy: [{ isActive: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ isActive: 'desc' }, { createdAt: 'desc' }],
   });
 }
 
 export async function updateGoalProgress(goalId: string, current: number) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -113,7 +113,7 @@ export async function updateGoalProgress(goalId: string, current: number) {
     });
 
     if (!goal) {
-      return { error: "Goal not found" };
+      return { error: 'Goal not found' };
     }
 
     const updatedGoal = await prisma.goal.update({
@@ -130,15 +130,15 @@ export async function updateGoalProgress(goalId: string, current: number) {
 
     return { success: true, goal: updatedGoal };
   } catch (error) {
-    console.error("Error updating goal progress:", error);
-    return { error: "Failed to update goal progress" };
+    console.error('Error updating goal progress:', error);
+    return { error: 'Failed to update goal progress' };
   }
 }
 
 export async function deleteGoal(goalId: string) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -151,8 +151,8 @@ export async function deleteGoal(goalId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting goal:", error);
-    return { error: "Failed to delete goal" };
+    console.error('Error deleting goal:', error);
+    return { error: 'Failed to delete goal' };
   }
 }
 
@@ -190,13 +190,11 @@ export async function updateGoalsProgress(userId: string) {
             week: {
               gte:
                 Math.floor(
-                  (new Date().getTime() - startDate.getTime()) /
-                    (7 * 24 * 60 * 60 * 1000)
+                  (new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
                 ) + 1,
             },
             ...(goal.type !== GoalType.TOTAL_SESSIONS && {
-              activityType:
-                goal.type === GoalType.YOGA_SESSIONS ? "YOGA" : "WORKOUT",
+              activityType: goal.type === GoalType.YOGA_SESSIONS ? 'YOGA' : 'WORKOUT',
             }),
           },
         });
@@ -206,7 +204,7 @@ export async function updateGoalsProgress(userId: string) {
       case GoalType.WEIGHT:
         const latestMeasurement = await prisma.bodyMeasurement.findFirst({
           where: { userId },
-          orderBy: { date: "desc" },
+          orderBy: { date: 'desc' },
         });
         current = latestMeasurement?.weight || 0;
         break;
@@ -221,22 +219,18 @@ export async function updateGoalsProgress(userId: string) {
 
         const latestWorkoutActivity = await prisma.workoutActivity.findFirst({
           where: { userId },
-          orderBy: { endedAt: "desc" },
+          orderBy: { endedAt: 'desc' },
           include: {
             WorkoutActivityExercise: {
               where: { exerciseId: goal.exerciseId },
-              orderBy: { roundNumber: "desc" },
+              orderBy: { roundNumber: 'desc' },
               take: 1,
             },
           },
         });
 
-        if (
-          latestWorkoutActivity &&
-          latestWorkoutActivity.WorkoutActivityExercise[0]
-        ) {
-          const exercisePerformance =
-            latestWorkoutActivity.WorkoutActivityExercise[0];
+        if (latestWorkoutActivity && latestWorkoutActivity.WorkoutActivityExercise[0]) {
+          const exercisePerformance = latestWorkoutActivity.WorkoutActivityExercise[0];
           switch (goal.type) {
             case GoalType.EXERCISE_WEIGHT:
               current = exercisePerformance.weight;
@@ -276,7 +270,7 @@ export async function updateGoalsProgress(userId: string) {
 export async function markGoalComplete(goalId: string) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -285,7 +279,7 @@ export async function markGoalComplete(goalId: string) {
     });
 
     if (!goal) {
-      return { error: "Goal not found" };
+      return { error: 'Goal not found' };
     }
 
     const updatedGoal = await prisma.goal.update({
@@ -302,15 +296,15 @@ export async function markGoalComplete(goalId: string) {
 
     return { success: true, goal: updatedGoal };
   } catch (error) {
-    console.error("Error marking goal as complete:", error);
-    return { error: "Failed to mark goal as complete" };
+    console.error('Error marking goal as complete:', error);
+    return { error: 'Failed to mark goal as complete' };
   }
 }
 
 export async function markGoalInactive(goalId: string) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -326,15 +320,15 @@ export async function markGoalInactive(goalId: string) {
 
     return { success: true, goal: updatedGoal };
   } catch (error) {
-    console.error("Error marking goal as inactive:", error);
-    return { error: "Failed to mark goal as inactive" };
+    console.error('Error marking goal as inactive:', error);
+    return { error: 'Failed to mark goal as inactive' };
   }
 }
 
 export async function getGoalProgress(goalId: string) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   try {
@@ -343,7 +337,7 @@ export async function getGoalProgress(goalId: string) {
     });
 
     if (!goal) {
-      return { error: "Goal not found" };
+      return { error: 'Goal not found' };
     }
 
     let current = 0;
@@ -354,10 +348,7 @@ export async function getGoalProgress(goalId: string) {
       case GoalType.TOTAL_SESSIONS:
         const startDate =
           goal.period === GoalPeriod.WEEK
-            ? new Date(
-                new Date().setHours(0, 0, 0, 0) -
-                  new Date().getDay() * 24 * 60 * 60 * 1000
-              )
+            ? new Date(new Date().setHours(0, 0, 0, 0) - new Date().getDay() * 24 * 60 * 60 * 1000)
             : new Date(new Date().setDate(1)); // First day of current month
 
         const sessionCount = await prisma.programmeActivity.count({
@@ -375,13 +366,12 @@ export async function getGoalProgress(goalId: string) {
               gte: startDate,
             },
             ...(goal.type !== GoalType.TOTAL_SESSIONS && {
-              activityType:
-                goal.type === GoalType.YOGA_SESSIONS ? "YOGA" : "WORKOUT",
+              activityType: goal.type === GoalType.YOGA_SESSIONS ? 'YOGA' : 'WORKOUT',
             }),
           },
         });
 
-        console.log("Goal Progress Debug:", {
+        console.log('Goal Progress Debug:', {
           goalType: goal.type,
           startDate,
           sessionCount,
@@ -394,7 +384,7 @@ export async function getGoalProgress(goalId: string) {
       case GoalType.WEIGHT:
         const latestMeasurement = await prisma.bodyMeasurement.findFirst({
           where: { userId: session.user.id },
-          orderBy: { date: "desc" },
+          orderBy: { date: 'desc' },
         });
         current = latestMeasurement?.weight || 0;
         break;
@@ -403,27 +393,23 @@ export async function getGoalProgress(goalId: string) {
       case GoalType.EXERCISE_REPS:
       case GoalType.EXERCISE_DISTANCE:
         if (!goal.exerciseId) {
-          return { error: "Exercise ID not set for this goal" };
+          return { error: 'Exercise ID not set for this goal' };
         }
 
         const latestWorkoutActivity = await prisma.workoutActivity.findFirst({
           where: { userId: session.user.id },
-          orderBy: { endedAt: "desc" },
+          orderBy: { endedAt: 'desc' },
           include: {
             WorkoutActivityExercise: {
               where: { exerciseId: goal.exerciseId },
-              orderBy: { roundNumber: "desc" },
+              orderBy: { roundNumber: 'desc' },
               take: 1,
             },
           },
         });
 
-        if (
-          latestWorkoutActivity &&
-          latestWorkoutActivity.WorkoutActivityExercise[0]
-        ) {
-          const exercisePerformance =
-            latestWorkoutActivity.WorkoutActivityExercise[0];
+        if (latestWorkoutActivity && latestWorkoutActivity.WorkoutActivityExercise[0]) {
+          const exercisePerformance = latestWorkoutActivity.WorkoutActivityExercise[0];
           switch (goal.type) {
             case GoalType.EXERCISE_WEIGHT:
               current = exercisePerformance.weight;
@@ -443,7 +429,7 @@ export async function getGoalProgress(goalId: string) {
         break;
 
       default:
-        return { error: "Unsupported goal type" };
+        return { error: 'Unsupported goal type' };
     }
 
     const progress = (current / goal.target) * 100;
@@ -459,7 +445,7 @@ export async function getGoalProgress(goalId: string) {
       },
     };
   } catch (error) {
-    console.error("Error getting goal progress:", error);
-    return { error: "Failed to get goal progress" };
+    console.error('Error getting goal progress:', error);
+    return { error: 'Failed to get goal progress' };
   }
 }

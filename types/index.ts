@@ -1,4 +1,4 @@
-import { User as PrismaUser, UserRole } from "@prisma/client";
+import { User as PrismaUser, UserRole } from '@prisma/client';
 
 export interface User extends PrismaUser {
   id: string;

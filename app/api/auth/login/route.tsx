@@ -1,16 +1,13 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { generateAuthCode, sendAuthCode } from "@/lib/auth";
-import { User } from "next-auth";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { generateAuthCode, sendAuthCode } from '@/lib/auth';
+import { User } from 'next-auth';
 
 export async function POST(request: Request) {
   const { email } = await request.json();
 
   if (!email) {
-    return NextResponse.json(
-      { message: "Missing required fields" },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
   try {
@@ -18,8 +15,8 @@ export async function POST(request: Request) {
       where: { email },
     });
     if (!user) {
-      console.log("no user found");
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      console.log('no user found');
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
     const authCode = generateAuthCode();
@@ -33,14 +30,11 @@ export async function POST(request: Request) {
     await sendAuthCode(email, authCode);
 
     return NextResponse.json(
-      { message: "Auth code sent. Check your email.", userId: user.id },
-      { status: 200 }
+      { message: 'Auth code sent. Check your email.', userId: user.id },
+      { status: 200 },
     );
   } catch (error) {
     console.error(error.response.body);
-    return NextResponse.json(
-      { message: "Error sending auth code", error },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Error sending auth code', error }, { status: 500 });
   }
 }

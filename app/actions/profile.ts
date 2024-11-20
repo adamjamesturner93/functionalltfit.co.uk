@@ -1,13 +1,13 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { Unit } from "@prisma/client";
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { Unit } from '@prisma/client';
 
 const profileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
   dateOfBirth: z.string().optional(),
   weightUnit: z.nativeEnum(Unit),
   lengthUnit: z.nativeEnum(Unit),
@@ -33,9 +33,7 @@ export async function getCurrentUser() {
 
   return {
     ...user,
-    dateOfBirth: user.dateOfBirth
-      ? user.dateOfBirth.toISOString().split("T")[0]
-      : undefined,
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : undefined,
     weightUnit: user.preferences?.weightUnit || Unit.METRIC,
     lengthUnit: user.preferences?.lengthUnit || Unit.METRIC,
     image: user.image || undefined,
@@ -45,24 +43,23 @@ export async function getCurrentUser() {
 export async function updateProfile(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   const validatedFields = profileSchema.safeParse({
-    name: formData.get("name"),
-    email: formData.get("email"),
-    dateOfBirth: formData.get("dateOfBirth"),
-    weightUnit: formData.get("weightUnit"),
-    lengthUnit: formData.get("lengthUnit"),
-    image: formData.get("image"),
+    name: formData.get('name'),
+    email: formData.get('email'),
+    dateOfBirth: formData.get('dateOfBirth'),
+    weightUnit: formData.get('weightUnit'),
+    lengthUnit: formData.get('lengthUnit'),
+    image: formData.get('image'),
   });
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields" };
+    return { error: 'Invalid fields' };
   }
 
-  const { name, email, dateOfBirth, weightUnit, lengthUnit, image } =
-    validatedFields.data;
+  const { name, email, dateOfBirth, weightUnit, lengthUnit, image } = validatedFields.data;
 
   try {
     await prisma.user.update({
@@ -82,30 +79,30 @@ export async function updateProfile(formData: FormData) {
     });
     return { success: true };
   } catch (error) {
-    console.error("Error updating profile:", error);
-    return { error: "Failed to update profile" };
+    console.error('Error updating profile:', error);
+    return { error: 'Failed to update profile' };
   }
 }
 
 export async function uploadProfileImage(formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
-  const file = formData.get("file") as File;
+  const file = formData.get('file') as File;
   if (!file) {
-    return { error: "No file provided" };
+    return { error: 'No file provided' };
   }
 
   try {
-    const uploadResponse = await fetch("/api/upload", {
-      method: "POST",
+    const uploadResponse = await fetch('/api/upload', {
+      method: 'POST',
       body: formData,
     });
 
     if (!uploadResponse.ok) {
-      throw new Error("Failed to upload image");
+      throw new Error('Failed to upload image');
     }
 
     const { url } = await uploadResponse.json();
@@ -117,7 +114,7 @@ export async function uploadProfileImage(formData: FormData) {
 
     return { url };
   } catch (error) {
-    console.error("Error uploading profile image:", error);
-    return { error: "Failed to upload profile image" };
+    console.error('Error uploading profile image:', error);
+    return { error: 'Failed to upload profile image' };
   }
 }

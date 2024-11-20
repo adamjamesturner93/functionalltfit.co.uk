@@ -1,6 +1,6 @@
-import { DefaultSession } from "next-auth";
+import { DefaultSession } from 'next-auth';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface User {
     role: string;
   }
@@ -13,6 +13,6 @@ declare module "next-auth" {
       id: string;
       role: string;
       token: string;
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 }

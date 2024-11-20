@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+import { faker } from '@faker-js/faker';
 import {
   PrismaClient,
   MembershipStatus,
@@ -8,7 +8,7 @@ import {
   ExerciseType,
   ExerciseMode,
   SetType,
-} from "@prisma/client";
+} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -29,8 +29,8 @@ async function main() {
   // Create users
   const adminUser = await prisma.user.create({
     data: {
-      name: "Adam Turner",
-      email: "adamjamesturner93@gmail.com",
+      name: 'Adam Turner',
+      email: 'adamjamesturner93@gmail.com',
       role: UserRole.ADMIN,
       membershipStatus: MembershipStatus.ACTIVE,
       membershipPlan: MembershipPlan.GOLD,
@@ -40,8 +40,8 @@ async function main() {
   const regularUsers = await Promise.all([
     prisma.user.create({
       data: {
-        name: "Emily Johnson",
-        email: "emily.johnson@example.com",
+        name: 'Emily Johnson',
+        email: 'emily.johnson@example.com',
         role: UserRole.USER,
         membershipStatus: MembershipStatus.ACTIVE,
         membershipPlan: MembershipPlan.SILVER,
@@ -49,8 +49,8 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        name: "Michael Chen",
-        email: "michael.chen@example.com",
+        name: 'Michael Chen',
+        email: 'michael.chen@example.com',
         role: UserRole.USER,
         membershipStatus: MembershipStatus.ACTIVE,
         membershipPlan: MembershipPlan.BRONZE,
@@ -58,8 +58,8 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        name: "Sophia Rodriguez",
-        email: "sophia.rodriguez@example.com",
+        name: 'Sophia Rodriguez',
+        email: 'sophia.rodriguez@example.com',
         role: UserRole.USER,
         membershipStatus: MembershipStatus.INACTIVE,
         membershipPlan: MembershipPlan.FREE,
@@ -67,8 +67,8 @@ async function main() {
     }),
     prisma.user.create({
       data: {
-        name: "Daniel Kim",
-        email: "daniel.kim@example.com",
+        name: 'Daniel Kim',
+        email: 'daniel.kim@example.com',
         role: UserRole.USER,
         membershipStatus: MembershipStatus.ACTIVE,
         membershipPlan: MembershipPlan.GOLD,
@@ -82,196 +82,181 @@ async function main() {
   const yogaVideos = await Promise.all([
     prisma.yogaVideo.create({
       data: {
-        title: "Morning Sun Salutations",
-        description: "Start your day with energizing sun salutations",
+        title: 'Morning Sun Salutations',
+        description: 'Start your day with energizing sun salutations',
         type: YogaType.BUILD,
-        props: ["mat"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 1200, // 20 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Gentle Bedtime Yoga",
-        description: "Relax and unwind with this calming bedtime routine",
+        title: 'Gentle Bedtime Yoga',
+        description: 'Relax and unwind with this calming bedtime routine',
         type: YogaType.MINDFULNESS,
-        props: ["mat", "bolster"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'bolster'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 900, // 15 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Power Vinyasa Flow",
-        description: "Challenge yourself with this dynamic vinyasa sequence",
+        title: 'Power Vinyasa Flow',
+        description: 'Challenge yourself with this dynamic vinyasa sequence',
         type: YogaType.BUILD,
-        props: ["mat", "block"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'block'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 3600, // 60 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Yin Yoga for Flexibility",
-        description: "Improve flexibility with long-held, passive poses",
+        title: 'Yin Yoga for Flexibility',
+        description: 'Improve flexibility with long-held, passive poses',
         type: YogaType.EXPLORE,
-        props: ["mat", "strap", "bolster"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'strap', 'bolster'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 2700, // 45 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Yoga for Back Pain Relief",
-        description: "Gentle stretches and poses to alleviate back pain",
+        title: 'Yoga for Back Pain Relief',
+        description: 'Gentle stretches and poses to alleviate back pain',
         type: YogaType.MINDFULNESS,
-        props: ["mat", "block", "strap"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'block', 'strap'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 1800, // 30 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Ashtanga Primary Series",
-        description: "Traditional Ashtanga yoga primary series practice",
+        title: 'Ashtanga Primary Series',
+        description: 'Traditional Ashtanga yoga primary series practice',
         type: YogaType.BUILD,
-        props: ["mat"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 5400, // 90 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Restorative Yoga for Stress Relief",
-        description: "Deeply relaxing practice to reduce stress and anxiety",
+        title: 'Restorative Yoga for Stress Relief',
+        description: 'Deeply relaxing practice to reduce stress and anxiety',
         type: YogaType.MINDFULNESS,
-        props: ["mat", "bolster", "blanket", "block"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'bolster', 'blanket', 'block'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 3600, // 60 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Yoga for Runners",
-        description: "Stretch and strengthen key muscles for runners",
+        title: 'Yoga for Runners',
+        description: 'Stretch and strengthen key muscles for runners',
         type: YogaType.EXPLORE,
-        props: ["mat", "strap"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'strap'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 2400, // 40 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Chair Yoga for Office Workers",
-        description: "Simple yoga exercises you can do at your desk",
+        title: 'Chair Yoga for Office Workers',
+        description: 'Simple yoga exercises you can do at your desk',
         type: YogaType.MINDFULNESS,
-        props: ["chair"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['chair'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 900, // 15 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Kundalini Yoga for Beginners",
-        description: "Introduction to Kundalini yoga practice",
+        title: 'Kundalini Yoga for Beginners',
+        description: 'Introduction to Kundalini yoga practice',
         type: YogaType.EXPLORE,
-        props: ["mat", "blanket"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'blanket'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 3600, // 60 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Prenatal Yoga: Second Trimester",
-        description: "Safe and nurturing yoga practice for expecting mothers",
+        title: 'Prenatal Yoga: Second Trimester',
+        description: 'Safe and nurturing yoga practice for expecting mothers',
         type: YogaType.MINDFULNESS,
-        props: ["mat", "bolster", "block"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'bolster', 'block'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 2700, // 45 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Yoga for Better Sleep",
-        description: "Calming sequences to prepare your body for rest",
+        title: 'Yoga for Better Sleep',
+        description: 'Calming sequences to prepare your body for rest',
         type: YogaType.MINDFULNESS,
-        props: ["mat", "bolster"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'bolster'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 1800, // 30 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Core Strength Vinyasa",
-        description: "Build core strength with this challenging vinyasa flow",
+        title: 'Core Strength Vinyasa',
+        description: 'Build core strength with this challenging vinyasa flow',
         type: YogaType.BUILD,
-        props: ["mat"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 3600, // 60 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Yoga for Hikers and Climbers",
-        description: "Improve flexibility and balance for outdoor enthusiasts",
+        title: 'Yoga for Hikers and Climbers',
+        description: 'Improve flexibility and balance for outdoor enthusiasts',
         type: YogaType.EXPLORE,
-        props: ["mat", "block"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['mat', 'block'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 2700, // 45 minutes
       },
     }),
     prisma.yogaVideo.create({
       data: {
-        title: "Gentle Yoga for Seniors",
-        description: "Safe, low-impact yoga practice for older adults",
+        title: 'Gentle Yoga for Seniors',
+        description: 'Safe, low-impact yoga practice for older adults',
         type: YogaType.MINDFULNESS,
-        props: ["chair", "strap"],
-        muxAssetId: "Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM",
-        muxPlaybackId: "6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns",
-        thumbnailUrl:
-          "/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png",
+        props: ['chair', 'strap'],
+        muxAssetId: 'Bm3yWIPKvBw4MrRkFShFaeI5WWDAwtaIEw2k91FxPMM',
+        muxPlaybackId: '6CSCnxPakqazhXU6aDO02y02cvuqrcay02vQF1HoBaexns',
+        thumbnailUrl: '/uploads/q2eLjwPDWyHpdKYgiZBYv-Screenshot 2024-05-31 at 14.36.55.png',
         duration: 1800, // 30 minutes
       },
     }),
@@ -281,197 +266,197 @@ async function main() {
   const exercises = await Promise.all([
     prisma.exercise.create({
       data: {
-        name: "Push-up",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/push-up-video",
-        muscleGroups: ["Chest", "Shoulders", "Triceps"],
-        equipment: "None",
+        name: 'Push-up',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/push-up-video',
+        muscleGroups: ['Chest', 'Shoulders', 'Triceps'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Start in a plank position, lower your body until your chest nearly touches the floor, then push back up.",
+          'Start in a plank position, lower your body until your chest nearly touches the floor, then push back up.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Squat",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/squat-video",
-        muscleGroups: ["Quadriceps", "Hamstrings", "Glutes"],
-        equipment: "None",
+        name: 'Squat',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/squat-video',
+        muscleGroups: ['Quadriceps', 'Hamstrings', 'Glutes'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Stand with feet shoulder-width apart, lower your body as if sitting back into a chair, then return to standing.",
+          'Stand with feet shoulder-width apart, lower your body as if sitting back into a chair, then return to standing.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Deadlift",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/deadlift-video",
-        muscleGroups: ["Back", "Glutes", "Hamstrings"],
-        equipment: "Barbell",
+        name: 'Deadlift',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/deadlift-video',
+        muscleGroups: ['Back', 'Glutes', 'Hamstrings'],
+        equipment: 'Barbell',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Stand with feet hip-width apart, bend at hips and knees to lower the bar to the ground, then stand up straight.",
+          'Stand with feet hip-width apart, bend at hips and knees to lower the bar to the ground, then stand up straight.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Bench Press",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/bench-press-video",
-        muscleGroups: ["Chest", "Shoulders", "Triceps"],
-        equipment: "Barbell, Bench",
+        name: 'Bench Press',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/bench-press-video',
+        muscleGroups: ['Chest', 'Shoulders', 'Triceps'],
+        equipment: 'Barbell, Bench',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Lie on a bench, lower the barbell to your chest, then press it back up to the starting position.",
+          'Lie on a bench, lower the barbell to your chest, then press it back up to the starting position.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Pull-up",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/pull-up-video",
-        muscleGroups: ["Back", "Biceps"],
-        equipment: "Pull-up Bar",
+        name: 'Pull-up',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/pull-up-video',
+        muscleGroups: ['Back', 'Biceps'],
+        equipment: 'Pull-up Bar',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Hang from a bar with palms facing away, pull your body up until your chin is over the bar, then lower back down.",
+          'Hang from a bar with palms facing away, pull your body up until your chin is over the bar, then lower back down.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Plank",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/plank-video",
-        muscleGroups: ["Core", "Shoulders"],
-        equipment: "None",
+        name: 'Plank',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/plank-video',
+        muscleGroups: ['Core', 'Shoulders'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.TIME,
         instructions:
-          "Hold a push-up position with your forearms on the ground, keeping your body in a straight line.",
+          'Hold a push-up position with your forearms on the ground, keeping your body in a straight line.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Lunges",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/lunges-video",
-        muscleGroups: ["Quadriceps", "Hamstrings", "Glutes"],
-        equipment: "None",
+        name: 'Lunges',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/lunges-video',
+        muscleGroups: ['Quadriceps', 'Hamstrings', 'Glutes'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Step forward with one leg, lowering your hips until both knees are bent at about 90 degrees, then push back to the starting position.",
+          'Step forward with one leg, lowering your hips until both knees are bent at about 90 degrees, then push back to the starting position.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Dumbbell Shoulder Press",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/shoulder-press-video",
-        muscleGroups: ["Shoulders", "Triceps"],
-        equipment: "Dumbbells",
+        name: 'Dumbbell Shoulder Press',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/shoulder-press-video',
+        muscleGroups: ['Shoulders', 'Triceps'],
+        equipment: 'Dumbbells',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Stand with dumbbells at shoulder height, press them overhead until your arms are fully extended, then lower back down.",
+          'Stand with dumbbells at shoulder height, press them overhead until your arms are fully extended, then lower back down.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Russian Twists",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/russian-twists-video",
-        muscleGroups: ["Core", "Obliques"],
-        equipment: "None",
+        name: 'Russian Twists',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/russian-twists-video',
+        muscleGroups: ['Core', 'Obliques'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Sit with knees bent and feet off the ground, lean back slightly, and  rotate your torso from side to side.",
+          'Sit with knees bent and feet off the ground, lean back slightly, and  rotate your torso from side to side.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Burpees",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/burpees-video",
-        muscleGroups: ["Full Body"],
-        equipment: "None",
+        name: 'Burpees',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/burpees-video',
+        muscleGroups: ['Full Body'],
+        equipment: 'None',
         type: ExerciseType.CARDIO,
         mode: ExerciseMode.REPS,
         instructions:
-          "Start standing, drop into a squat, kick your legs back into a plank, do a push-up, jump your feet back to your hands, then jump up with hands overhead.",
+          'Start standing, drop into a squat, kick your legs back into a plank, do a push-up, jump your feet back to your hands, then jump up with hands overhead.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Bicycle Crunches",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/bicycle-crunches-video",
-        muscleGroups: ["Core", "Obliques"],
-        equipment: "None",
+        name: 'Bicycle Crunches',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/bicycle-crunches-video',
+        muscleGroups: ['Core', 'Obliques'],
+        equipment: 'None',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Lie on your back, lift shoulders off the ground, and alternate bringing opposite elbow to opposite knee while extending the other leg.",
+          'Lie on your back, lift shoulders off the ground, and alternate bringing opposite elbow to opposite knee while extending the other leg.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Dips",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/dips-video",
-        muscleGroups: ["Triceps", "Chest"],
-        equipment: "Parallel Bars",
+        name: 'Dips',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/dips-video',
+        muscleGroups: ['Triceps', 'Chest'],
+        equipment: 'Parallel Bars',
         type: ExerciseType.STRENGTH,
         mode: ExerciseMode.REPS,
         instructions:
-          "Support yourself on parallel bars with straight arms, lower your body by bending your elbows, then push back up to the starting position.",
+          'Support yourself on parallel bars with straight arms, lower your body by bending your elbows, then push back up to the starting position.',
       },
     }),
     prisma.exercise.create({
       data: {
-        name: "Mountain Climbers",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/mountain-climbers-video",
-        muscleGroups: ["Core", "Shoulders", "Legs"],
-        equipment: "None",
-        type: ExerciseType.CARDIO,
-        mode: ExerciseMode.TIME,
-        instructions:
-          "Start in a plank position and alternate driving your knees towards your chest as if running in place.",
-      },
-    }),
-    prisma.exercise.create({
-      data: {
-        name: "Kettlebell Swing",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/kettlebell-swing-video",
-        muscleGroups: ["Back", "Glutes", "Hamstrings"],
-        equipment: "Kettlebell",
-        type: ExerciseType.STRENGTH,
-        mode: ExerciseMode.REPS,
-        instructions:
-          "With feet shoulder-width apart, hinge at the hips and swing the kettlebell between your legs, then drive your hips forward to swing the kettlebell up to chest height.",
-      },
-    }),
-    prisma.exercise.create({
-      data: {
-        name: "Jump Rope",
-        thumbnailUrl: "https://loremflickr.com/g/300/300/fitness",
-        videoUrl: "https://example.com/jump-rope-video",
-        muscleGroups: ["Calves", "Shoulders"],
-        equipment: "Jump Rope",
+        name: 'Mountain Climbers',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/mountain-climbers-video',
+        muscleGroups: ['Core', 'Shoulders', 'Legs'],
+        equipment: 'None',
         type: ExerciseType.CARDIO,
         mode: ExerciseMode.TIME,
         instructions:
-          "Hold the handles of the jump rope and swing it over your head and under your feet, jumping to let it pass under you.",
+          'Start in a plank position and alternate driving your knees towards your chest as if running in place.',
+      },
+    }),
+    prisma.exercise.create({
+      data: {
+        name: 'Kettlebell Swing',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/kettlebell-swing-video',
+        muscleGroups: ['Back', 'Glutes', 'Hamstrings'],
+        equipment: 'Kettlebell',
+        type: ExerciseType.STRENGTH,
+        mode: ExerciseMode.REPS,
+        instructions:
+          'With feet shoulder-width apart, hinge at the hips and swing the kettlebell between your legs, then drive your hips forward to swing the kettlebell up to chest height.',
+      },
+    }),
+    prisma.exercise.create({
+      data: {
+        name: 'Jump Rope',
+        thumbnailUrl: 'https://loremflickr.com/g/300/300/fitness',
+        videoUrl: 'https://example.com/jump-rope-video',
+        muscleGroups: ['Calves', 'Shoulders'],
+        equipment: 'Jump Rope',
+        type: ExerciseType.CARDIO,
+        mode: ExerciseMode.TIME,
+        instructions:
+          'Hold the handles of the jump rope and swing it over your head and under your feet, jumping to let it pass under you.',
       },
     }),
   ]);
@@ -480,12 +465,11 @@ async function main() {
   const workouts = await Promise.all([
     prisma.workout.create({
       data: {
-        name: "Full Body Strength",
-        description:
-          "A comprehensive full-body workout to build overall strength",
+        name: 'Full Body Strength',
+        description: 'A comprehensive full-body workout to build overall strength',
         totalLength: 3600, // 60 minutes
-        equipment: ["Barbell", "Dumbbells", "Bench"],
-        muscleGroups: ["Chest", "Back", "Legs", "Shoulders", "Arms"],
+        equipment: ['Barbell', 'Dumbbells', 'Bench'],
+        muscleGroups: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms'],
         sets: {
           create: [
             {
@@ -558,12 +542,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "HIIT Cardio Blast",
-        description:
-          "High-intensity interval training to boost cardiovascular fitness",
+        name: 'HIIT Cardio Blast',
+        description: 'High-intensity interval training to boost cardiovascular fitness',
         totalLength: 1800, // 30 minutes
-        equipment: ["None"],
-        muscleGroups: ["Full Body"],
+        equipment: ['None'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -608,11 +591,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Upper Body Power",
-        description: "Focus on building upper body strength and muscle",
+        name: 'Upper Body Power',
+        description: 'Focus on building upper body strength and muscle',
         totalLength: 2700, // 45 minutes
-        equipment: ["Dumbbells", "Barbell", "Pull-up Bar"],
-        muscleGroups: ["Chest", "Back", "Shoulders", "Arms"],
+        equipment: ['Dumbbells', 'Barbell', 'Pull-up Bar'],
+        muscleGroups: ['Chest', 'Back', 'Shoulders', 'Arms'],
         sets: {
           create: [
             {
@@ -671,11 +654,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Core Crusher",
-        description: "Intense abdominal and core strengthening workout",
+        name: 'Core Crusher',
+        description: 'Intense abdominal and core strengthening workout',
         totalLength: 1800, // 30 minutes
-        equipment: ["None"],
-        muscleGroups: ["Core", "Abs", "Obliques"],
+        equipment: ['None'],
+        muscleGroups: ['Core', 'Abs', 'Obliques'],
         sets: {
           create: [
             {
@@ -720,11 +703,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Leg Day Challenge",
-        description: "Intense lower body workout to build strength and muscle",
+        name: 'Leg Day Challenge',
+        description: 'Intense lower body workout to build strength and muscle',
         totalLength: 3600, // 60 minutes
-        equipment: ["Barbell", "Dumbbells"],
-        muscleGroups: ["Quadriceps", "Hamstrings", "Glutes", "Calves"],
+        equipment: ['Barbell', 'Dumbbells'],
+        muscleGroups: ['Quadriceps', 'Hamstrings', 'Glutes', 'Calves'],
         sets: {
           create: [
             {
@@ -797,11 +780,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Bodyweight Basics",
-        description: "Full-body workout using only your body weight",
+        name: 'Bodyweight Basics',
+        description: 'Full-body workout using only your body weight',
         totalLength: 2400, // 40 minutes
-        equipment: ["None"],
-        muscleGroups: ["Full Body"],
+        equipment: ['None'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -846,11 +829,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Kettlebell Conditioning",
-        description: "Full-body workout focusing on kettlebell exercises",
+        name: 'Kettlebell Conditioning',
+        description: 'Full-body workout focusing on kettlebell exercises',
         totalLength: 2700, // 45 minutes
-        equipment: ["Kettlebell"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Kettlebell'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -909,12 +892,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Endurance Builder",
-        description:
-          "High-rep, low-weight workout to improve muscular endurance",
+        name: 'Endurance Builder',
+        description: 'High-rep, low-weight workout to improve muscular endurance',
         totalLength: 3600, // 60 minutes
-        equipment: ["Dumbbells", "Resistance Bands"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Dumbbells', 'Resistance Bands'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -988,12 +970,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Functional Fitness",
-        description:
-          "Workout focusing on movements that mimic everyday activities",
+        name: 'Functional Fitness',
+        description: 'Workout focusing on movements that mimic everyday activities',
         totalLength: 2700, // 45 minutes
-        equipment: ["Kettlebell", "Medicine Ball"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Kettlebell', 'Medicine Ball'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1038,12 +1019,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Power and Explosiveness",
-        description:
-          "Workout designed to improve power output and explosive movements",
+        name: 'Power and Explosiveness',
+        description: 'Workout designed to improve power output and explosive movements',
         totalLength: 2400, // 40 minutes
-        equipment: ["Barbell", "Plyo Box"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Barbell', 'Plyo Box'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1102,12 +1082,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Active Recovery",
-        description:
-          "Low-intensity workout to promote recovery and maintain activity",
+        name: 'Active Recovery',
+        description: 'Low-intensity workout to promote recovery and maintain activity',
         totalLength: 1800, // 30 minutes
-        equipment: ["Resistance Bands"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Resistance Bands'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1152,12 +1131,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Strength and Stability",
-        description:
-          "Workout focusing on building strength while improving balance and stability",
+        name: 'Strength and Stability',
+        description: 'Workout focusing on building strength while improving balance and stability',
         totalLength: 3000, // 50 minutes
-        equipment: ["Dumbbells", "Stability Ball"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Dumbbells', 'Stability Ball'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1216,12 +1194,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Metabolic Conditioning",
-        description:
-          "High-intensity workout to boost metabolism and burn calories",
+        name: 'Metabolic Conditioning',
+        description: 'High-intensity workout to boost metabolism and burn calories',
         totalLength: 2400, // 40 minutes
-        equipment: ["Jump Rope", "Kettlebell"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Jump Rope', 'Kettlebell'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1266,12 +1243,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Mobility and Flexibility",
-        description:
-          "Workout designed to improve range of motion and flexibility",
+        name: 'Mobility and Flexibility',
+        description: 'Workout designed to improve range of motion and flexibility',
         totalLength: 2700, // 45 minutes
-        equipment: ["Yoga Mat", "Foam Roller"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Yoga Mat', 'Foam Roller'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1316,12 +1292,11 @@ async function main() {
     }),
     prisma.workout.create({
       data: {
-        name: "Sports Performance",
-        description:
-          "Workout targeting key areas for overall athletic performance",
+        name: 'Sports Performance',
+        description: 'Workout targeting key areas for overall athletic performance',
         totalLength: 3300, // 55 minutes
-        equipment: ["Agility Ladder", "Medicine Ball", "Resistance Bands"],
-        muscleGroups: ["Full Body"],
+        equipment: ['Agility Ladder', 'Medicine Ball', 'Resistance Bands'],
+        muscleGroups: ['Full Body'],
         sets: {
           create: [
             {
@@ -1392,9 +1367,7 @@ async function main() {
       const workout = workouts[index % workouts.length];
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - index * 2);
-      const endDate = new Date(
-        startDate.getTime() + workout.totalLength * 1000
-      );
+      const endDate = new Date(startDate.getTime() + workout.totalLength * 1000);
       const id = faker.string.uuid();
 
       return prisma.workoutActivity.create({
@@ -1410,42 +1383,27 @@ async function main() {
               roundNumber: 1,
               exercises: {
                 create: set.exercises.flatMap((setExercise) => {
-                  const exercise = exercises.find(
-                    (e) => e.id === setExercise.exerciseId
-                  );
-                  if (!exercise)
-                    throw new Error(
-                      `Exercise not found: ${setExercise.exerciseId}`
-                    );
+                  const exercise = exercises.find((e) => e.id === setExercise.exerciseId);
+                  if (!exercise) throw new Error(`Exercise not found: ${setExercise.exerciseId}`);
 
-                  return Array.from({ length: set.rounds }).map(
-                    (_, roundIndex) => ({
-                      exerciseId: setExercise.exerciseId,
-                      workoutActivityId: id,
-                      weight: Math.floor(Math.random() * 20) + 10,
+                  return Array.from({ length: set.rounds }).map((_, roundIndex) => ({
+                    exerciseId: setExercise.exerciseId,
+                    workoutActivityId: id,
+                    weight: Math.floor(Math.random() * 20) + 10,
 
-                      reps:
-                        Math.floor(Math.random() * 5) +
-                        setExercise.targetReps -
-                        2,
-                      time:
-                        exercise.mode === "TIME"
-                          ? Math.floor(Math.random() * 30) + 30
-                          : null,
-                      distance:
-                        exercise.mode === "DISTANCE"
-                          ? Math.floor(Math.random() * 1000) + 500
-                          : null,
-                      roundNumber: roundIndex + 1,
-                    })
-                  );
+                    reps: Math.floor(Math.random() * 5) + setExercise.targetReps - 2,
+                    time: exercise.mode === 'TIME' ? Math.floor(Math.random() * 30) + 30 : null,
+                    distance:
+                      exercise.mode === 'DISTANCE' ? Math.floor(Math.random() * 1000) + 500 : null,
+                    roundNumber: roundIndex + 1,
+                  }));
                 }),
               },
             })),
           },
         },
       });
-    })
+    }),
   );
 
   // Create yoga histories
@@ -1463,7 +1421,7 @@ async function main() {
           watchedAt: watchedAt,
         },
       });
-    })
+    }),
   );
 
   // Create user exercise weights
@@ -1478,82 +1436,81 @@ async function main() {
               exerciseId: exercise.id,
               weight: Math.floor(Math.random() * 20) + 10, // Random weight between 10 and 30
             },
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   const programmes = await Promise.all([
     prisma.programme.create({
       data: {
-        title: "30-Day Fitness Kickstart",
-        description:
-          "A comprehensive 30-day programme to jumpstart your fitness journey.",
-        thumbnail: "https://loremflickr.com/g/300/300/fitness",
+        title: '30-Day Fitness Kickstart',
+        description: 'A comprehensive 30-day programme to jumpstart your fitness journey.',
+        thumbnail: 'https://loremflickr.com/g/300/300/fitness',
         sessionsPerWeek: 5,
-        intention: "General Fitness",
+        intention: 'General Fitness',
         weeks: 2,
         activities: {
           create: [
             {
               week: 1,
               day: 1,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[0].id,
             },
             {
               week: 1,
               day: 2,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[0].id,
             },
             {
               week: 1,
               day: 3,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[1].id,
             },
             {
               week: 1,
               day: 4,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[1].id,
             },
             {
               week: 1,
               day: 5,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[2].id,
             },
             {
               week: 2,
               day: 1,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[0].id,
             },
             {
               week: 2,
               day: 2,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[0].id,
             },
             {
               week: 2,
               day: 3,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[1].id,
             },
             {
               week: 2,
               day: 4,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[1].id,
             },
             {
               week: 2,
               day: 5,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[2].id,
             },
           ],
@@ -1562,31 +1519,30 @@ async function main() {
     }),
     prisma.programme.create({
       data: {
-        title: "Mobility Mastery",
-        description:
-          "Improve your flexibility and mobility with this 8-week programme.",
-        thumbnail: "https://loremflickr.com/g/300/300/fitness",
+        title: 'Mobility Mastery',
+        description: 'Improve your flexibility and mobility with this 8-week programme.',
+        thumbnail: 'https://loremflickr.com/g/300/300/fitness',
         sessionsPerWeek: 3,
-        intention: "Mobility",
+        intention: 'Mobility',
         weeks: 1,
         activities: {
           create: [
             {
               week: 1,
               day: 1,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[2].id,
             },
             {
               week: 1,
               day: 2,
-              activityType: "WORKOUT",
+              activityType: 'WORKOUT',
               workoutId: workouts[3].id,
             },
             {
               week: 1,
               day: 3,
-              activityType: "YOGA",
+              activityType: 'YOGA',
               yogaVideoId: yogaVideos[3].id,
             },
           ],

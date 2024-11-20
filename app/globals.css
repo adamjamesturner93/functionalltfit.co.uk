@@ -186,10 +186,10 @@
 
 /* MuxUploader styles */
 .mux-uploader {
-  --mux-uploader-primary-color: theme("colors.primary.DEFAULT");
-  --mux-uploader-secondary-color: theme("colors.secondary.DEFAULT");
-  --mux-uploader-font-family: theme("fontFamily.sans");
-  --mux-uploader-border-radius: theme("borderRadius.md");
+  --mux-uploader-primary-color: theme('colors.primary.DEFAULT');
+  --mux-uploader-secondary-color: theme('colors.secondary.DEFAULT');
+  --mux-uploader-font-family: theme('fontFamily.sans');
+  --mux-uploader-border-radius: theme('borderRadius.md');
 }
 
 /* Ensure the MuxUploader fits within its container */
@@ -199,7 +199,7 @@
 }
 
 /* Style the file input to match your design */
-.mux-uploader input[type="file"] {
+.mux-uploader input[type='file'] {
   display: none;
 }
 
@@ -212,7 +212,7 @@
 }
 
 .mux-uploader progress::-webkit-progress-bar {
-  background-color: theme("colors.gray.200");
+  background-color: theme('colors.gray.200');
 }
 
 .mux-uploader progress::-webkit-progress-value {

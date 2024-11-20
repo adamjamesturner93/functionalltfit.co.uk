@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface TypeaheadSelectProps {
   items: Array<{ id: string; label: string }>;
@@ -14,14 +14,9 @@ interface TypeaheadSelectProps {
   placeholder: string;
 }
 
-export function TypeaheadSelect({
-  items,
-  value,
-  onChange,
-  placeholder,
-}: TypeaheadSelectProps) {
+export function TypeaheadSelect({ items, value, onChange, placeholder }: TypeaheadSelectProps) {
   const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const [buttonWidth, setButtonWidth] = React.useState<number>(0);
 
@@ -32,9 +27,7 @@ export function TypeaheadSelect({
   }, []);
 
   const filteredItems = React.useMemo(() => {
-    return items.filter((item) =>
-      item.label.toLowerCase().includes(search.toLowerCase())
-    );
+    return items.filter((item) => item.label.toLowerCase().includes(search.toLowerCase()));
   }, [items, search]);
 
   const selectedItem = React.useMemo(() => {
@@ -57,7 +50,7 @@ export function TypeaheadSelect({
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          className="z-50 p-1 bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 bg-popover p-1 text-popover-foreground shadow-md outline-none"
           align="start"
           style={{ width: `${buttonWidth}px` }}
         >
@@ -80,10 +73,7 @@ export function TypeaheadSelect({
                 }}
               >
                 <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === item.id ? "opacity-100" : "opacity-0"
-                  )}
+                  className={cn('mr-2 h-4 w-4', value === item.id ? 'opacity-100' : 'opacity-0')}
                 />
                 {item.label}
               </Button>

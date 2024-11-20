@@ -1,11 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { authorizeUser, unauthorizedResponse } from "@/lib/auth-utils";
-import { startWorkout } from "@/app/actions/workouts";
+import { NextRequest, NextResponse } from 'next/server';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
+import { startWorkout } from '@/app/actions/workouts';
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await authorizeUser(request);
 
   if (!session) {
@@ -15,20 +12,14 @@ export async function POST(
   const workoutId = params.id;
 
   if (!workoutId) {
-    return NextResponse.json(
-      { error: "Workout ID is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Workout ID is required' }, { status: 400 });
   }
 
   try {
     const combinedWorkout = await startWorkout(workoutId, session.user.id);
     return NextResponse.json(combinedWorkout);
   } catch (error) {
-    console.error("Error starting workout:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error starting workout:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

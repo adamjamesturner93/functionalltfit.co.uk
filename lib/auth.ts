@@ -1,10 +1,10 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma";
-import sgMail from "@sendgrid/mail";
-import { formatAuthCodeEmail } from "./formatAuthCodeEmail";
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from '@/lib/prisma';
+import sgMail from '@sendgrid/mail';
+import { formatAuthCodeEmail } from './formatAuthCodeEmail';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -15,10 +15,10 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
-      name: "Passwordless",
+      name: 'Passwordless',
       credentials: {
-        email: { label: "Email", type: "email" },
-        authCode: { label: "Authentication Code", type: "text" },
+        email: { label: 'Email', type: 'email' },
+        authCode: { label: 'Authentication Code', type: 'text' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.authCode) {
@@ -33,10 +33,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           return null;
         }
 
-        const isValid = await verifyAuthCode(
-          user.id,
-          credentials.authCode as string
-        );
+        const isValid = await verifyAuthCode(user.id, credentials.authCode as string);
 
         if (!isValid) {
           return null;
@@ -52,9 +49,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
-  session: { strategy: "jwt", maxAge: 24 * 60 * 60 },
+  session: { strategy: 'jwt', maxAge: 24 * 60 * 60 },
   jwt: {
     maxAge: 60 * 60 * 24 * 30, // 30 days
   },
@@ -90,15 +87,12 @@ export async function sendAuthCode(email: string, authCode: string) {
   try {
     await sgMail.send(msg);
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
     throw error;
   }
 }
 
-export async function verifyAuthCode(
-  userId: string,
-  authCode: string
-): Promise<boolean> {
+export async function verifyAuthCode(userId: string, authCode: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });

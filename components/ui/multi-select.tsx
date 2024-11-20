@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { X, Check } from "lucide-react";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import * as React from 'react';
+import { X, Check } from 'lucide-react';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export type Option = {
   label: string;
@@ -23,10 +23,10 @@ export function MultiSelect({
   options,
   selected,
   onChange,
-  placeholder = "Select items...",
+  placeholder = 'Select items...',
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const [triggerWidth, setTriggerWidth] = React.useState<number>(0);
 
@@ -37,7 +37,7 @@ export function MultiSelect({
   }, []);
 
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(search.toLowerCase())
+    option.label.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleSelect = (value: string) => {
@@ -66,7 +66,7 @@ export function MultiSelect({
                   {option?.label}
                   <button
                     type="button"
-                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemove(value);
@@ -77,15 +77,13 @@ export function MultiSelect({
                 </Badge>
               );
             })}
-            {selected.length === 0 && (
-              <span className="text-muted-foreground">{placeholder}</span>
-            )}
+            {selected.length === 0 && <span className="text-muted-foreground">{placeholder}</span>}
           </div>
         </div>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          className="z-50 p-1 bg-popover text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 bg-popover p-1 text-popover-foreground shadow-md outline-none"
           align="start"
           style={{ width: `${triggerWidth}px` }}
         >
@@ -106,9 +104,7 @@ export function MultiSelect({
               >
                 <Check
                   className={`mr-2 h-4 w-4 ${
-                    selected.includes(option.value)
-                      ? "opacity-100"
-                      : "opacity-0"
+                    selected.includes(option.value) ? 'opacity-100' : 'opacity-0'
                   }`}
                 />
                 {option.label}

@@ -1,4 +1,4 @@
-declare module "mux-embed" {
+declare module 'mux-embed' {
   interface MuxMonitorOptions {
     debug?: boolean;
     data: {

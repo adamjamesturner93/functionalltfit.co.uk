@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { getProgrammes } from "@/app/actions/programmes";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, useMemo } from 'react';
+import { getProgrammes } from '@/app/actions/programmes';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Programme } from "@prisma/client";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+} from '@/components/ui/dropdown-menu';
+import { Programme } from '@prisma/client';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -32,8 +32,8 @@ import {
   ColumnDef,
   flexRender,
   FilterFn,
-} from "@tanstack/react-table";
-import { rankItem } from "@tanstack/match-sorter-utils";
+} from '@tanstack/react-table';
+import { rankItem } from '@tanstack/match-sorter-utils';
 
 const fuzzyFilter: FilterFn<Programme> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -43,7 +43,7 @@ const fuzzyFilter: FilterFn<Programme> = (row, columnId, value, addMeta) => {
 
 export default function ProgrammesPage() {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
 
   useEffect(() => {
     const fetchProgrammes = async () => {
@@ -56,14 +56,12 @@ export default function ProgrammesPage() {
   const columns = useMemo<ColumnDef<Programme>[]>(
     () => [
       {
-        accessorKey: "title",
+        accessorKey: 'title',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Title
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -72,19 +70,17 @@ export default function ProgrammesPage() {
         },
       },
       {
-        accessorKey: "intention",
-        header: "Intention",
-        filterFn: "equals",
+        accessorKey: 'intention',
+        header: 'Intention',
+        filterFn: 'equals',
       },
       {
-        accessorKey: "sessionsPerWeek",
+        accessorKey: 'sessionsPerWeek',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Sessions/Week
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -93,14 +89,12 @@ export default function ProgrammesPage() {
         },
       },
       {
-        accessorKey: "weeks",
+        accessorKey: 'weeks',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Duration (Weeks)
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -109,31 +103,27 @@ export default function ProgrammesPage() {
         },
       },
       {
-        accessorKey: "createdAt",
+        accessorKey: 'createdAt',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Created At
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           );
         },
-        cell: ({ row }) =>
-          new Date(row.getValue("createdAt")).toLocaleDateString(),
+        cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleDateString(),
       },
       {
-        accessorKey: "updatedAt",
-        header: "Updated At",
-        cell: ({ row }) =>
-          new Date(row.getValue("updatedAt")).toLocaleDateString(),
+        accessorKey: 'updatedAt',
+        header: 'Updated At',
+        cell: ({ row }) => new Date(row.getValue('updatedAt')).toLocaleDateString(),
       },
       {
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
           const programme = row.original;
 
@@ -148,9 +138,7 @@ export default function ProgrammesPage() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Link href={`/admin/content/programmes/${programme.id}`}>
-                    Edit
-                  </Link>
+                  <Link href={`/admin/content/programmes/${programme.id}`}>Edit</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -162,7 +150,7 @@ export default function ProgrammesPage() {
         },
       },
     ],
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -184,20 +172,20 @@ export default function ProgrammesPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {" "}
+      {' '}
       <div className="container mx-auto py-10">
-        <div className="bg-surface-grey shadow-md rounded-lg overflow-hidden">
-          <div className="p-6 bg-bg-surface-light-grey border-b border-gray-200">
-            <div className="flex justify-between items-center mb-6">
+        <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
+          <div className="bg-bg-surface-light-grey border-b border-gray-200 p-6">
+            <div className="mb-6 flex items-center justify-between">
               <h1 className="text-3xl font-bold text-foreground">Programmes</h1>
               <Link href="/admin/content/programmes/new">
                 <Button>Create New Programme</Button>
               </Link>
             </div>
-            <div className="flex space-x-4 mb-4">
+            <div className="mb-4 flex space-x-4">
               <Input
                 placeholder="Search all columns..."
-                value={globalFilter ?? ""}
+                value={globalFilter ?? ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
                 className="max-w-sm"
               />
@@ -211,10 +199,7 @@ export default function ProgrammesPage() {
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -223,26 +208,17 @@ export default function ProgrammesPage() {
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

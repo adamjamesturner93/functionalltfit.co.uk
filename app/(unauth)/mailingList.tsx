@@ -1,15 +1,15 @@
-"use client";
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export function MailingListPopup() {
   const [showMailingListPopup, setShowMailingListPopup] = useState(false);
@@ -28,8 +28,8 @@ export function MailingListPopup() {
         <DialogHeader>
           <DialogTitle>Join Our Mailing List</DialogTitle>
           <DialogDescription>
-            Sign up to receive exclusive fitness tips, early access to new
-            features, and special offers!
+            Sign up to receive exclusive fitness tips, early access to new features, and special
+            offers!
           </DialogDescription>
         </DialogHeader>
         <form className="space-y-4">

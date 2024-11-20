@@ -1,11 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { authorizeUser, unauthorizedResponse } from "@/lib/auth-utils";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
+import { prisma } from '@/lib/prisma';
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await authorizeUser(request);
 
   if (!session) {
@@ -36,10 +33,7 @@ export async function POST(
 
     return NextResponse.json(userExerciseWeight);
   } catch (error) {
-    console.error("Error updating exercise weight:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error('Error updating exercise weight:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

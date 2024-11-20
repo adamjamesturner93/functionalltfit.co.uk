@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 export default function Loading() {
   return (
@@ -78,11 +78,11 @@ export default function Loading() {
               ))}
             </TableBody>
           </Table>
-          <div className="flex justify-between items-center mt-4">
+          <div className="mt-4 flex items-center justify-between">
             <Skeleton className="h-4 w-[200px]" />
             <div className="space-x-2">
-              <Skeleton className="h-10 w-[100px] inline-block" />
-              <Skeleton className="h-10 w-[100px] inline-block" />
+              <Skeleton className="inline-block h-10 w-[100px]" />
+              <Skeleton className="inline-block h-10 w-[100px]" />
             </div>
           </div>
         </CardContent>

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,27 +12,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { GoalType, GoalPeriod } from "@prisma/client";
-import { addGoal } from "@/app/actions/goals";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { GoalType, GoalPeriod } from '@prisma/client';
+import { addGoal } from '@/app/actions/goals';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
 
 const goalSchema = z.object({
   type: z.enum([
@@ -58,10 +54,7 @@ type AddGoalFormProps = {
   currentActiveGoals: number;
 };
 
-export function AddGoalForm({
-  maxActiveGoals,
-  currentActiveGoals,
-}: AddGoalFormProps) {
+export function AddGoalForm({ maxActiveGoals, currentActiveGoals }: AddGoalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -74,14 +67,14 @@ export function AddGoalForm({
     },
   });
 
-  const goalType = form.watch("type");
+  const goalType = form.watch('type');
 
   async function onSubmit(values: z.infer<typeof goalSchema>) {
     if (currentActiveGoals >= maxActiveGoals) {
       toast({
-        title: "Maximum active goals reached",
+        title: 'Maximum active goals reached',
         description: `You can have a maximum of ${maxActiveGoals} active goals.`,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
@@ -93,18 +86,16 @@ export function AddGoalForm({
         throw new Error(result.error);
       }
       toast({
-        title: "Goal added",
-        description: "Your goal has been successfully created.",
+        title: 'Goal added',
+        description: 'Your goal has been successfully created.',
       });
       form.reset();
     } catch (error) {
       toast({
-        title: "Error",
+        title: 'Error',
         description:
-          error instanceof Error
-            ? error.message
-            : "There was a problem adding your goal.",
-        variant: "destructive",
+          error instanceof Error ? error.message : 'There was a problem adding your goal.',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -128,25 +119,13 @@ export function AddGoalForm({
                 </FormControl>
                 <SelectContent>
                   <SelectItem value={GoalType.WEIGHT}>Target Weight</SelectItem>
-                  <SelectItem value={GoalType.YOGA_SESSIONS}>
-                    Yoga Sessions
-                  </SelectItem>
-                  <SelectItem value={GoalType.WORKOUT_SESSIONS}>
-                    Workout Sessions
-                  </SelectItem>
-                  <SelectItem value={GoalType.TOTAL_SESSIONS}>
-                    Total Sessions
-                  </SelectItem>
+                  <SelectItem value={GoalType.YOGA_SESSIONS}>Yoga Sessions</SelectItem>
+                  <SelectItem value={GoalType.WORKOUT_SESSIONS}>Workout Sessions</SelectItem>
+                  <SelectItem value={GoalType.TOTAL_SESSIONS}>Total Sessions</SelectItem>
                   <SelectItem value={GoalType.CUSTOM}>Custom Goal</SelectItem>
-                  <SelectItem value={GoalType.EXERCISE_WEIGHT}>
-                    Exercise Weight
-                  </SelectItem>
-                  <SelectItem value={GoalType.EXERCISE_REPS}>
-                    Exercise Reps
-                  </SelectItem>
-                  <SelectItem value={GoalType.EXERCISE_DISTANCE}>
-                    Exercise Distance
-                  </SelectItem>
+                  <SelectItem value={GoalType.EXERCISE_WEIGHT}>Exercise Weight</SelectItem>
+                  <SelectItem value={GoalType.EXERCISE_REPS}>Exercise Reps</SelectItem>
+                  <SelectItem value={GoalType.EXERCISE_DISTANCE}>Exercise Distance</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -192,21 +171,20 @@ export function AddGoalForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Target{" "}
+                Target{' '}
                 {goalType === GoalType.WEIGHT
-                  ? "(kg)"
+                  ? '(kg)'
                   : goalType === GoalType.EXERCISE_DISTANCE
-                  ? "(km)"
-                  : ""}
+                    ? '(km)'
+                    : ''}
               </FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   step={
-                    goalType === GoalType.WEIGHT ||
-                    goalType === GoalType.EXERCISE_DISTANCE
-                      ? "0.1"
-                      : "1"
+                    goalType === GoalType.WEIGHT || goalType === GoalType.EXERCISE_DISTANCE
+                      ? '0.1'
+                      : '1'
                   }
                   {...field}
                 />
@@ -223,10 +201,7 @@ export function AddGoalForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Time Period</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select time period" />
@@ -271,16 +246,12 @@ export function AddGoalForm({
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
-                      variant={"outline"}
+                      variant={'outline'}
                       className={`w-full pl-3 text-left font-normal ${
-                        !field.value && "text-muted-foreground"
+                        !field.value && 'text-muted-foreground'
                       }`}
                     >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
+                      {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
@@ -290,9 +261,7 @@ export function AddGoalForm({
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
-                    }
+                    disabled={(date) => date < new Date() || date < new Date('1900-01-01')}
                     initialFocus
                   />
                 </PopoverContent>
@@ -303,7 +272,7 @@ export function AddGoalForm({
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Adding..." : "Add Goal"}
+          {isSubmitting ? 'Adding...' : 'Add Goal'}
         </Button>
       </form>
     </Form>

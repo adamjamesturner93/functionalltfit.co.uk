@@ -1,19 +1,19 @@
-import { Suspense } from "react";
-import { Metadata } from "next";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { getYogaVideos, YogaVideoFilters } from "@/app/actions/yoga-videos";
-import { YogaFilters } from "./yoga-filters";
-import { YogaCard } from "./yoga-card";
-import { YogaCardSkeleton } from "./yoga-card-skeleton";
-import { Pagination } from "@/components/ui/pagination";
-import { YogaType } from "@prisma/client";
-import { getCurrentUserId } from "@/lib/auth-utils";
+import { Suspense } from 'react';
+import { Metadata } from 'next';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { getYogaVideos, YogaVideoFilters } from '@/app/actions/yoga-videos';
+import { YogaFilters } from './yoga-filters';
+import { YogaCard } from './yoga-card';
+import { YogaCardSkeleton } from './yoga-card-skeleton';
+import { Pagination } from '@/components/ui/pagination';
+import { YogaType } from '@prisma/client';
+import { getCurrentUserId } from '@/lib/auth-utils';
 
 export const metadata: Metadata = {
-  title: "Yoga Videos | FunctionallyFit",
+  title: 'Yoga Videos | FunctionallyFit',
   description:
-    "Explore our collection of yoga videos for mindfulness, strength building, and flexibility.",
+    'Explore our collection of yoga videos for mindfulness, strength building, and flexibility.',
 };
 
 export default async function YogaPage({
@@ -29,23 +29,21 @@ export default async function YogaPage({
     saved?: string;
   };
 }) {
-  const page = Number(searchParams.page) || 1;
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
   const pageSize = 9;
-  const search = searchParams.search || "";
+  const search = params.search || '';
   const filters: YogaVideoFilters = {
-    type: searchParams.type as YogaType | undefined,
-    props: searchParams.props ? searchParams.props.split(",") : undefined,
-    duration: getDurationFilter(
-      searchParams.minDuration,
-      searchParams.maxDuration
-    ),
-    savedOnly: searchParams.saved === "true",
+    type: params.type as YogaType | undefined,
+    props: params.props ? params.props.split(',') : undefined,
+    duration: getDurationFilter(params.minDuration, params.maxDuration),
+    savedOnly: params.saved === 'true',
   };
 
   const userId = await getCurrentUserId();
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto space-y-8 p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Yoga Videos</h1>
@@ -107,13 +105,13 @@ async function YogaVideoList({
     pageSize,
     search,
     filters,
-    "newest",
-    userId
+    'newest',
+    userId,
   );
 
   if (yogaVideos.length === 0) {
     return (
-      <p className="text-center col-span-full">
+      <p className="col-span-full text-center">
         No yoga videos found. Try adjusting your search or filters.
       </p>
     );
@@ -136,12 +134,7 @@ async function YogaVideoList({
         />
       ))}
       <div className="col-span-full mt-6">
-        <Pagination
-          totalItems={total}
-          pageSize={pageSize}
-          currentPage={page}
-          baseUrl="/yoga"
-        />
+        <Pagination totalItems={total} pageSize={pageSize} currentPage={page} baseUrl="/yoga" />
       </div>
     </>
   );
@@ -149,15 +142,15 @@ async function YogaVideoList({
 
 function getDurationFilter(
   minDuration?: string,
-  maxDuration?: string
-): YogaVideoFilters["duration"] {
+  maxDuration?: string,
+): YogaVideoFilters['duration'] {
   if (minDuration && maxDuration) {
     const min = parseInt(minDuration);
     const max = parseInt(maxDuration);
-    if (max <= 15) return "less15";
-    if (min >= 45) return "45plus";
-    if (min >= 30 && max <= 45) return "30to45";
-    if (min >= 15 && max <= 30) return "15to30";
+    if (max <= 15) return 'less15';
+    if (min >= 45) return '45plus';
+    if (min >= 30 && max <= 45) return '30to45';
+    if (min >= 15 && max <= 30) return '15to30';
   }
   return undefined;
 }

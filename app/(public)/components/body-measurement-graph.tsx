@@ -1,27 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
-import {
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+} from '@/components/ui/select';
+import { format } from 'date-fns';
+import { Line, LineChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 type BodyMeasurement = {
   date: Date;
@@ -40,12 +29,12 @@ type BodyMeasurementGraphProps = {
 };
 
 export function BodyMeasurementGraph({ data }: BodyMeasurementGraphProps) {
-  const [timeRange, setTimeRange] = useState("30");
-  const [metric, setMetric] = useState("weight");
+  const [timeRange, setTimeRange] = useState('30');
+  const [metric, setMetric] = useState('weight');
 
   const formattedData = data.slice(-parseInt(timeRange)).map((measurement) => ({
     ...measurement,
-    date: format(new Date(measurement.date), "MMM d"),
+    date: format(new Date(measurement.date), 'MMM d'),
     totalCm:
       (measurement.calve || 0) +
       (measurement.thigh || 0) +
@@ -57,20 +46,20 @@ export function BodyMeasurementGraph({ data }: BodyMeasurementGraphProps) {
   }));
 
   const metrics = {
-    weight: { label: "Weight", color: "hsl(var(--chart-1))" },
-    totalCm: { label: "Total cm", color: "hsl(var(--chart-2))" },
-    calve: { label: "Calve", color: "hsl(var(--chart-3))" },
-    thigh: { label: "Thigh", color: "hsl(var(--chart-4))" },
-    waist: { label: "Waist", color: "hsl(var(--chart-5))" },
-    hips: { label: "Hips", color: "hsl(var(--chart-6))" },
-    butt: { label: "Butt", color: "hsl(var(--chart-7))" },
-    chest: { label: "Chest", color: "hsl(var(--chart-8))" },
-    arm: { label: "Arm", color: "hsl(var(--chart-9))" },
+    weight: { label: 'Weight', color: 'hsl(var(--chart-1))' },
+    totalCm: { label: 'Total cm', color: 'hsl(var(--chart-2))' },
+    calve: { label: 'Calve', color: 'hsl(var(--chart-3))' },
+    thigh: { label: 'Thigh', color: 'hsl(var(--chart-4))' },
+    waist: { label: 'Waist', color: 'hsl(var(--chart-5))' },
+    hips: { label: 'Hips', color: 'hsl(var(--chart-6))' },
+    butt: { label: 'Butt', color: 'hsl(var(--chart-7))' },
+    chest: { label: 'Chest', color: 'hsl(var(--chart-8))' },
+    arm: { label: 'Arm', color: 'hsl(var(--chart-9))' },
   };
 
   return (
     <>
-      <div className="flex space-x-4 mb-4">
+      <div className="mb-4 flex space-x-4">
         <Select onValueChange={setTimeRange} defaultValue={timeRange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select time range" />
@@ -113,12 +102,7 @@ export function BodyMeasurementGraph({ data }: BodyMeasurementGraphProps) {
               tickMargin={8}
               className="text-xs"
             />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              className="text-xs"
-            />
+            <YAxis tickLine={false} axisLine={false} tickMargin={8} className="text-xs" />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line
               type="monotone"

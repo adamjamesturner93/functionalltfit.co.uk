@@ -1,22 +1,18 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  startWorkout,
-  completeWorkout,
-  updateWorkoutActivity,
-} from "@/app/actions/workouts";
-import { getCurrentUserId } from "@/lib/auth-utils";
-import { getCurrentUser } from "@/app/actions/profile";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { WorkoutExercise } from "./workout-exercise";
-import { WorkoutProgress } from "./workout-progress";
-import { SetRest } from "./set-rest";
-import { ExerciseMode, Unit } from "@prisma/client";
-import { Progress } from "@/components/ui/progress";
-import { Clock } from "lucide-react";
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { startWorkout, completeWorkout, updateWorkoutActivity } from '@/app/actions/workouts';
+import { getCurrentUserId } from '@/lib/auth-utils';
+import { getCurrentUser } from '@/app/actions/profile';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { WorkoutExercise } from './workout-exercise';
+import { WorkoutProgress } from './workout-progress';
+import { SetRest } from './set-rest';
+import { ExerciseMode, Unit } from '@prisma/client';
+import { Progress } from '@/components/ui/progress';
+import { Clock } from 'lucide-react';
 
 interface Exercise {
   id: string;
@@ -89,7 +85,7 @@ export default function WorkoutPage() {
         const currentUserId = await getCurrentUserId();
         setUserId(currentUserId);
         if (!currentUserId) {
-          throw new Error("User not authenticated");
+          throw new Error('User not authenticated');
         }
         const user = await getCurrentUser();
         setUserPreferences({
@@ -99,7 +95,7 @@ export default function WorkoutPage() {
         const combinedWorkout = await startWorkout(id as string, currentUserId);
         setWorkout(combinedWorkout as unknown as Workout);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setIsLoading(false);
       }
@@ -136,16 +132,14 @@ export default function WorkoutPage() {
           }
 
           return exerciseData;
-        })
+        }),
       );
 
       await completeWorkout(workout.id, workout.workoutId, exercises, userId);
-      router.push("/workouts");
+      router.push('/workouts');
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred while completing the workout"
+        err instanceof Error ? err.message : 'An error occurred while completing the workout',
       );
     } finally {
       setIsLoading(false);
@@ -206,14 +200,7 @@ export default function WorkoutPage() {
       }
     }
     return () => clearTimeout(timer);
-  }, [
-    isResting,
-    isGap,
-    isSetRest,
-    timeLeft,
-    moveToNextExercise,
-    moveToNextSet,
-  ]);
+  }, [isResting, isGap, isSetRest, timeLeft, moveToNextExercise, moveToNextSet]);
 
   const handleUpdateExercise = async (
     exerciseId: string,
@@ -222,7 +209,7 @@ export default function WorkoutPage() {
       reps?: number;
       time?: number;
       distance?: number;
-    }
+    },
   ) => {
     if (!workout) return;
 
@@ -236,7 +223,7 @@ export default function WorkoutPage() {
                 ...exercise,
                 ...performance,
               }
-            : exercise
+            : exercise,
         ),
       })),
     };
@@ -251,18 +238,14 @@ export default function WorkoutPage() {
           ...performance,
           roundNumber: currentRoundIndex + 1,
           mode:
-            workout.sets[currentSetIndex].exercises.find(
-              (e) => e.id === exerciseId
-            )?.mode || ExerciseMode.REPS,
+            workout.sets[currentSetIndex].exercises.find((e) => e.id === exerciseId)?.mode ||
+            ExerciseMode.REPS,
         },
       ]);
 
       // Start gap timer if there's a gap and it's not the last exercise
       const currentSet = workout.sets[currentSetIndex];
-      if (
-        currentSet.gap &&
-        currentExerciseIndex < currentSet.exercises.length - 1
-      ) {
+      if (currentSet.gap && currentExerciseIndex < currentSet.exercises.length - 1) {
         setIsGap(true);
         setTimeLeft(currentSet.gap);
       } else {
@@ -270,9 +253,7 @@ export default function WorkoutPage() {
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred while updating the exercise"
+        err instanceof Error ? err.message : 'An error occurred while updating the exercise',
       );
     }
   };
@@ -292,10 +273,10 @@ export default function WorkoutPage() {
 
   if (error) {
     return (
-      <Card className="max-w-lg mx-auto mt-8">
+      <Card className="mx-auto mt-8 max-w-lg">
         <CardContent>
           <p className="text-destructive">Error: {error}</p>
-          <Button onClick={() => router.push("/workouts")} className="mt-4">
+          <Button onClick={() => router.push('/workouts')} className="mt-4">
             Back to Workouts
           </Button>
         </CardContent>
@@ -305,7 +286,7 @@ export default function WorkoutPage() {
 
   if (isLoading) {
     return (
-      <Card className="max-w-lg mx-auto mt-8">
+      <Card className="mx-auto mt-8 max-w-lg">
         <CardContent>
           <p className="text-center">Loading...</p>
         </CardContent>
@@ -315,10 +296,10 @@ export default function WorkoutPage() {
 
   if (!workout || workout.sets.length === 0) {
     return (
-      <Card className="max-w-lg mx-auto mt-8">
+      <Card className="mx-auto mt-8 max-w-lg">
         <CardContent>
           <p className="text-center">No workout data available.</p>
-          <Button onClick={() => router.push("/workouts")} className="mt-4">
+          <Button onClick={() => router.push('/workouts')} className="mt-4">
             Back to Workouts
           </Button>
         </CardContent>
@@ -331,7 +312,7 @@ export default function WorkoutPage() {
 
   const totalExercises = workout.sets.reduce(
     (total, set) => total + set.exercises.length * set.rounds,
-    0
+    0,
   );
   const completedExercises =
     workout.sets
@@ -343,16 +324,12 @@ export default function WorkoutPage() {
 
   const nextSetEquipment =
     currentSetIndex < workout.sets.length - 1
-      ? [
-          ...new Set(
-            workout.sets[currentSetIndex + 1].exercises.map((e) => e.equipment)
-          ),
-        ]
+      ? [...new Set(workout.sets[currentSetIndex + 1].exercises.map((e) => e.equipment))]
       : [];
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
+      <Card className="mx-auto max-w-2xl">
         <CardContent>
           <WorkoutProgress
             workoutName={workout.name}
@@ -362,29 +339,23 @@ export default function WorkoutPage() {
             currentExerciseIndex={currentExerciseIndex}
           />
           {isResting ? (
-            <div className="text-center py-8">
-              <h3 className="text-2xl font-bold mb-4">Rest Time</h3>
-              <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="py-8 text-center">
+              <h3 className="mb-4 text-2xl font-bold">Rest Time</h3>
+              <div className="mb-4 flex items-center justify-center gap-2">
                 <Clock className="h-6 w-6" />
-                <p className="text-4xl font-mono">{timeLeft}s</p>
+                <p className="font-mono text-4xl">{timeLeft}s</p>
               </div>
-              <Progress
-                value={(1 - timeLeft / currentSet.rest) * 100}
-                className="w-full mb-4"
-              />
+              <Progress value={(1 - timeLeft / currentSet.rest) * 100} className="mb-4 w-full" />
               <Button onClick={handleSkipRest}>Skip Rest</Button>
             </div>
           ) : isGap ? (
-            <div className="text-center py-8">
-              <h3 className="text-2xl font-bold mb-4">Gap Time</h3>
-              <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="py-8 text-center">
+              <h3 className="mb-4 text-2xl font-bold">Gap Time</h3>
+              <div className="mb-4 flex items-center justify-center gap-2">
                 <Clock className="h-6 w-6" />
-                <p className="text-4xl font-mono">{timeLeft}s</p>
+                <p className="font-mono text-4xl">{timeLeft}s</p>
               </div>
-              <Progress
-                value={(1 - timeLeft / currentSet.gap) * 100}
-                className="w-full mb-4"
-              />
+              <Progress value={(1 - timeLeft / currentSet.gap) * 100} className="mb-4 w-full" />
               <Button onClick={handleSkipRest}>Skip Gap</Button>
             </div>
           ) : isSetRest ? (

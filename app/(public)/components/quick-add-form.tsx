@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,10 +12,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { addBodyMeasurement } from "@/app/actions/health";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { addBodyMeasurement } from '@/app/actions/health';
 
 const bodyMeasurementSchema = z.object({
   date: z.string(),
@@ -38,7 +38,7 @@ export function QuickAddForm() {
   const form = useForm<BodyMeasurementFormValues>({
     resolver: zodResolver(bodyMeasurementSchema),
     defaultValues: {
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split('T')[0],
       weight: 0,
       calve: 0,
       thigh: 0,
@@ -58,18 +58,16 @@ export function QuickAddForm() {
         throw new Error(result.error);
       }
       toast({
-        title: "Measurements added",
-        description: "Your measurements have been successfully recorded.",
+        title: 'Measurements added',
+        description: 'Your measurements have been successfully recorded.',
       });
       form.reset();
     } catch (error) {
       toast({
-        title: "Error",
+        title: 'Error',
         description:
-          error instanceof Error
-            ? error.message
-            : "There was a problem adding your measurements.",
-        variant: "destructive",
+          error instanceof Error ? error.message : 'There was a problem adding your measurements.',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -201,7 +199,7 @@ export function QuickAddForm() {
         </div>
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save Measurements"}
+          {isSubmitting ? 'Saving...' : 'Save Measurements'}
         </Button>
       </form>
     </Form>

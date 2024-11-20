@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
 export const config = {
-  matcher: ["/api/:path*"],
-  runtime: "experimental-edge",
+  matcher: ['/api/:path*'],
+  runtime: 'experimental-edge',
 };
 
 export async function middleware(request: NextRequest) {
@@ -12,26 +12,26 @@ export async function middleware(request: NextRequest) {
 
   // Don't require authentication for auth endpoints or mux-upload
   if (
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/mux") ||
-    pathname.startsWith("/api/upload-image")
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/mux') ||
+    pathname.startsWith('/api/upload-image')
   ) {
     return NextResponse.next();
   }
 
   // Check if the request is for an API route
-  if (pathname.startsWith("/api/")) {
-    const authHeader = request.headers.get("Authorization");
+  if (pathname.startsWith('/api/')) {
+    const authHeader = request.headers.get('Authorization');
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      console.log("Invalid Authorization header");
-      return new NextResponse(
-        JSON.stringify({ error: "Invalid Authorization header" }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
-      );
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('Invalid Authorization header');
+      return new NextResponse(JSON.stringify({ error: 'Invalid Authorization header' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(' ')[1];
 
     try {
       const secret = new TextEncoder().encode(process.env.AUTH_SECRET);
@@ -50,14 +50,14 @@ export async function middleware(request: NextRequest) {
       const response = NextResponse.next();
 
       // Attach the session to the response
-      response.headers.set("X-Session", JSON.stringify(session));
+      response.headers.set('X-Session', JSON.stringify(session));
 
       return response;
     } catch (error) {
-      console.error("Token verification failed:", error);
-      return new NextResponse(JSON.stringify({ error: "Invalid token" }), {
+      console.error('Token verification failed:', error);
+      return new NextResponse(JSON.stringify({ error: 'Invalid token' }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
   }

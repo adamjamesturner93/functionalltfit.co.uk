@@ -1,11 +1,11 @@
-"use server";
+'use server';
 
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
-import { YogaType, YogaVideo, Prisma } from "@prisma/client";
-import { autoUpdateActivityCompletion } from "./programmes";
+import { revalidatePath } from 'next/cache';
+import { prisma } from '@/lib/prisma';
+import { YogaType, YogaVideo, Prisma } from '@prisma/client';
+import { autoUpdateActivityCompletion } from './programmes';
 
-import { Mux } from "@mux/mux-node";
+import { Mux } from '@mux/mux-node';
 
 const { video } = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,
@@ -26,11 +26,11 @@ export type YogaVideoInput = {
 export type YogaVideoFilters = {
   type?: YogaType;
   props?: string[];
-  duration?: "less15" | "15to30" | "30to45" | "45plus";
+  duration?: 'less15' | '15to30' | '30to45' | '45plus';
   savedOnly?: boolean;
 };
 
-export type YogaVideoSortOption = "newest" | "mostViewed" | "leastViewed";
+export type YogaVideoSortOption = 'newest' | 'mostViewed' | 'leastViewed';
 
 export type YogaVideoWithWatchCountAndSaved = YogaVideo & {
   watchCount: number;
@@ -40,10 +40,10 @@ export type YogaVideoWithWatchCountAndSaved = YogaVideo & {
 export async function getYogaVideos(
   page: number = 1,
   pageSize: number = 10,
-  search: string = "",
+  search: string = '',
   filters: YogaVideoFilters = {},
-  sort: YogaVideoSortOption = "newest",
-  userId?: string | null
+  sort: YogaVideoSortOption = 'newest',
+  userId?: string | null,
 ): Promise<{ yogaVideos: YogaVideoWithWatchCountAndSaved[]; total: number }> {
   const skip = (page - 1) * pageSize;
   const take = pageSize;
@@ -52,8 +52,8 @@ export async function getYogaVideos(
 
   if (search) {
     where.OR = [
-      { title: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
+      { title: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
     ];
   }
 
@@ -69,17 +69,17 @@ export async function getYogaVideos(
 
   if (filters.duration) {
     switch (filters.duration) {
-      case "less15":
+      case 'less15':
         where.duration = { lt: 15 * 60 };
         break;
-      case "15to30":
+      case '15to30':
         where.duration = { gte: 15 * 60, lt: 30 * 60 };
 
         break;
-      case "30to45":
+      case '30to45':
         where.duration = { gte: 30 * 60, lt: 45 * 60 };
         break;
-      case "45plus":
+      case '45plus':
         where.duration = { gte: 45 * 60 };
         break;
     }
@@ -94,11 +94,11 @@ export async function getYogaVideos(
   }
 
   const orderBy: Prisma.YogaVideoOrderByWithRelationInput =
-    sort === "newest"
-      ? { createdAt: "desc" }
-      : sort === "mostViewed"
-      ? { activities: { _count: "desc" } }
-      : { activities: { _count: "asc" } };
+    sort === 'newest'
+      ? { createdAt: 'desc' }
+      : sort === 'mostViewed'
+        ? { activities: { _count: 'desc' } }
+        : { activities: { _count: 'asc' } };
 
   const [yogaVideos, total] = await Promise.all([
     prisma.yogaVideo.findMany({
@@ -133,7 +133,7 @@ export async function getYogaVideos(
 }
 export async function getYogaVideoById(
   id: string,
-  userId?: string | null
+  userId?: string | null,
 ): Promise<YogaVideoWithWatchCountAndSaved | null> {
   const yogaVideo = await prisma.yogaVideo.findUnique({
     where: { id },
@@ -161,19 +161,16 @@ export async function getYogaVideoById(
 
 export async function createYogaVideo(data: YogaVideoInput) {
   const yogaVideo = await prisma.yogaVideo.create({ data });
-  revalidatePath("/admin/content/yoga-videos");
+  revalidatePath('/admin/content/yoga-videos');
   return yogaVideo;
 }
 
-export async function updateYogaVideo(
-  id: string,
-  data: Partial<YogaVideoInput>
-) {
+export async function updateYogaVideo(id: string, data: Partial<YogaVideoInput>) {
   const yogaVideo = await prisma.yogaVideo.update({
     where: { id },
     data,
   });
-  revalidatePath("/admin/content/yoga-videos");
+  revalidatePath('/admin/content/yoga-videos');
   return yogaVideo;
 }
 
@@ -181,8 +178,8 @@ export async function deleteMuxAsset(assetId: string) {
   try {
     await video.assets.delete(assetId);
   } catch (error) {
-    console.error("Error deleting Mux asset:", error);
-    throw new Error("Failed to delete Mux asset");
+    console.error('Error deleting Mux asset:', error);
+    throw new Error('Failed to delete Mux asset');
   }
 }
 
@@ -192,7 +189,7 @@ export async function deleteYogaVideo(id: string) {
     await deleteMuxAsset(yogaVideo.muxAssetId);
   }
   await prisma.yogaVideo.delete({ where: { id } });
-  revalidatePath("/admin/content/yoga-videos");
+  revalidatePath('/admin/content/yoga-videos');
 }
 
 export async function completeYogaVideo(userId: string, yogaVideoId: string) {
@@ -203,7 +200,7 @@ export async function completeYogaVideo(userId: string, yogaVideoId: string) {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Check if the yoga video exists
@@ -212,7 +209,7 @@ export async function completeYogaVideo(userId: string, yogaVideoId: string) {
     });
 
     if (!yogaVideo) {
-      throw new Error("Yoga video not found");
+      throw new Error('Yoga video not found');
     }
 
     // Create a new yoga video activity
@@ -225,22 +222,19 @@ export async function completeYogaVideo(userId: string, yogaVideoId: string) {
     });
 
     // Update the programme activity if it's part of a programme
-    await autoUpdateActivityCompletion(userId, "YOGA", yogaVideoId);
+    await autoUpdateActivityCompletion(userId, 'YOGA', yogaVideoId);
 
-    revalidatePath("/dashboard");
-    revalidatePath("/yoga");
+    revalidatePath('/dashboard');
+    revalidatePath('/yoga');
 
-    return { success: true, message: "Yoga video completed successfully" };
+    return { success: true, message: 'Yoga video completed successfully' };
   } catch (error) {
-    console.error("Error completing yoga video:", error);
+    console.error('Error completing yoga video:', error);
     throw error;
   }
 }
 
-export async function getYogaVideoCompletions(
-  userId: string,
-  yogaVideoId: string
-) {
+export async function getYogaVideoCompletions(userId: string, yogaVideoId: string) {
   try {
     const completions = await prisma.yogaVideoActivity.findMany({
       where: {
@@ -248,37 +242,34 @@ export async function getYogaVideoCompletions(
         videoId: yogaVideoId,
       },
       orderBy: {
-        watchedAt: "desc",
+        watchedAt: 'desc',
       },
     });
 
     return completions;
   } catch (error) {
-    console.error("Error fetching yoga video completions:", error);
+    console.error('Error fetching yoga video completions:', error);
     throw error;
   }
 }
 
-export async function fetchViewStats(
-  id: string,
-  timeFrame: "week" | "month" | "6months"
-) {
+export async function fetchViewStats(id: string, timeFrame: 'week' | 'month' | '6months') {
   const startDate = new Date();
   switch (timeFrame) {
-    case "week":
+    case 'week':
       startDate.setDate(startDate.getDate() - 7);
       break;
-    case "month":
+    case 'month':
       startDate.setMonth(startDate.getMonth() - 1);
       break;
-    case "6months":
+    case '6months':
       startDate.setMonth(startDate.getMonth() - 6);
       break;
   }
 
   try {
     const viewStats = await prisma.yogaVideoActivity.groupBy({
-      by: ["watchedAt"],
+      by: ['watchedAt'],
       where: {
         videoId: id,
         watchedAt: {
@@ -289,7 +280,7 @@ export async function fetchViewStats(
         id: true,
       },
       orderBy: {
-        watchedAt: "asc",
+        watchedAt: 'asc',
       },
     });
 
@@ -297,18 +288,16 @@ export async function fetchViewStats(
     const viewsByDate = new Map<string, number>();
 
     viewStats.forEach((stat) => {
-      const date = stat.watchedAt.toISOString().split("T")[0];
+      const date = stat.watchedAt.toISOString().split('T')[0];
       const currentViews = viewsByDate.get(date) || 0;
       viewsByDate.set(date, currentViews + stat._count.id);
     });
 
     // Convert the map back to an array of objects
-    const formattedStats = Array.from(viewsByDate.entries()).map(
-      ([date, views]) => ({
-        date,
-        views,
-      })
-    );
+    const formattedStats = Array.from(viewsByDate.entries()).map(([date, views]) => ({
+      date,
+      views,
+    }));
 
     // Sort by date
     formattedStats.sort((a, b) => a.date.localeCompare(b.date));
@@ -318,7 +307,7 @@ export async function fetchViewStats(
 
     return filledStats;
   } catch (error) {
-    console.error("Error fetching view stats:", error);
+    console.error('Error fetching view stats:', error);
     return [];
   }
 }
@@ -327,13 +316,13 @@ export async function fetchViewStats(
 function fillMissingDates(
   stats: { date: string; views: number }[],
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ) {
   const filledStats = [];
   const currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
-    const dateString = currentDate.toISOString().split("T")[0];
+    const dateString = currentDate.toISOString().split('T')[0];
     const existingStat = stats.find((stat) => stat.date === dateString);
 
     if (existingStat) {
@@ -355,7 +344,7 @@ export async function getYogaFilterOptions() {
     select: {
       props: true,
     },
-    distinct: ["props"],
+    distinct: ['props'],
   });
 
   const uniqueProps = Array.from(new Set(props.flatMap((p) => p.props)));
@@ -391,6 +380,6 @@ export async function toggleYogaVideoSave(yogaVideoId: string, userId: string) {
     });
   }
 
-  revalidatePath("/yoga");
+  revalidatePath('/yoga');
   revalidatePath(`/yoga/${yogaVideoId}`);
 }

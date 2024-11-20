@@ -1,29 +1,24 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import {
-  User,
-  MembershipStatus,
-  MembershipPlan,
-  UserRole,
-} from "@prisma/client";
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { User, MembershipStatus, MembershipPlan, UserRole } from '@prisma/client';
 
 export type UserFilters = {
-  status?: MembershipStatus | "ALL";
-  plan?: MembershipPlan | "ALL";
+  status?: MembershipStatus | 'ALL';
+  plan?: MembershipPlan | 'ALL';
 };
 
 export async function getUsers(
   page: number = 1,
   pageSize: number = 10,
-  search: string = "",
-  filters: UserFilters = {}
+  search: string = '',
+  filters: UserFilters = {},
 ): Promise<{ users: User[]; total: number }> {
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
-  const searchTerms = search.split(" ").filter(Boolean);
+  const searchTerms = search.split(' ').filter(Boolean);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
@@ -31,17 +26,17 @@ export async function getUsers(
   if (searchTerms.length > 0) {
     where.OR = searchTerms.map((term) => ({
       OR: [
-        { name: { contains: term, mode: "insensitive" } },
-        { email: { contains: term, mode: "insensitive" } },
+        { name: { contains: term, mode: 'insensitive' } },
+        { email: { contains: term, mode: 'insensitive' } },
       ],
     }));
   }
 
-  if (filters.status && filters.status !== "ALL") {
+  if (filters.status && filters.status !== 'ALL') {
     where.membershipStatus = filters.status;
   }
 
-  if (filters.plan && filters.plan !== "ALL") {
+  if (filters.plan && filters.plan !== 'ALL') {
     where.membershipPlan = filters.plan;
   }
 
@@ -50,7 +45,7 @@ export async function getUsers(
       where,
       skip,
       take,
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     }),
     prisma.user.count({ where }),
   ]);
@@ -77,7 +72,7 @@ export async function createUser(data: UserInput): Promise<User> {
   const user = await prisma.user.create({
     data,
   });
-  revalidatePath("/admin/users");
+  revalidatePath('/admin/users');
   return user;
 }
 
@@ -86,7 +81,7 @@ export async function updateUser(id: string, data: UserInput): Promise<User> {
     where: { id },
     data,
   });
-  revalidatePath("/admin/users");
+  revalidatePath('/admin/users');
   revalidatePath(`/admin/users/${id}`);
   return user;
 }
@@ -95,6 +90,6 @@ export async function deleteUser(id: string): Promise<User> {
   const user = await prisma.user.delete({
     where: { id },
   });
-  revalidatePath("/admin/users");
+  revalidatePath('/admin/users');
   return user;
 }

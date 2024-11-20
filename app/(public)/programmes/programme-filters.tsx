@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useTransition, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
@@ -18,14 +18,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import {
-  getUniqueIntentions,
-  getUniqueLengths,
-} from "@/app/actions/programmes";
+} from '@/components/ui/sheet';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { getUniqueIntentions, getUniqueLengths } from '@/app/actions/programmes';
 
 export function ProgrammeFilters() {
   const router = useRouter();
@@ -34,17 +31,11 @@ export function ProgrammeFilters() {
   const [intentions, setIntentions] = useState<string[]>([]);
   const [lengths, setLengths] = useState<string[]>([]);
 
-  const [intention, setIntention] = useState(
-    searchParams.get("intention") || "all"
-  );
-  const [length, setLength] = useState(searchParams.get("length") || "all");
-  const [minSessions, setMinSessions] = useState(
-    searchParams.get("minSessions") || ""
-  );
-  const [maxSessions, setMaxSessions] = useState(
-    searchParams.get("maxSessions") || ""
-  );
-  const [saved, setSaved] = useState(searchParams.get("saved") === "true");
+  const [intention, setIntention] = useState(searchParams.get('intention') || 'all');
+  const [length, setLength] = useState(searchParams.get('length') || 'all');
+  const [minSessions, setMinSessions] = useState(searchParams.get('minSessions') || '');
+  const [maxSessions, setMaxSessions] = useState(searchParams.get('maxSessions') || '');
+  const [saved, setSaved] = useState(searchParams.get('saved') === 'true');
 
   useEffect(() => {
     const fetchFilterOptions = async () => {
@@ -61,29 +52,29 @@ export function ProgrammeFilters() {
   const applyFilters = () => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams);
-      if (intention && intention !== "all") params.set("intention", intention);
-      else params.delete("intention");
-      if (length && length !== "all") params.set("length", length);
-      else params.delete("length");
-      if (minSessions) params.set("minSessions", minSessions);
-      else params.delete("minSessions");
-      if (maxSessions) params.set("maxSessions", maxSessions);
-      else params.delete("maxSessions");
-      if (saved) params.set("saved", "true");
-      else params.delete("saved");
+      if (intention && intention !== 'all') params.set('intention', intention);
+      else params.delete('intention');
+      if (length && length !== 'all') params.set('length', length);
+      else params.delete('length');
+      if (minSessions) params.set('minSessions', minSessions);
+      else params.delete('minSessions');
+      if (maxSessions) params.set('maxSessions', maxSessions);
+      else params.delete('maxSessions');
+      if (saved) params.set('saved', 'true');
+      else params.delete('saved');
 
       router.push(`/programmes?${params.toString()}`);
     });
   };
 
   const resetFilters = () => {
-    setIntention("all");
-    setLength("all");
-    setMinSessions("");
-    setMaxSessions("");
+    setIntention('all');
+    setLength('all');
+    setMinSessions('');
+    setMaxSessions('');
     setSaved(false);
     startTransition(() => {
-      router.push("/programmes");
+      router.push('/programmes');
     });
   };
 
@@ -91,16 +82,14 @@ export function ProgrammeFilters() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Filter className="h-4 w-4 mr-2" />
+          <Filter className="mr-2 h-4 w-4" />
           Filters
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Filter Programmes</SheetTitle>
-          <SheetDescription>
-            Customize your programme search with these filters
-          </SheetDescription>
+          <SheetDescription>Customize your programme search with these filters</SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
@@ -148,7 +137,7 @@ export function ProgrammeFilters() {
                   min={0}
                   value={minSessions}
                   onChange={(e) => setMinSessions(e.target.value)}
-                  className="w-full p-2 border rounded"
+                  className="w-full rounded border p-2"
                 />
               </div>
               <div className="grid gap-1.5">
@@ -162,7 +151,7 @@ export function ProgrammeFilters() {
                   min={0}
                   value={maxSessions}
                   onChange={(e) => setMaxSessions(e.target.value)}
-                  className="w-full p-2 border rounded"
+                  className="w-full rounded border p-2"
                 />
               </div>
             </div>

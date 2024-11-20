@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useTransition, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
@@ -19,10 +19,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { getYogaFilterOptions } from "@/app/actions/yoga-videos";
-import { YogaType } from "@prisma/client";
+} from '@/components/ui/sheet';
+import { Checkbox } from '@/components/ui/checkbox';
+import { getYogaFilterOptions } from '@/app/actions/yoga-videos';
+import { YogaType } from '@prisma/client';
 
 type FilterOptions = {
   types: YogaType[];
@@ -34,19 +34,13 @@ export function YogaFilters() {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const [minDuration, setMinDuration] = useState(
-    searchParams.get("minDuration") || ""
+  const [minDuration, setMinDuration] = useState(searchParams.get('minDuration') || '');
+  const [maxDuration, setMaxDuration] = useState(searchParams.get('maxDuration') || '');
+  const [type, setType] = useState<YogaType | 'all'>(
+    (searchParams.get('type') as YogaType) || 'all',
   );
-  const [maxDuration, setMaxDuration] = useState(
-    searchParams.get("maxDuration") || ""
-  );
-  const [type, setType] = useState<YogaType | "all">(
-    (searchParams.get("type") as YogaType) || "all"
-  );
-  const [props, setProps] = useState(searchParams.get("props") || "all");
-  const [savedOnly, setSavedOnly] = useState(
-    searchParams.get("saved") === "true"
-  );
+  const [props, setProps] = useState(searchParams.get('props') || 'all');
+  const [savedOnly, setSavedOnly] = useState(searchParams.get('saved') === 'true');
 
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     types: [],
@@ -64,29 +58,29 @@ export function YogaFilters() {
   const applyFilters = () => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams);
-      if (minDuration) params.set("minDuration", minDuration);
-      else params.delete("minDuration");
-      if (maxDuration) params.set("maxDuration", maxDuration);
-      else params.delete("maxDuration");
-      if (type && type !== "all") params.set("type", type);
-      else params.delete("type");
-      if (props && props !== "all") params.set("props", props);
-      else params.delete("props");
-      if (savedOnly) params.set("saved", "true");
-      else params.delete("saved");
+      if (minDuration) params.set('minDuration', minDuration);
+      else params.delete('minDuration');
+      if (maxDuration) params.set('maxDuration', maxDuration);
+      else params.delete('maxDuration');
+      if (type && type !== 'all') params.set('type', type);
+      else params.delete('type');
+      if (props && props !== 'all') params.set('props', props);
+      else params.delete('props');
+      if (savedOnly) params.set('saved', 'true');
+      else params.delete('saved');
 
       router.push(`/yoga?${params.toString()}`);
     });
   };
 
   const resetFilters = () => {
-    setMinDuration("");
-    setMaxDuration("");
-    setType("all");
-    setProps("all");
+    setMinDuration('');
+    setMaxDuration('');
+    setType('all');
+    setProps('all');
     setSavedOnly(false);
     startTransition(() => {
-      router.push("/yoga");
+      router.push('/yoga');
     });
   };
 
@@ -94,16 +88,14 @@ export function YogaFilters() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Filter className="h-4 w-4 mr-2" />
+          <Filter className="mr-2 h-4 w-4" />
           Filters
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Filter Yoga Videos</SheetTitle>
-          <SheetDescription>
-            Find the perfect practice for your needs
-          </SheetDescription>
+          <SheetDescription>Find the perfect practice for your needs</SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
@@ -141,9 +133,7 @@ export function YogaFilters() {
             <h3 className="text-sm font-medium">Type</h3>
             <Select
               value={type}
-              onValueChange={(value: string) =>
-                setType(value as YogaType | "all")
-              }
+              onValueChange={(value: string) => setType(value as YogaType | 'all')}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />

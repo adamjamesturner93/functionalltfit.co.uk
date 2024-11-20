@@ -1,28 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { ExerciseMode, Unit } from "@prisma/client";
-import {
-  Info,
-  Dumbbell,
-  Timer,
-  ChevronRight,
-  Play,
-  Pause,
-  RotateCcw,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  convertWeight,
-  convertDistance,
-  formatDistance,
-} from "@/lib/unit-conversion";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { ExerciseMode, Unit } from '@prisma/client';
+import { Info, Dumbbell, Timer, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { convertWeight, convertDistance, formatDistance } from '@/lib/unit-conversion';
 
 interface Exercise {
   id: string;
@@ -53,7 +41,7 @@ interface WorkoutExerciseProps {
       reps?: number;
       time?: number;
       distance?: number;
-    }
+    },
   ) => void;
   userPreferences: {
     weightUnit: Unit;
@@ -118,17 +106,12 @@ export function WorkoutExercise({
 
   const handleComplete = () => {
     onComplete(exercise.id, {
-      weight:
-        userPreferences.weightUnit === Unit.IMPERIAL
-          ? weight / 2.20462
-          : weight,
+      weight: userPreferences.weightUnit === Unit.IMPERIAL ? weight / 2.20462 : weight,
       ...(exercise.mode === ExerciseMode.REPS && { reps }),
       ...(exercise.mode === ExerciseMode.TIME && { time }),
       ...(exercise.mode === ExerciseMode.DISTANCE && {
         distance:
-          userPreferences.lengthUnit === Unit.IMPERIAL
-            ? distance * 1609.34
-            : distance * 1000,
+          userPreferences.lengthUnit === Unit.IMPERIAL ? distance * 1609.34 : distance * 1000,
       }),
     });
   };
@@ -138,29 +121,23 @@ export function WorkoutExercise({
   };
 
   return (
-    <Card className="bg-slate-900 border-slate-800">
+    <Card className="border-slate-800 bg-slate-900">
       <CardHeader className="border-b border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-2xl font-bold">
-              {exercise.name}
-            </CardTitle>
+            <CardTitle className="text-2xl font-bold">{exercise.name}</CardTitle>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Info className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-900 border-slate-800">
-                <div className="aspect-video w-full rounded-lg overflow-hidden mb-4">
-                  <video
-                    src={exercise.videoUrl}
-                    controls
-                    className="w-full h-full object-cover"
-                  />
+              <DialogContent className="border-slate-800 bg-slate-900">
+                <div className="mb-4 aspect-video w-full overflow-hidden rounded-lg">
+                  <video src={exercise.videoUrl} controls className="h-full w-full object-cover" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-lg">Instructions</h4>
+                  <h4 className="text-lg font-semibold">Instructions</h4>
                   <p className="text-slate-400">{exercise.instructions}</p>
                 </div>
               </DialogContent>
@@ -174,19 +151,15 @@ export function WorkoutExercise({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="space-y-6 p-6">
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label className="text-sm text-slate-400">Target</Label>
             <div className="text-2xl font-bold">
-              {exercise.mode === ExerciseMode.REPS &&
-                `${exercise.targetReps} reps`}
+              {exercise.mode === ExerciseMode.REPS && `${exercise.targetReps} reps`}
               {exercise.mode === ExerciseMode.TIME && `${exercise.targetTime}s`}
               {exercise.mode === ExerciseMode.DISTANCE &&
-                formatDistance(
-                  exercise.targetDistance || 0,
-                  userPreferences.lengthUnit
-                )}
+                formatDistance(exercise.targetDistance || 0, userPreferences.lengthUnit)}
             </div>
           </div>
           <div className="space-y-2">
@@ -201,25 +174,20 @@ export function WorkoutExercise({
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="weight" className="text-sm text-slate-400">
-              Weight (
-              {userPreferences.weightUnit === Unit.IMPERIAL ? "lbs" : "kg"})
+              Weight ({userPreferences.weightUnit === Unit.IMPERIAL ? 'lbs' : 'kg'})
             </Label>
             <Input
               id="weight"
               type="number"
-              value={roundToNearestHalf(
-                convertWeight(weight, userPreferences.weightUnit)
-              )}
+              value={roundToNearestHalf(convertWeight(weight, userPreferences.weightUnit))}
               onChange={(e) => {
                 const newWeight = parseFloat(e.target.value);
                 setWeight(
-                  userPreferences.weightUnit === Unit.IMPERIAL
-                    ? newWeight / 2.20462
-                    : newWeight
+                  userPreferences.weightUnit === Unit.IMPERIAL ? newWeight / 2.20462 : newWeight,
                 );
               }}
               step={userPreferences.weightUnit === Unit.IMPERIAL ? 0.5 : 0.25}
-              className="text-lg bg-slate-950 border-slate-800 focus:ring-indigo-500"
+              className="border-slate-800 bg-slate-950 text-lg focus:ring-indigo-500"
             />
           </div>
 
@@ -233,7 +201,7 @@ export function WorkoutExercise({
                 type="number"
                 value={reps}
                 onChange={(e) => setReps(Number(e.target.value))}
-                className="text-lg bg-slate-950 border-slate-800 focus:ring-indigo-500"
+                className="border-slate-800 bg-slate-950 text-lg focus:ring-indigo-500"
               />
             </div>
           )}
@@ -247,16 +215,16 @@ export function WorkoutExercise({
                     size="sm"
                     variant="outline"
                     className={cn(
-                      "border-slate-800",
-                      (isTimerRunning || countdown !== null) && "bg-slate-800"
+                      'border-slate-800',
+                      (isTimerRunning || countdown !== null) && 'bg-slate-800',
                     )}
                     onClick={handleStartTimer}
                   >
-                    {isTimerRunning ? "Pause" : "Start"}
+                    {isTimerRunning ? 'Pause' : 'Start'}
                     {isTimerRunning ? (
-                      <Pause className="h-4 w-4 ml-2" />
+                      <Pause className="ml-2 h-4 w-4" />
                     ) : (
-                      <Play className="h-4 w-4 ml-2" />
+                      <Play className="ml-2 h-4 w-4" />
                     )}
                   </Button>
                   <Button
@@ -266,29 +234,22 @@ export function WorkoutExercise({
                     onClick={handleResetTimer}
                   >
                     Reset
-                    <RotateCcw className="h-4 w-4 ml-2" />
+                    <RotateCcw className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
               <div className="space-y-4">
                 {countdown !== null && (
-                  <div className="bg-slate-800 rounded-lg p-4 text-center">
-                    <p className="text-sm text-slate-400 mb-2">
-                      Starting in...
-                    </p>
-                    <span className="font-mono text-4xl text-indigo-400">
-                      {countdown}
-                    </span>
+                  <div className="rounded-lg bg-slate-800 p-4 text-center">
+                    <p className="mb-2 text-sm text-slate-400">Starting in...</p>
+                    <span className="font-mono text-4xl text-indigo-400">{countdown}</span>
                   </div>
                 )}
-                <div className="bg-slate-950 rounded-lg p-4 text-center">
+                <div className="rounded-lg bg-slate-950 p-4 text-center">
                   <span className="font-mono text-4xl">{time}s</span>
                 </div>
                 {exercise.targetTime && (
-                  <Progress
-                    value={(time / exercise.targetTime) * 100}
-                    className="h-2"
-                  />
+                  <Progress value={(time / exercise.targetTime) * 100} className="h-2" />
                 )}
               </div>
             </div>
@@ -297,8 +258,7 @@ export function WorkoutExercise({
           {exercise.mode === ExerciseMode.DISTANCE && (
             <div className="space-y-2">
               <Label htmlFor="distance" className="text-sm text-slate-400">
-                Distance (
-                {userPreferences.lengthUnit === Unit.IMPERIAL ? "miles" : "km"})
+                Distance ({userPreferences.lengthUnit === Unit.IMPERIAL ? 'miles' : 'km'})
               </Label>
               <Input
                 id="distance"
@@ -309,11 +269,11 @@ export function WorkoutExercise({
                   setDistance(
                     userPreferences.lengthUnit === Unit.IMPERIAL
                       ? newDistance / 0.621371
-                      : newDistance
+                      : newDistance,
                   );
                 }}
                 step={0.1}
-                className="text-lg bg-slate-950 border-slate-800 focus:ring-indigo-500"
+                className="border-slate-800 bg-slate-950 text-lg focus:ring-indigo-500"
               />
             </div>
           )}
@@ -321,10 +281,10 @@ export function WorkoutExercise({
 
         <Button
           onClick={handleComplete}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 text-lg"
+          className="h-12 w-full bg-indigo-600 text-lg hover:bg-indigo-700"
         >
           Complete Exercise
-          <ChevronRight className="h-5 w-5 ml-2" />
+          <ChevronRight className="ml-2 h-5 w-5" />
         </Button>
       </CardContent>
     </Card>

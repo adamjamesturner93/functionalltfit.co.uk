@@ -1,22 +1,14 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import {
-  Dumbbell,
-  GlassWater,
-  Heart,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  UserIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { User } from "@prisma/client";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Dumbbell, GlassWater, Heart, LayoutDashboard, LogOut, UserIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { User } from '@prisma/client';
 
 interface NavItem {
   title: string;
@@ -27,31 +19,31 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    title: "Dashboard",
-    href: "/dashboard",
+    title: 'Dashboard',
+    href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    title: "Workouts",
-    href: "/workouts",
+    title: 'Workouts',
+    href: '/workouts',
     icon: Dumbbell,
   },
   {
-    title: "Yoga",
-    href: "/yoga",
+    title: 'Yoga',
+    href: '/yoga',
     icon: GlassWater,
   },
   {
-    title: "Programmes",
-    href: "/programmes",
+    title: 'Programmes',
+    href: '/programmes',
     icon: Heart,
   },
 ];
 
 const bottomNavItems: NavItem[] = [
   {
-    title: "Profile",
-    href: "/profile",
+    title: 'Profile',
+    href: '/profile',
     icon: UserIcon,
   },
 ];
@@ -60,12 +52,9 @@ export function Navigation({ user }: { user: User }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-screen flex-col gap-4 border-r bg-card/50 backdrop-blur w-64">
+    <div className="flex h-screen w-64 flex-col gap-4 border-r bg-card/50 backdrop-blur">
       <div className="flex h-14 items-center border-b px-4">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2 font-semibold"
-        >
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <Heart className="h-6 w-6 text-primary" />
           <span>FunctionallyFit</span>
         </Link>
@@ -80,11 +69,10 @@ export function Navigation({ user }: { user: User }) {
               {navItems.map((item) => (
                 <Button
                   key={item.href}
-                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  variant={pathname === item.href ? 'secondary' : 'ghost'}
                   className={cn(
-                    "w-full justify-start",
-                    pathname === item.href &&
-                      "bg-primary/10 font-medium text-primary"
+                    'w-full justify-start',
+                    pathname === item.href && 'bg-primary/10 font-medium text-primary',
                   )}
                   asChild
                 >
@@ -92,10 +80,7 @@ export function Navigation({ user }: { user: User }) {
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.title}
                     {item.badge && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-auto bg-primary/10 text-primary"
-                      >
+                      <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
                         {item.badge}
                       </Badge>
                     )}
@@ -112,11 +97,10 @@ export function Navigation({ user }: { user: User }) {
               {bottomNavItems.map((item) => (
                 <Button
                   key={item.href}
-                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  variant={pathname === item.href ? 'secondary' : 'ghost'}
                   className={cn(
-                    "w-full justify-start",
-                    pathname === item.href &&
-                      "bg-primary/10 font-medium text-primary"
+                    'w-full justify-start',
+                    pathname === item.href && 'bg-primary/10 font-medium text-primary',
                   )}
                   asChild
                 >
@@ -138,9 +122,7 @@ export function Navigation({ user }: { user: User }) {
           </Avatar>
           <div className="flex-1">
             <p className="text-sm font-medium">{user?.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {user?.membershipPlan} Plan
-            </p>
+            <p className="text-xs text-muted-foreground">{user?.membershipPlan} Plan</p>
           </div>
           <Button variant="ghost" size="icon" asChild>
             <Link href="/logout">

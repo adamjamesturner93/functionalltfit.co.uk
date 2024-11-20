@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import ReactConfetti from "react-confetti";
+import { useEffect, useState } from 'react';
+import ReactConfetti from 'react-confetti';
 
 export function Confetti() {
   const [windowDimension, setWindowDimension] = useState({
@@ -18,9 +18,9 @@ export function Confetti() {
 
   useEffect(() => {
     detectSize();
-    window.addEventListener("resize", detectSize);
+    window.addEventListener('resize', detectSize);
     return () => {
-      window.removeEventListener("resize", detectSize);
+      window.removeEventListener('resize', detectSize);
     };
   }, []);
 

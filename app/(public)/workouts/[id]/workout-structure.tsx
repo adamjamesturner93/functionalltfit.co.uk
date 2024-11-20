@@ -1,11 +1,11 @@
-import { WorkoutWithSets } from "@/app/actions/workouts";
+import { WorkoutWithSets } from '@/app/actions/workouts';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 
 export function WorkoutStructure({ workout }: { workout: WorkoutWithSets }) {
   return (
@@ -26,14 +26,10 @@ export function WorkoutStructure({ workout }: { workout: WorkoutWithSets }) {
             <AccordionContent>
               <ul className="space-y-2">
                 {set.exercises.map((exercise) => (
-                  <li
-                    key={exercise.id}
-                    className="flex items-center justify-between"
-                  >
+                  <li key={exercise.id} className="flex items-center justify-between">
                     <span>{exercise.exercise.name}</span>
                     <Badge>
-                      {exercise.targetReps}{" "}
-                      {exercise.exercise.mode.toLowerCase()}
+                      {exercise.targetReps} {exercise.exercise.mode.toLowerCase()}
                     </Badge>
                   </li>
                 ))}

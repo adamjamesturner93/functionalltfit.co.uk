@@ -1,33 +1,28 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import {
-  User,
-  MembershipStatus,
-  MembershipPlan,
-  UserRole,
-} from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { User, MembershipStatus, MembershipPlan, UserRole } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { updateUser, UserInput } from "@/app/actions/users";
-import { useToast } from "@/hooks/use-toast";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+} from '@/components/ui/select';
+import { updateUser, UserInput } from '@/app/actions/users';
+import { useToast } from '@/hooks/use-toast';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const userSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
   dateOfBirth: z.date().nullable(),
   membershipStatus: z.nativeEnum(MembershipStatus),
   membershipPlan: z.nativeEnum(MembershipPlan),
@@ -62,11 +57,11 @@ export function EditUserForm({ user }: EditUserFormProps) {
   const onSubmit = async (data: UserFormData) => {
     try {
       await updateUser(user.id, data as UserInput);
-      toast({ title: "User updated successfully" });
+      toast({ title: 'User updated successfully' });
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast({ title: "Error updating user", variant: "destructive" });
+      toast({ title: 'Error updating user', variant: 'destructive' });
     }
   };
 
@@ -77,16 +72,11 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Name
             </label>
             <Input {...field} id={field.name} />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
           </div>
         )}
       />
@@ -96,16 +86,11 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Email
             </label>
             <Input {...field} id={field.name} type="email" />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
           </div>
         )}
       />
@@ -115,10 +100,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Date of Birth
             </label>
             <DatePicker
@@ -133,9 +115,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
               placeholderText="Select date of birth"
             />
             {errors.dateOfBirth && (
-              <p className="text-red-500 text-sm">
-                {errors.dateOfBirth.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
             )}
           </div>
         )}
@@ -146,10 +126,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Membership Status
             </label>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -165,9 +142,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
               </SelectContent>
             </Select>
             {errors.membershipStatus && (
-              <p className="text-red-500 text-sm">
-                {errors.membershipStatus.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.membershipStatus.message}</p>
             )}
           </div>
         )}
@@ -178,10 +153,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Membership Plan
             </label>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -197,9 +169,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
               </SelectContent>
             </Select>
             {errors.membershipPlan && (
-              <p className="text-red-500 text-sm">
-                {errors.membershipPlan.message}
-              </p>
+              <p className="text-sm text-red-500">{errors.membershipPlan.message}</p>
             )}
           </div>
         )}
@@ -210,10 +180,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         control={control}
         render={({ field }) => (
           <div>
-            <label
-              htmlFor={field.name}
-              className="block text-sm font-medium text-muted"
-            >
+            <label htmlFor={field.name} className="block text-sm font-medium text-muted">
               Role
             </label>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -228,9 +195,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
                 ))}
               </SelectContent>
             </Select>
-            {errors.role && (
-              <p className="text-red-500 text-sm">{errors.role.message}</p>
-            )}
+            {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
           </div>
         )}
       />

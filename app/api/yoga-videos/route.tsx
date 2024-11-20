@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { authorizeUser, unauthorizedResponse } from "@/lib/auth-utils";
+import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
 const prisma = new PrismaClient();
 
 export const config = {
-  runtime: "edge",
+  runtime: 'edge',
 };
 
 export async function GET(request: NextRequest) {
@@ -30,10 +30,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(yogaVideos);
   } catch (error) {
-    console.error("Error fetching yoga videos:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error fetching yoga videos:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

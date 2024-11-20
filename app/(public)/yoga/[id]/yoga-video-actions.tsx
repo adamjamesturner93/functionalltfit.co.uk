@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { BookmarkIcon, Play } from "lucide-react";
-import { toggleYogaVideoSave } from "@/app/actions/yoga-videos";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { BookmarkIcon, Play } from 'lucide-react';
+import { toggleYogaVideoSave } from '@/app/actions/yoga-videos';
+import { useRouter } from 'next/navigation';
 
 interface YogaVideoActionsProps {
   yogaVideoId: string;
@@ -12,11 +12,7 @@ interface YogaVideoActionsProps {
   isSaved: boolean;
 }
 
-export function YogaVideoActions({
-  yogaVideoId,
-  userId,
-  isSaved,
-}: YogaVideoActionsProps) {
+export function YogaVideoActions({ yogaVideoId, userId, isSaved }: YogaVideoActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(isSaved);
   const router = useRouter();
@@ -31,9 +27,9 @@ export function YogaVideoActions({
   };
 
   const handleStartPractice = () => {
-    document.querySelector("#video-section")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+    document.querySelector('#video-section')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
     });
   };
 
@@ -47,10 +43,8 @@ export function YogaVideoActions({
           className="min-w-[100px]"
           disabled={isLoading}
         >
-          <BookmarkIcon
-            className={`mr-2 h-4 w-4 ${saved ? "fill-current" : ""}`}
-          />
-          {saved ? "Saved" : "Save"}
+          <BookmarkIcon className={`mr-2 h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+          {saved ? 'Saved' : 'Save'}
         </Button>
       )}
       <Button size="sm" className="min-w-[140px]" onClick={handleStartPractice}>

@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Video, Dumbbell, Clipboard } from "lucide-react";
-import { getUsers } from "@/app/actions/users";
-import { getYogaVideos } from "../actions/yoga-videos";
-import { getExercises } from "../actions/exercises";
-import { getWorkouts } from "../actions/workouts";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, Video, Dumbbell, Clipboard } from 'lucide-react';
+import { getUsers } from '@/app/actions/users';
+import { getYogaVideos } from '../actions/yoga-videos';
+import { getExercises } from '../actions/exercises';
+import { getWorkouts } from '../actions/workouts';
 
 export default async function Dashboard() {
   const { total: totalMembers } = await getUsers();

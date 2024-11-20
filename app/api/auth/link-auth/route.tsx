@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   const session = await auth();
 
   if (!session || !session.user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   const { googleId } = await request.json();
@@ -18,25 +18,20 @@ export async function POST(request: Request) {
     });
 
     if (!existingUser) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    const googleAccount = existingUser.Account.find(
-      (account) => account.provider === "google"
-    );
+    const googleAccount = existingUser.Account.find((account) => account.provider === 'google');
 
     if (googleAccount) {
-      return NextResponse.json(
-        { message: "Google account already linked" },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: 'Google account already linked' }, { status: 400 });
     }
 
     await prisma.account.create({
       data: {
         userId: existingUser.id,
-        type: "oauth",
-        provider: "google",
+        type: 'oauth',
+        provider: 'google',
         providerAccountId: googleId,
         refresh_token: null,
         access_token: null,
@@ -48,14 +43,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Google account linked successfully" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Google account linked successfully' }, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { message: "Error linking Google account", error },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Error linking Google account', error }, { status: 500 });
   }
 }

@@ -1,10 +1,10 @@
-import { api } from "./client";
+import { api } from './client';
 
 export interface YogaVideo {
   id: string;
   title: string;
   description: string;
-  type: "MINDFULNESS" | "BUILD" | "EXPLORE";
+  type: 'MINDFULNESS' | 'BUILD' | 'EXPLORE';
   props: string[];
   duration: number;
   thumbnailUrl: string;
@@ -14,10 +14,10 @@ export interface YogaVideo {
 
 export const fetchYogaVideos = async (): Promise<YogaVideo[]> => {
   try {
-    const response = await api.get("/api/yoga-videos");
+    const response = await api.get('/api/yoga-videos');
     return response.data;
   } catch (error) {
-    console.error("Error fetching yoga videos:", error);
+    console.error('Error fetching yoga videos:', error);
     throw error;
   }
 };

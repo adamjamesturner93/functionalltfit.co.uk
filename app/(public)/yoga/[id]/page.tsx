@@ -1,23 +1,19 @@
-import { getYogaVideoById } from "@/app/actions/yoga-videos";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import Link from "next/link";
-import { Clock, ArrowLeft, Dumbbell, Target } from "lucide-react";
-import { getPlaybackToken } from "@/lib/mux";
-import { VideoPlayer } from "@/components/video-player";
-import { getCurrentUserId } from "@/lib/auth-utils";
-import { YogaVideoActions } from "./yoga-video-actions";
-import { CompleteButton } from "./complete-button";
+import { getYogaVideoById } from '@/app/actions/yoga-videos';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { Clock, ArrowLeft, Dumbbell, Target } from 'lucide-react';
+import { getPlaybackToken } from '@/lib/mux';
+import { VideoPlayer } from '@/components/video-player';
+import { getCurrentUserId } from '@/lib/auth-utils';
+import { YogaVideoActions } from './yoga-video-actions';
+import { CompleteButton } from './complete-button';
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
-  const { id } = params;
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const { id } = await params;
   const userId = await getCurrentUserId();
   const yogaVideo = await getYogaVideoById(id, userId);
-  if (!yogaVideo) return { title: "Yoga Video Not Found" };
+  if (!yogaVideo) return { title: 'Yoga Video Not Found' };
 
   const minutes = Math.floor(yogaVideo.duration / 60);
 
@@ -26,32 +22,32 @@ export async function generateMetadata({
     description: `${
       yogaVideo.description
     }. A ${minutes}-minute ${yogaVideo.type.toLowerCase()} yoga session with ${yogaVideo.props.join(
-      ", "
+      ', ',
     )}.`,
     keywords: [
-      "yoga",
+      'yoga',
       yogaVideo.type.toLowerCase(),
       ...yogaVideo.props,
-      "fitness",
-      "wellness",
-      "exercise",
-      "mindfulness",
-    ].join(", "),
+      'fitness',
+      'wellness',
+      'exercise',
+      'mindfulness',
+    ].join(', '),
     openGraph: {
       title: `${yogaVideo.title} | FunctionallyFit Yoga`,
       description: yogaVideo.description,
-      type: "video.other",
+      type: 'video.other',
       url: `https://functionalfitness.com/yoga/${id}`,
       images: [{ url: yogaVideo.thumbnailUrl }],
       videos: [
         {
           url: `https://stream.mux.com/${yogaVideo.muxPlaybackId}.m3u8`,
-          type: "application/x-mpegURL",
+          type: 'application/x-mpegURL',
         },
       ],
     },
     twitter: {
-      card: "player",
+      card: 'player',
       title: `${yogaVideo.title} | FunctionallyFit Yoga`,
       description: yogaVideo.description,
       images: [yogaVideo.thumbnailUrl],
@@ -59,12 +55,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function YogaVideoPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
+export default async function YogaVideoPage({ params }: { params: { id: string } }) {
+  const { id } = await params;
   const userId = await getCurrentUserId();
   const yogaVideo = await getYogaVideoById(id, userId);
 
@@ -76,26 +68,20 @@ export default async function YogaVideoPage({
   const minutes = Math.floor(yogaVideo.duration / 60);
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="flex justify-between items-start mb-8">
+    <div className="container mx-auto space-y-8 p-6">
+      <div className="mb-8 flex items-start justify-between">
         <div>
           <Link
             href="/yoga"
-            className="inline-flex items-center text-sm mb-4 text-muted-foreground hover:text-primary transition-colors"
+            className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Yoga Videos
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
-            {yogaVideo.title}
-          </h1>
+          <h1 className="mb-2 text-3xl font-bold tracking-tight">{yogaVideo.title}</h1>
           <p className="text-muted-foreground">{yogaVideo.description}</p>
         </div>
-        <YogaVideoActions
-          yogaVideoId={id}
-          userId={userId}
-          isSaved={yogaVideo.isSaved}
-        />
+        <YogaVideoActions yogaVideoId={id} userId={userId} isSaved={yogaVideo.isSaved} />
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
@@ -105,7 +91,7 @@ export default async function YogaVideoPage({
           </div>
           <div className="flex items-center gap-2">
             <Dumbbell className="h-5 w-5 text-muted-foreground" />
-            <span>{yogaVideo.props.join(", ") || "No equipment needed"}</span>
+            <span>{yogaVideo.props.join(', ') || 'No equipment needed'}</span>
           </div>
           <div className="flex items-center gap-2">
             <Target className="h-5 w-5 text-muted-foreground" />
@@ -124,10 +110,7 @@ export default async function YogaVideoPage({
 
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold">Workout Structure</h2>
-        <div
-          id="video-section"
-          className="aspect-video rounded-lg overflow-hidden bg-black"
-        >
+        <div id="video-section" className="aspect-video overflow-hidden rounded-lg bg-black">
           <VideoPlayer playbackId={yogaVideo.muxPlaybackId} token={token} />
         </div>
       </div>
@@ -140,8 +123,8 @@ export default async function YogaVideoPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "VideoObject",
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
             name: yogaVideo.title,
             description: yogaVideo.description,
             thumbnailUrl: yogaVideo.thumbnailUrl,
@@ -149,16 +132,16 @@ export default async function YogaVideoPage({
             duration: `PT${minutes}M`,
             contentUrl: `https://stream.mux.com/${yogaVideo.muxPlaybackId}.m3u8`,
             publisher: {
-              "@type": "Organization",
-              name: "FunctionallyFit",
+              '@type': 'Organization',
+              name: 'FunctionallyFit',
               logo: {
-                "@type": "ImageObject",
-                url: "https://functionalfitness.com/logo.png",
+                '@type': 'ImageObject',
+                url: 'https://functionalfitness.com/logo.png',
               },
             },
-            accessMode: ["visual", "auditory"],
-            accessibilityControl: ["fullScreen", "volume"],
-            accessibilityFeature: ["captions"],
+            accessMode: ['visual', 'auditory'],
+            accessibilityControl: ['fullScreen', 'volume'],
+            accessibilityFeature: ['captions'],
           }),
         }}
       />

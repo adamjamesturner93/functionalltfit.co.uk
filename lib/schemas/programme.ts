@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const activityTypeEnum = z.enum(["WORKOUT", "YOGA"]);
+export const activityTypeEnum = z.enum(['WORKOUT', 'YOGA']);
 
 export const activitySchema = z.object({
   id: z.string().optional(),
@@ -27,7 +27,4 @@ export const programmeSchema = z.object({
 
 export type Activity = z.infer<typeof activitySchema>;
 export type Programme = z.infer<typeof programmeSchema>;
-export type ProgrammeFormData = Omit<
-  Programme,
-  "id" | "createdAt" | "updatedAt"
->;
+export type ProgrammeFormData = Omit<Programme, 'id' | 'createdAt' | 'updatedAt'>;

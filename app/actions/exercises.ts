@@ -1,24 +1,24 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/prisma";
-import { Exercise, ExerciseType, ExerciseMode } from "@prisma/client";
+import { prisma } from '@/lib/prisma';
+import { Exercise, ExerciseType, ExerciseMode } from '@prisma/client';
 
 export type ExerciseFilters = {
-  type?: ExerciseType | "ALL";
-  mode?: ExerciseMode | "ALL";
-  muscleGroup?: string | "ALL";
+  type?: ExerciseType | 'ALL';
+  mode?: ExerciseMode | 'ALL';
+  muscleGroup?: string | 'ALL';
 };
 
 export async function getExercises(
   page: number = 1,
   pageSize: number = 10,
-  search: string = "",
-  filters: ExerciseFilters = {}
+  search: string = '',
+  filters: ExerciseFilters = {},
 ): Promise<{ exercises: Exercise[]; total: number }> {
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
-  const searchTerms = search.split(" ").filter(Boolean);
+  const searchTerms = search.split(' ').filter(Boolean);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
@@ -26,21 +26,21 @@ export async function getExercises(
   if (searchTerms.length > 0) {
     where.OR = searchTerms.map((term) => ({
       OR: [
-        { name: { contains: term, mode: "insensitive" } },
+        { name: { contains: term, mode: 'insensitive' } },
         { muscleGroups: { hasSome: [term] } },
       ],
     }));
   }
 
-  if (filters.type && filters.type !== "ALL") {
+  if (filters.type && filters.type !== 'ALL') {
     where.type = filters.type;
   }
 
-  if (filters.mode && filters.mode !== "ALL") {
+  if (filters.mode && filters.mode !== 'ALL') {
     where.mode = filters.mode;
   }
 
-  if (filters.muscleGroup && filters.muscleGroup !== "ALL") {
+  if (filters.muscleGroup && filters.muscleGroup !== 'ALL') {
     where.muscleGroups = { hasSome: [filters.muscleGroup] };
   }
 
@@ -49,7 +49,7 @@ export async function getExercises(
       where,
       skip,
       take,
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     }),
     prisma.exercise.count({ where }),
   ]);
@@ -79,10 +79,7 @@ export async function createExercise(data: ExerciseInput): Promise<Exercise> {
   });
 }
 
-export async function updateExercise(
-  id: string,
-  data: ExerciseInput
-): Promise<Exercise> {
+export async function updateExercise(id: string, data: ExerciseInput): Promise<Exercise> {
   return prisma.exercise.update({
     where: { id },
     data,

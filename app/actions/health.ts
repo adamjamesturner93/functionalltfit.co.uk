@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 
 const healthDataSchema = z.object({
   date: z.string(),
@@ -32,7 +32,7 @@ export type BodyMeasurementInput = z.infer<typeof bodyMeasurementSchema>;
 export async function addHealthData(data: HealthDataInput) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   const validatedData = healthDataSchema.parse(data);
@@ -47,15 +47,15 @@ export async function addHealthData(data: HealthDataInput) {
     });
     return { success: true };
   } catch (error) {
-    console.error("Error adding health data:", error);
-    return { error: "Failed to add health data" };
+    console.error('Error adding health data:', error);
+    return { error: 'Failed to add health data' };
   }
 }
 
 export async function addBodyMeasurement(data: BodyMeasurementInput) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { error: "Not authenticated" };
+    return { error: 'Not authenticated' };
   }
 
   const validatedData = bodyMeasurementSchema.parse(data);
@@ -70,7 +70,7 @@ export async function addBodyMeasurement(data: BodyMeasurementInput) {
     });
 
     if (existingMeasurement) {
-      return { error: "A measurement for this date already exists" };
+      return { error: 'A measurement for this date already exists' };
     }
 
     // If no existing measurement, create a new one
@@ -83,8 +83,8 @@ export async function addBodyMeasurement(data: BodyMeasurementInput) {
     });
     return { success: true };
   } catch (error) {
-    console.error("Error adding body  measurement:", error);
-    return { error: "Failed to add body measurement" };
+    console.error('Error adding body  measurement:', error);
+    return { error: 'Failed to add body measurement' };
   }
 }
 
@@ -100,7 +100,7 @@ export async function getHealthData(userId: string, days: number) {
       },
     },
     orderBy: {
-      date: "asc",
+      date: 'asc',
     },
   });
 }
@@ -117,7 +117,7 @@ export async function getBodyMeasurements(userId: string, days: number) {
       },
     },
     orderBy: {
-      date: "asc",
+      date: 'asc',
     },
   });
 }

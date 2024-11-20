@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from 'react';
 import {
   getYogaVideos,
   YogaVideoFilters,
   YogaVideoSortOption,
   deleteYogaVideo,
-} from "@/app/actions/yoga-videos";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from '@/app/actions/yoga-videos';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,15 +26,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+} from '@/components/ui/select';
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -44,11 +44,11 @@ import {
   ColumnDef,
   flexRender,
   FilterFn,
-} from "@tanstack/react-table";
-import { rankItem } from "@tanstack/match-sorter-utils";
-import { useToast } from "@/hooks/use-toast";
-import { YogaVideo, YogaType } from "@prisma/client";
-import { MultiSelect } from "@/components/ui/multi-select";
+} from '@tanstack/react-table';
+import { rankItem } from '@tanstack/match-sorter-utils';
+import { useToast } from '@/hooks/use-toast';
+import { YogaVideo, YogaType } from '@prisma/client';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 const fuzzyFilter: FilterFn<YogaVideo> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -56,47 +56,33 @@ const fuzzyFilter: FilterFn<YogaVideo> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const propOptions = [
-  "Mat",
-  "Blocks",
-  "Straps",
-  "Blanket",
-  "Bolster",
-  "Chair",
-  "Wall",
-];
+const propOptions = ['Mat', 'Blocks', 'Straps', 'Blanket', 'Bolster', 'Chair', 'Wall'];
 
 const durationOptions = [
-  { value: "less15", label: "Less than 15 minutes" },
-  { value: "15to30", label: "15-30 minutes" },
-  { value: "30to45", label: "30-45 minutes" },
-  { value: "45plus", label: "45+ minutes" },
+  { value: 'less15', label: 'Less than 15 minutes' },
+  { value: '15to30', label: '15-30 minutes' },
+  { value: '30to45', label: '30-45 minutes' },
+  { value: '45plus', label: '45+ minutes' },
 ];
 
 const sortOptions = [
-  { value: "newest", label: "Newest" },
-  { value: "mostViewed", label: "Most Viewed" },
-  { value: "leastViewed", label: "Least Viewed" },
+  { value: 'newest', label: 'Newest' },
+  { value: 'mostViewed', label: 'Most Viewed' },
+  { value: 'leastViewed', label: 'Least Viewed' },
 ];
 
 export default function YogaVideosPage() {
   const [yogaVideos, setYogaVideos] = useState<YogaVideo[]>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const [filters, setFilters] = useState<YogaVideoFilters>({});
-  const [sort, setSort] = useState<YogaVideoSortOption>("newest");
+  const [sort, setSort] = useState<YogaVideoSortOption>('newest');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchYogaVideos = async () => {
-      const { yogaVideos } = await getYogaVideos(
-        1,
-        1000,
-        globalFilter,
-        filters,
-        sort
-      );
+      const { yogaVideos } = await getYogaVideos(1, 1000, globalFilter, filters, sort);
       setYogaVideos(yogaVideos);
     };
     fetchYogaVideos();
@@ -105,14 +91,12 @@ export default function YogaVideosPage() {
   const columns = useMemo<ColumnDef<YogaVideo>[]>(
     () => [
       {
-        accessorKey: "title",
+        accessorKey: 'title',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Title
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -121,14 +105,12 @@ export default function YogaVideosPage() {
         },
       },
       {
-        accessorKey: "type",
+        accessorKey: 'type',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Type
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -137,14 +119,12 @@ export default function YogaVideosPage() {
         },
       },
       {
-        accessorKey: "duration",
+        accessorKey: 'duration',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Duration
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -154,19 +134,17 @@ export default function YogaVideosPage() {
         cell: ({ row }) => `${Math.floor(row.original.duration / 60)} minutes`,
       },
       {
-        accessorKey: "props",
-        header: "Props",
-        cell: ({ row }) => row.original.props.join(", "),
+        accessorKey: 'props',
+        header: 'Props',
+        cell: ({ row }) => row.original.props.join(', '),
       },
       {
-        accessorKey: "watchCount",
+        accessorKey: 'watchCount',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Views
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -175,20 +153,20 @@ export default function YogaVideosPage() {
         },
       },
       {
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
           const yogaVideo = row.original;
 
           const handleDelete = async () => {
             try {
               await deleteYogaVideo(yogaVideo.id);
-              toast({ title: "Yoga video deleted successfully" });
+              toast({ title: 'Yoga video deleted successfully' });
               router.refresh();
             } catch (error) {
               console.error(error);
               toast({
-                title: "Error deleting yoga video",
-                variant: "destructive",
+                title: 'Error deleting yoga video',
+                variant: 'destructive',
               });
             }
           };
@@ -204,9 +182,7 @@ export default function YogaVideosPage() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() =>
-                    router.push(`/admin/content/yoga-videos/${yogaVideo.id}`)
-                  }
+                  onClick={() => router.push(`/admin/content/yoga-videos/${yogaVideo.id}`)}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit
@@ -222,7 +198,7 @@ export default function YogaVideosPage() {
         },
       },
     ],
-    [router, toast]
+    [router, toast],
   );
 
   const table = useReactTable({
@@ -242,10 +218,7 @@ export default function YogaVideosPage() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const updateFilter = (
-    key: keyof YogaVideoFilters,
-    value: string | string[]
-  ) => {
+  const updateFilter = (key: keyof YogaVideoFilters, value: string | string[]) => {
     setFilters((prev) => {
       if (Array.isArray(value)) {
         if (value.length > 0) {
@@ -255,7 +228,7 @@ export default function YogaVideosPage() {
           const { [key]: _, ...rest } = prev;
           return rest;
         }
-      } else if (value && value !== "ALL") {
+      } else if (value && value !== 'ALL') {
         return { ...prev, [key]: value };
       } else {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -267,28 +240,26 @@ export default function YogaVideosPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {" "}
+      {' '}
       <div className="container mx-auto py-10">
-        <div className="bg-surface-grey shadow-md rounded-lg overflow-hidden">
-          <div className="p-6 bg-bg-surface-light-grey border-b border-gray-200">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-foreground">
-                Yoga Videos
-              </h1>
+        <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
+          <div className="bg-bg-surface-light-grey border-b border-gray-200 p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h1 className="text-3xl font-bold text-foreground">Yoga Videos</h1>
               <Link href="/admin/content/yoga-videos/new">
                 <Button>Create New Yoga Video</Button>
               </Link>
             </div>
-            <div className="flex flex-wrap gap-4 mb-4">
+            <div className="mb-4 flex flex-wrap gap-4">
               <Input
                 placeholder="Search all columns..."
-                value={globalFilter ?? ""}
+                value={globalFilter ?? ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
                 className="max-w-sm"
               />
               <Select
-                onValueChange={(value) => updateFilter("type", value)}
-                defaultValue={searchParams.get("type") || "ALL"}
+                onValueChange={(value) => updateFilter('type', value)}
+                defaultValue={searchParams.get('type') || 'ALL'}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by Type" />
@@ -308,12 +279,12 @@ export default function YogaVideosPage() {
                   value: prop,
                 }))}
                 selected={filters.props || []}
-                onChange={(value) => updateFilter("props", value)}
+                onChange={(value) => updateFilter('props', value)}
                 placeholder="Filter by Props"
               />
               <Select
-                onValueChange={(value) => updateFilter("duration", value)}
-                defaultValue={searchParams.get("duration") || "ALL"}
+                onValueChange={(value) => updateFilter('duration', value)}
+                defaultValue={searchParams.get('duration') || 'ALL'}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by Duration" />
@@ -352,10 +323,7 @@ export default function YogaVideosPage() {
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -364,26 +332,17 @@ export default function YogaVideosPage() {
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

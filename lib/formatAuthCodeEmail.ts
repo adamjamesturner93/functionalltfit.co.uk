@@ -1,13 +1,10 @@
-import { MailDataRequired } from "@sendgrid/mail";
+import { MailDataRequired } from '@sendgrid/mail';
 
-export function formatAuthCodeEmail(
-  email: string,
-  authCode: string
-): MailDataRequired {
+export function formatAuthCodeEmail(email: string, authCode: string): MailDataRequired {
   return {
     to: email,
-    from: "noreply@thechronicyogini.com",
-    subject: "Your FunctionallyFit Authentication Code",
+    from: 'noreply@thechronicyogini.com',
+    subject: 'Your FunctionallyFit Authentication Code',
     text: `Your FunctionallyFit authentication code is: ${authCode}. If you didn't request this, please ignore this email.`,
     html: `
       <!DOCTYPE html>

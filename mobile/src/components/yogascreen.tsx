@@ -1,18 +1,18 @@
-import React from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import { VideoPlayer } from '../components/VideoPlayer'
-import { YogaVideo } from '../types'
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { VideoPlayer } from '../components/VideoPlayer';
+import { YogaVideo } from '../types';
 
 interface YogaVideoScreenProps {
   route: {
     params: {
-      video: YogaVideo
-    }
-  }
+      video: YogaVideo;
+    };
+  };
 }
 
 export const YogaVideoScreen: React.FC<YogaVideoScreenProps> = ({ route }) => {
-  const { video } = route.params
+  const { video } = route.params;
 
   return (
     <ScrollView style={styles.container}>
@@ -25,8 +25,8 @@ export const YogaVideoScreen: React.FC<YogaVideoScreenProps> = ({ route }) => {
         <Text style={styles.details}>Props: {video.props.join(', ')}</Text>
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -48,4 +48,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
-})
+});

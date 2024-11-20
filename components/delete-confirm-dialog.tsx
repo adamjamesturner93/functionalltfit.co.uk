@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,8 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+} from './ui/alert-dialog';
+import { Button } from './ui/button';
 
 export function DeleteConfirmDialog({
   onConfirm,
@@ -31,8 +31,7 @@ export function DeleteConfirmDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete{" "}
-            {entityName}.
+            This action cannot be undone. This will permanently delete {entityName}.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

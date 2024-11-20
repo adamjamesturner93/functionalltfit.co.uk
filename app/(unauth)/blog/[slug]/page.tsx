@@ -1,8 +1,8 @@
-import { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowLeft, Tag } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { Metadata } from 'next';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, ArrowLeft, Tag } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface BlogPost {
   title: string;
@@ -16,7 +16,7 @@ interface BlogPost {
 
 // This would typically come from a CMS or API
 const post: BlogPost = {
-  title: "5 Adaptive Workouts for Limited Mobility",
+  title: '5 Adaptive Workouts for Limited Mobility',
   content: `
     <p>Living with limited mobility doesn't mean you can't enjoy the benefits of regular exercise. In fact, staying active is crucial for maintaining overall health and improving quality of life. Here are five adaptive workouts that can be tailored to various levels of mobility:</p>
 
@@ -37,16 +37,11 @@ const post: BlogPost = {
 
     <p>Remember, it's important to consult with a healthcare professional or a certified adaptive fitness instructor before starting any new exercise regimen. They can help you create a safe and effective workout plan tailored to your specific needs and abilities.</p>
   `,
-  date: "2024-10-20",
-  readTime: "5 min read",
-  image: "/placeholder.svg",
-  slug: "5-adaptive-workouts-for-limited-mobility",
-  categories: [
-    "adaptive fitness",
-    "limited mobility",
-    "strength training",
-    "flexibility",
-  ],
+  date: '2024-10-20',
+  readTime: '5 min read',
+  image: '/placeholder.svg',
+  slug: '5-adaptive-workouts-for-limited-mobility',
+  categories: ['adaptive fitness', 'limited mobility', 'strength training', 'flexibility'],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,7 +62,7 @@ export const generateMetadata = (): Metadata => {
     openGraph: {
       title: post.title,
       description: `Learn about ${post.title.toLowerCase()} in this informative article from FunctionallyFit.`,
-      type: "article",
+      type: 'article',
       publishedTime: post.date,
       images: [
         {
@@ -79,7 +74,7 @@ export const generateMetadata = (): Metadata => {
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title: post.title,
       description: `Learn about ${post.title.toLowerCase()} in this informative article from FunctionallyFit.`,
       images: [`https://functionallyfit.com${post.image}`],
@@ -93,48 +88,39 @@ export default function BlogPost() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link
-        href="/blog"
-        className="inline-flex items-center text-primary hover:underline mb-6"
-      >
+      <Link href="/blog" className="mb-6 inline-flex items-center text-primary hover:underline">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Blog
       </Link>
-      <article className="max-w-3xl mx-auto">
+      <article className="mx-auto max-w-3xl">
         <Image
           src={post.image}
           alt={post.title}
           width={800}
           height={400}
-          className="rounded-lg object-cover w-full h-64 mb-6"
+          className="mb-6 h-64 w-full rounded-lg object-cover"
         />
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-        <div className="flex items-center text-sm text-muted-foreground mb-4">
+        <h1 className="mb-4 text-3xl font-bold">{post.title}</h1>
+        <div className="mb-4 flex items-center text-sm text-muted-foreground">
           <Calendar className="mr-2 h-4 w-4" />
           <span className="mr-4">{post.date}</span>
           <Clock className="mr-2 h-4 w-4" />
           <span>{post.readTime}</span>
         </div>
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="mb-6 flex flex-wrap gap-2">
           {post.categories.map((category, i) => (
-            <Link
-              key={i}
-              href={`/blog?category=${encodeURIComponent(category)}`}
-            >
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer">
+            <Link key={i} href={`/blog?category=${encodeURIComponent(category)}`}>
+              <span className="inline-flex cursor-pointer items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary hover:bg-primary/20">
                 <Tag className="mr-1 h-3 w-3" />
                 {category}
               </span>
             </Link>
           ))}
         </div>
-        <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
-      <div className="max-w-3xl mx-auto mt-12">
-        <h2 className="text-2xl font-bold mb-4">Share this article</h2>
+      <div className="mx-auto mt-12 max-w-3xl">
+        <h2 className="mb-4 text-2xl font-bold">Share this article</h2>
         <div className="flex space-x-4">
           <Button variant="outline">Facebook</Button>
           <Button variant="outline">Twitter</Button>

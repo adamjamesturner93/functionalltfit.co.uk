@@ -1,15 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import {
-  getWorkouts,
-  WorkoutWithCount,
-  WorkoutFilters,
-} from "@/app/actions/workouts";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, useMemo } from 'react';
+import { getWorkouts, WorkoutWithCount, WorkoutFilters } from '@/app/actions/workouts';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -17,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,15 +21,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+} from '@/components/ui/select';
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -43,47 +39,42 @@ import {
   ColumnDef,
   flexRender,
   FilterFn,
-} from "@tanstack/react-table";
-import { rankItem } from "@tanstack/match-sorter-utils";
-import { useToast } from "@/hooks/use-toast";
-import { deleteWorkout } from "@/app/actions/workouts";
+} from '@tanstack/react-table';
+import { rankItem } from '@tanstack/match-sorter-utils';
+import { useToast } from '@/hooks/use-toast';
+import { deleteWorkout } from '@/app/actions/workouts';
 
-const fuzzyFilter: FilterFn<WorkoutWithCount> = (
-  row,
-  columnId,
-  value,
-  addMeta
-) => {
+const fuzzyFilter: FilterFn<WorkoutWithCount> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
   addMeta({ itemRank });
   return itemRank.passed;
 };
 
 const equipmentOptions = [
-  "Dumbbells",
-  "Barbell",
-  "Kettlebell",
-  "Resistance Bands",
-  "Pull-up Bar",
-  "Jump Rope",
+  'Dumbbells',
+  'Barbell',
+  'Kettlebell',
+  'Resistance Bands',
+  'Pull-up Bar',
+  'Jump Rope',
 ];
 
 const muscleGroups = [
-  "Full Body",
-  "Upper Body",
-  "Lower Body",
-  "Core",
-  "Chest",
-  "Back",
-  "Arms",
-  "Shoulders",
-  "Legs",
-  "Glutes",
+  'Full Body',
+  'Upper Body',
+  'Lower Body',
+  'Core',
+  'Chest',
+  'Back',
+  'Arms',
+  'Shoulders',
+  'Legs',
+  'Glutes',
 ];
 
 export default function WorkoutsPage() {
   const [workouts, setWorkouts] = useState<WorkoutWithCount[]>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
   const [filters, setFilters] = useState<WorkoutFilters>({});
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -100,14 +91,12 @@ export default function WorkoutsPage() {
   const columns = useMemo<ColumnDef<WorkoutWithCount>[]>(
     () => [
       {
-        accessorKey: "name",
+        accessorKey: 'name',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Name
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -116,46 +105,41 @@ export default function WorkoutsPage() {
         },
       },
       {
-        accessorKey: "description",
-        header: "Description",
+        accessorKey: 'description',
+        header: 'Description',
       },
       {
-        accessorKey: "totalLength",
+        accessorKey: 'totalLength',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Total Length
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           );
         },
-        cell: ({ row }) =>
-          `${Math.floor(row.original.totalLength / 60)} minutes`,
+        cell: ({ row }) => `${Math.floor(row.original.totalLength / 60)} minutes`,
       },
       {
-        accessorKey: "equipment",
-        header: "Equipment",
-        cell: ({ row }) => row.original.equipment.join(", "),
+        accessorKey: 'equipment',
+        header: 'Equipment',
+        cell: ({ row }) => row.original.equipment.join(', '),
       },
       {
-        accessorKey: "muscleGroups",
-        header: "Muscle Groups",
-        cell: ({ row }) => row.original.muscleGroups.join(", "),
+        accessorKey: 'muscleGroups',
+        header: 'Muscle Groups',
+        cell: ({ row }) => row.original.muscleGroups.join(', '),
       },
       {
-        accessorKey: "_count.WorkoutActivity",
+        accessorKey: '_count.WorkoutActivity',
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Times Completed
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -164,20 +148,20 @@ export default function WorkoutsPage() {
         },
       },
       {
-        id: "actions",
+        id: 'actions',
         cell: ({ row }) => {
           const workout = row.original;
 
           const handleDelete = async () => {
             try {
               await deleteWorkout(workout.id);
-              toast({ title: "Workout deleted successfully" });
+              toast({ title: 'Workout deleted successfully' });
               router.refresh();
             } catch (error) {
               console.error(error);
               toast({
-                title: "Error deleting workout",
-                variant: "destructive",
+                title: 'Error deleting workout',
+                variant: 'destructive',
               });
             }
           };
@@ -193,9 +177,7 @@ export default function WorkoutsPage() {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() =>
-                    router.push(`/admin/content/workouts/${workout.id}`)
-                  }
+                  onClick={() => router.push(`/admin/content/workouts/${workout.id}`)}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit
@@ -211,7 +193,7 @@ export default function WorkoutsPage() {
         },
       },
     ],
-    [router, toast]
+    [router, toast],
   );
 
   const table = useReactTable({
@@ -233,7 +215,7 @@ export default function WorkoutsPage() {
 
   const updateFilter = (key: keyof WorkoutFilters, value: string) => {
     setFilters((prev) => {
-      if (value && value !== "ALL") {
+      if (value && value !== 'ALL') {
         return { ...prev, [key]: value };
       } else {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -245,26 +227,26 @@ export default function WorkoutsPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {" "}
+      {' '}
       <div className="container mx-auto py-10">
-        <div className="bg-surface-grey shadow-md rounded-lg overflow-hidden">
-          <div className="p-6 bg-bg-surface-light-grey border-b border-gray-200">
-            <div className="flex justify-between items-center mb-6">
+        <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
+          <div className="bg-bg-surface-light-grey border-b border-gray-200 p-6">
+            <div className="mb-6 flex items-center justify-between">
               <h1 className="text-3xl font-bold text-foreground">Workouts</h1>
               <Link href="/admin/content/workouts/new">
                 <Button>Create New Workout</Button>
               </Link>
             </div>
-            <div className="flex flex-wrap gap-4 mb-4">
+            <div className="mb-4 flex flex-wrap gap-4">
               <Input
                 placeholder="Search all columns..."
-                value={globalFilter ?? ""}
+                value={globalFilter ?? ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
                 className="max-w-sm"
               />
               <Select
-                onValueChange={(value) => updateFilter("equipment", value)}
-                defaultValue={searchParams.get("equipment") || "ALL"}
+                onValueChange={(value) => updateFilter('equipment', value)}
+                defaultValue={searchParams.get('equipment') || 'ALL'}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by Equipment" />
@@ -279,8 +261,8 @@ export default function WorkoutsPage() {
                 </SelectContent>
               </Select>
               <Select
-                onValueChange={(value) => updateFilter("muscleGroup", value)}
-                defaultValue={searchParams.get("muscleGroup") || "ALL"}
+                onValueChange={(value) => updateFilter('muscleGroup', value)}
+                defaultValue={searchParams.get('muscleGroup') || 'ALL'}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by Muscle Group" />
@@ -298,15 +280,15 @@ export default function WorkoutsPage() {
                 type="number"
                 placeholder="Min Duration (minutes)"
                 className="w-[180px]"
-                value={filters.minDuration || ""}
-                onChange={(e) => updateFilter("minDuration", e.target.value)}
+                value={filters.minDuration || ''}
+                onChange={(e) => updateFilter('minDuration', e.target.value)}
               />
               <Input
                 type="number"
                 placeholder="Max Duration (minutes)"
                 className="w-[180px]"
-                value={filters.maxDuration || ""}
-                onChange={(e) => updateFilter("maxDuration", e.target.value)}
+                value={filters.maxDuration || ''}
+                onChange={(e) => updateFilter('maxDuration', e.target.value)}
               />
             </div>
           </div>
@@ -318,10 +300,7 @@ export default function WorkoutsPage() {
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -330,26 +309,17 @@ export default function WorkoutsPage() {
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

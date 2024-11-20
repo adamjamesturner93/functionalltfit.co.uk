@@ -1,16 +1,12 @@
-import { getProgramme } from "@/app/actions/programmes";
-import { getWorkouts } from "@/app/actions/workouts";
-import { getYogaVideos } from "@/app/actions/yoga-videos";
-import ProgrammeFormClient from "./ProgrammeFormClient";
-import { Programme } from "@/lib/schemas/programme";
+import { getProgramme } from '@/app/actions/programmes';
+import { getWorkouts } from '@/app/actions/workouts';
+import { getYogaVideos } from '@/app/actions/yoga-videos';
+import ProgrammeFormClient from './ProgrammeFormClient';
+import { Programme } from '@/lib/schemas/programme';
 
-export default async function ProgrammeFormPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ProgrammeFormPage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const isNewProgramme = id === "new";
+  const isNewProgramme = id === 'new';
 
   let initialProgramme: Programme | null = null;
   if (!isNewProgramme) {

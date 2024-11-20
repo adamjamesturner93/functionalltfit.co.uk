@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
@@ -12,22 +12,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [authCode, setAuthCode] = useState("");
+  const [email, setEmail] = useState('');
+  const [authCode, setAuthCode] = useState('');
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSendCode = async () => {
     try {
-      const response = await fetch("/api/auth/send-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
@@ -36,16 +36,16 @@ export default function LoginForm() {
         setError(null);
       } else {
         const data = await response.json();
-        setError(data.message || "Failed to send authentication code");
+        setError(data.message || 'Failed to send authentication code');
       }
     } catch (error) {
-      setError("An error occurred while sending the authentication code");
+      setError('An error occurred while sending the authentication code');
       console.error(error);
     }
   };
 
   const handlePasswordlessLogin = async () => {
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       email,
       authCode,
       redirect: false,
@@ -54,12 +54,12 @@ export default function LoginForm() {
     if (result?.error) {
       setError(result.error);
     } else {
-      router.push("/login");
+      router.push('/login');
     }
   };
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/login" });
+    signIn('google', { callbackUrl: '/login' });
   };
 
   return (
@@ -106,11 +106,7 @@ export default function LoginForm() {
         )}
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={handleGoogleLogin}
-          variant="outline"
-          className="w-full"
-        >
+        <Button onClick={handleGoogleLogin} variant="outline" className="w-full">
           Sign in with Google
         </Button>
       </CardFooter>

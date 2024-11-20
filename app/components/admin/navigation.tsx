@@ -1,22 +1,16 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Users,
-  Video,
-  Dumbbell,
-  Clipboard,
-  LayoutDashboard,
-} from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Users, Video, Dumbbell, Clipboard, LayoutDashboard } from 'lucide-react';
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", label: "Members", icon: Users },
-  { href: "/admin/content/yoga-videos", label: "Yoga Videos", icon: Video },
-  { href: "/admin/content/exercises", label: "Exercises", icon: Dumbbell },
-  { href: "/admin/content/workouts", label: "Workouts", icon: Clipboard },
-  { href: "/admin/content/programmes", label: "Programmes", icon: Clipboard },
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/users', label: 'Members', icon: Users },
+  { href: '/admin/content/yoga-videos', label: 'Yoga Videos', icon: Video },
+  { href: '/admin/content/exercises', label: 'Exercises', icon: Dumbbell },
+  { href: '/admin/content/workouts', label: 'Workouts', icon: Clipboard },
+  { href: '/admin/content/programmes', label: 'Programmes', icon: Clipboard },
 ];
 
 export function Navigation() {
@@ -25,9 +19,7 @@ export function Navigation() {
   return (
     <nav className="w-64 bg-surface-grey shadow-md">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-foreground">
-          FunctionallyFit Admin
-        </h1>
+        <h1 className="text-2xl font-bold text-foreground">FunctionallyFit Admin</h1>
       </div>
       <ul className="space-y-2 p-4">
         {navItems.map((item) => {
@@ -36,10 +28,10 @@ export function Navigation() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`flex items-center space-x-2 p-2 rounded-md ${
+                className={`flex items-center space-x-2 rounded-md p-2 ${
                   pathname === item.href
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted hover:bg-muted hover:text-surface-grey"
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted hover:bg-muted hover:text-surface-grey'
                 }`}
               >
                 <Icon className="h-5 w-5" />

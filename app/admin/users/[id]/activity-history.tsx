@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import {
-  getActivityHistory,
-  ActivityHistoryItem,
-} from "@/app/actions/activity";
-import { format } from "date-fns";
+import React, { useEffect, useState } from 'react';
+import { getActivityHistory, ActivityHistoryItem } from '@/app/actions/activity';
+import { format } from 'date-fns';
 import {
   Table,
   TableBody,
@@ -13,8 +10,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Dumbbell, GlassWater } from "lucide-react";
+} from '@/components/ui/table';
+import { Dumbbell, GlassWater } from 'lucide-react';
 
 interface ActivityHistoryProps {
   userId: string;
@@ -31,7 +28,7 @@ export function ActivityHistory({ userId }: ActivityHistoryProps) {
         const history = await getActivityHistory(userId);
         setActivities(history);
       } catch (error) {
-        console.error("Failed to fetch activity history:", error);
+        console.error('Failed to fetch activity history:', error);
       } finally {
         setIsLoading(false);
       }
@@ -58,14 +55,14 @@ export function ActivityHistory({ userId }: ActivityHistoryProps) {
         {activities.map((activity) => (
           <TableRow key={activity.id}>
             <TableCell>
-              {activity.type === "workout" ? (
+              {activity.type === 'workout' ? (
                 <Dumbbell className="h-5 w-5 text-blue-500" />
               ) : (
                 <GlassWater className="h-5 w-5 text-green-500" />
               )}
             </TableCell>
             <TableCell>{activity.name}</TableCell>
-            <TableCell>{format(activity.date, "PPP")}</TableCell>
+            <TableCell>{format(activity.date, 'PPP')}</TableCell>
             <TableCell>{activity.duration}</TableCell>
           </TableRow>
         ))}

@@ -1,21 +1,21 @@
-import { ReactNode } from "react";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { Toaster } from "@/components/ui/toaster";
-import { Navigation } from "./Navigation";
-import { getUserById } from "../actions/users";
+import { ReactNode } from 'react';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { Toaster } from '@/components/ui/toaster';
+import { Navigation } from './Navigation';
+import { getUserById } from '../actions/users';
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const session = await auth();
 
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const user = await getUserById(session.user.id);
 
   if (!user) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return (

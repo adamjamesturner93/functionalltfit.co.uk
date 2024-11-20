@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
-import { completeYogaVideo } from "@/app/actions/yoga-videos";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle } from 'lucide-react';
+import { completeYogaVideo } from '@/app/actions/yoga-videos';
+import { useRouter } from 'next/navigation';
 
 interface CompleteButtonProps {
   yogaVideoId: string;
@@ -23,7 +23,7 @@ export function CompleteButton({ yogaVideoId, userId }: CompleteButtonProps) {
       await completeYogaVideo(userId, yogaVideoId);
       setIsCompleted(true);
     } catch (error) {
-      console.error("Failed to mark video as completed:", error);
+      console.error('Failed to mark video as completed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +37,7 @@ export function CompleteButton({ yogaVideoId, userId }: CompleteButtonProps) {
       disabled={isLoading || isCompleted}
     >
       <CheckCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-      {isCompleted ? "Class Completed" : "Mark as Completed"}
+      {isCompleted ? 'Class Completed' : 'Mark as Completed'}
     </Button>
   );
 }

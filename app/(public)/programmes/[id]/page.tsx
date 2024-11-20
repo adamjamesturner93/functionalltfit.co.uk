@@ -1,29 +1,17 @@
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Clock,
-  Calendar,
-  Dumbbell,
-  Target,
-  BarChart,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getProgramme, getUserProgramme } from "@/app/actions/programmes";
-import { getCurrentUserId } from "@/lib/auth-utils";
-import { ProgrammeActions } from "./programme-actions";
+import Link from 'next/link';
+import { ArrowLeft, Clock, Calendar, Dumbbell, Target, BarChart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getProgramme, getUserProgramme } from '@/app/actions/programmes';
+import { getCurrentUserId } from '@/lib/auth-utils';
+import { ProgrammeActions } from './programme-actions';
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default async function ProgrammePage({ params }: Props) {
+export default async function ProgrammePage({ params }: { params: { id: string } }) {
   const userId = await getCurrentUserId();
+  const { id } = await params;
   const [programme, activeProgramme] = await Promise.all([
-    getProgramme(params.id, userId!),
+    getProgramme(id, userId!),
     userId ? getUserProgramme(userId) : null,
   ]);
 
@@ -31,10 +19,10 @@ export default async function ProgrammePage({ params }: Props) {
     return <div>Programme not found</div>;
   }
 
-  const isActive = activeProgramme?.programme.id === params.id;
+  const isActive = activeProgramme?.programme.id === id;
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       <div className="flex items-center justify-between">
         <Link
           href="/programmes"
@@ -44,7 +32,7 @@ export default async function ProgrammePage({ params }: Props) {
           Back to Programmes
         </Link>
         <ProgrammeActions
-          programmeId={params.id}
+          programmeId={id}
           userId={userId}
           isSaved={programme.isSaved}
           isActive={isActive}
@@ -56,35 +44,33 @@ export default async function ProgrammePage({ params }: Props) {
         <p className="text-muted-foreground">{programme.description}</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Calendar className="h-6 w-6 text-primary mb-2" />
+            <Calendar className="mb-2 h-6 w-6 text-primary" />
             <p className="text-sm font-medium">{programme.weeks} weeks</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Clock className="h-6 w-6 text-primary mb-2" />
-            <p className="text-sm font-medium">
-              {programme.sessionsPerWeek} sessions/week
-            </p>
+            <Clock className="mb-2 h-6 w-6 text-primary" />
+            <p className="text-sm font-medium">{programme.sessionsPerWeek} sessions/week</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Target className="h-6 w-6 text-primary mb-2" />
+            <Target className="mb-2 h-6 w-6 text-primary" />
             <p className="text-sm font-medium">{programme.intention}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <BarChart className="h-6 w-6 text-primary mb-2" />
+            <BarChart className="mb-2 h-6 w-6 text-primary" />
             <p className="text-sm font-medium">
-              {programme.activities.some((a) => a.activityType === "WORKOUT") &&
-              programme.activities.some((a) => a.activityType === "YOGA")
-                ? "Mixed"
-                : programme.activities[0]?.activityType || "N/A"}
+              {programme.activities.some((a) => a.activityType === 'WORKOUT') &&
+                programme.activities.some((a) => a.activityType === 'YOGA')
+                ? 'Mixed'
+                : programme.activities[0]?.activityType || 'N/A'}
             </p>
           </CardContent>
         </Card>
@@ -99,24 +85,18 @@ export default async function ProgrammePage({ params }: Props) {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {programme.activities.some(
-              (a) => a.workout?.equipment?.length || 0 > 0
-            ) ? (
+            {programme.activities.some((a) => a.workout?.equipment?.length || 0 > 0) ? (
               Array.from(
                 new Set(
-                  programme.activities
-                    .flatMap((a) => a.workout?.equipment || [])
-                    .filter(Boolean)
-                )
+                  programme.activities.flatMap((a) => a.workout?.equipment || []).filter(Boolean),
+                ),
               ).map((equipment) => (
                 <Badge key={equipment} variant="secondary">
                   {equipment}
                 </Badge>
               ))
             ) : (
-              <span className="text-muted-foreground">
-                No equipment required
-              </span>
+              <span className="text-muted-foreground">No equipment required</span>
             )}
           </div>
         </CardContent>
@@ -133,38 +113,32 @@ export default async function ProgrammePage({ params }: Props) {
                 .map((activity) => (
                   <Card key={activity.id}>
                     <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="mb-2 flex items-center justify-between">
                         <Badge variant="outline">Day {activity.day}</Badge>
                         {isActive && activity.completed && (
                           <Badge variant="secondary">Completed</Badge>
                         )}
                       </div>
-                      <h3 className="font-medium mb-1">
+                      <h3 className="mb-1 font-medium">
                         {activity.workout?.name || activity.yogaVideo?.title}
                       </h3>
-                      <div className="flex items-center text-sm text-muted-foreground mb-4">
-                        <span className="capitalize mr-2">
+                      <div className="mb-4 flex items-center text-sm text-muted-foreground">
+                        <span className="mr-2 capitalize">
                           {activity.activityType.toLowerCase()}
                         </span>
                         <span>•</span>
                         <span className="ml-2">
-                          {activity.activityType === "WORKOUT" &&
-                          activity.workout
-                            ? `${Math.floor(
-                                activity.workout.totalLength / 60
-                              )} mins`
-                            : activity.activityType === "YOGA" &&
-                              activity.yogaVideo
-                            ? `${Math.floor(
-                                activity.yogaVideo.duration / 60
-                              )} mins`
-                            : "Duration not available"}
+                          {activity.activityType === 'WORKOUT' && activity.workout
+                            ? `${Math.floor(activity.workout.totalLength / 60)} mins`
+                            : activity.activityType === 'YOGA' && activity.yogaVideo
+                              ? `${Math.floor(activity.yogaVideo.duration / 60)} mins`
+                              : 'Duration not available'}
                         </span>
                       </div>
                       <Button variant="outline" className="w-full" asChild>
                         <Link
                           href={
-                            activity.activityType === "WORKOUT"
+                            activity.activityType === 'WORKOUT'
                               ? `/workouts/${activity.workout?.id}`
                               : `/yoga/${activity.yogaVideo?.id}`
                           }

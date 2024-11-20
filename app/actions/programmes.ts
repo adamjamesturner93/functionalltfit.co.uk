@@ -1,19 +1,12 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import {
-  programmeSchema,
-  ProgrammeFormData,
-  Programme,
-} from "@/lib/schemas/programme";
-import { Prisma, ProgrammeActivity, UserProgramme } from "@prisma/client";
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { programmeSchema, ProgrammeFormData, Programme } from '@/lib/schemas/programme';
+import { Prisma, ProgrammeActivity, UserProgramme } from '@prisma/client';
 
-export type ProgrammeActivityWithName = Omit<
-  ProgrammeActivity,
-  "activityType"
-> & {
-  activityType: "WORKOUT" | "YOGA";
+export type ProgrammeActivityWithName = Omit<ProgrammeActivity, 'activityType'> & {
+  activityType: 'WORKOUT' | 'YOGA';
   name: string;
 };
 
@@ -21,7 +14,7 @@ export type ProgrammeWithActivities = Programme & {
   activities: ProgrammeActivityWithName[];
 };
 
-export type UserProgrammeWithProgress = Omit<UserProgramme, "progress"> & {
+export type UserProgrammeWithProgress = Omit<UserProgramme, 'progress'> & {
   programme: ProgrammeWithActivities;
   progress: number;
 };
@@ -63,7 +56,7 @@ export type ProgrammeWithActivitiesAndSaved = Prisma.ProgrammeGetPayload<{
 
 export async function getProgramme(
   id: string,
-  userId?: string
+  userId?: string,
 ): Promise<ProgrammeWithActivitiesAndSaved | null> {
   const programme = await prisma.programme.findUnique({
     where: { id },
@@ -104,7 +97,7 @@ export async function getProgramme(
     isSaved: userId ? programme.savedBy.length > 0 : false,
     activities: programme.activities.map((activity) => ({
       ...activity,
-      name: activity.workout?.name || activity.yogaVideo?.title || "",
+      name: activity.workout?.name || activity.yogaVideo?.title || '',
     })),
   };
 }
@@ -134,7 +127,7 @@ export async function toggleProgrammeSave(programmeId: string, userId: string) {
     });
   }
 
-  revalidatePath("/programmes");
+  revalidatePath('/programmes');
   revalidatePath(`/programmes/${programmeId}`);
 }
 
@@ -143,7 +136,7 @@ export async function getUniqueIntentions(): Promise<string[]> {
     select: {
       intention: true,
     },
-    distinct: ["intention"],
+    distinct: ['intention'],
   });
 
   return intentions.map((i) => i.intention);
@@ -154,9 +147,9 @@ export async function getUniqueLengths(): Promise<string[]> {
     select: {
       weeks: true,
     },
-    distinct: ["weeks"],
+    distinct: ['weeks'],
     orderBy: {
-      weeks: "asc",
+      weeks: 'asc',
     },
   });
 
@@ -166,7 +159,7 @@ export async function getUniqueLengths(): Promise<string[]> {
 export async function getProgrammes(
   page: number = 1,
   pageSize: number = 9,
-  search: string = "",
+  search: string = '',
   filters: {
     intention?: string;
     length?: string;
@@ -174,22 +167,22 @@ export async function getProgrammes(
     maxSessions?: number;
     saved?: boolean;
   } = {},
-  userId?: string
+  userId?: string,
 ) {
   const where: Prisma.ProgrammeWhereInput = {
     ...(search && {
       OR: [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
       ],
     }),
     ...(filters.intention &&
-      filters.intention !== "all" && {
-        intention: { equals: filters.intention, mode: "insensitive" },
+      filters.intention !== 'all' && {
+        intention: { equals: filters.intention, mode: 'insensitive' },
       }),
     ...(filters.length &&
-      filters.length !== "all" && {
-        weeks: parseInt(filters.length.split(" ")[0]),
+      filters.length !== 'all' && {
+        weeks: parseInt(filters.length.split(' ')[0]),
       }),
     ...(filters.minSessions && {
       sessionsPerWeek: { gte: filters.minSessions },
@@ -252,7 +245,7 @@ export async function createProgramme(data: ProgrammeFormData) {
     },
     include: { activities: true },
   });
-  revalidatePath("/admin/content/programmes");
+  revalidatePath('/admin/content/programmes');
   return programme;
 }
 
@@ -277,19 +270,17 @@ export async function updateProgramme(id: string, data: ProgrammeFormData) {
     include: { activities: true },
   });
 
-  revalidatePath("/admin/content/programmes");
+  revalidatePath('/admin/content/programmes');
   revalidatePath(`/admin/content/programmes/${id}`);
   return programme;
 }
 
 export async function deleteProgramme(id: string) {
   await prisma.programme.delete({ where: { id } });
-  revalidatePath("/admin/content/programmes");
+  revalidatePath('/admin/content/programmes');
 }
 
-export async function getUserProgramme(
-  userId: string
-): Promise<UserProgrammeWithProgress | null> {
+export async function getUserProgramme(userId: string): Promise<UserProgrammeWithProgress | null> {
   const userProgramme = await prisma.userProgramme.findFirst({
     where: { userId, isActive: true },
     include: {
@@ -308,19 +299,17 @@ export async function getUserProgramme(
 
   if (!userProgramme) return null;
 
-  const activitiesWithNames: ProgrammeActivityWithName[] =
-    userProgramme.programme.activities.map((activity) => ({
+  const activitiesWithNames: ProgrammeActivityWithName[] = userProgramme.programme.activities.map(
+    (activity) => ({
       ...activity,
-      activityType: activity.activityType as "WORKOUT" | "YOGA",
-      name: activity.workout?.name || activity.yogaVideo?.title || "",
-    }));
+      activityType: activity.activityType as 'WORKOUT' | 'YOGA',
+      name: activity.workout?.name || activity.yogaVideo?.title || '',
+    }),
+  );
 
-  const completedActivities = activitiesWithNames.filter(
-    (activity) => activity.completed
-  ).length;
+  const completedActivities = activitiesWithNames.filter((activity) => activity.completed).length;
   const totalActivities = activitiesWithNames.length;
-  const progress =
-    totalActivities > 0 ? (completedActivities / totalActivities) * 100 : 0;
+  const progress = totalActivities > 0 ? (completedActivities / totalActivities) * 100 : 0;
 
   return {
     ...userProgramme,
@@ -350,8 +339,8 @@ export async function startProgramme(userId: string, programmeId: string) {
     },
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/programmes");
+  revalidatePath('/dashboard');
+  revalidatePath('/programmes');
   return newUserProgramme;
 }
 
@@ -361,14 +350,14 @@ export async function leaveProgramme(userId: string, programmeId: string) {
     data: { isActive: false, endDate: new Date() },
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/programmes");
+  revalidatePath('/dashboard');
+  revalidatePath('/programmes');
 }
 
 export async function updateActivityCompletion(
   userId: string,
   activityId: string,
-  completed: boolean
+  completed: boolean,
 ) {
   await prisma.programmeActivity.update({
     where: { id: activityId },
@@ -382,7 +371,7 @@ export async function updateActivityCompletion(
 
   if (userProgramme) {
     const completedActivities = userProgramme.programme.activities.filter(
-      (a) => a.completed
+      (a) => a.completed,
     ).length;
     const totalActivities = userProgramme.programme.activities.length;
     const progress = (completedActivities / totalActivities) * 100;
@@ -393,15 +382,15 @@ export async function updateActivityCompletion(
     });
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/programmes");
+  revalidatePath('/dashboard');
+  revalidatePath('/programmes');
 }
 
 // Add this new function to automatically update activity completion
 export async function autoUpdateActivityCompletion(
   userId: string,
-  activityType: "WORKOUT" | "YOGA",
-  activityId: string
+  activityType: 'WORKOUT' | 'YOGA',
+  activityId: string,
 ) {
   const userProgramme = await prisma.userProgramme.findFirst({
     where: { userId, isActive: true },
@@ -417,8 +406,8 @@ export async function autoUpdateActivityCompletion(
   if (userProgramme) {
     const activity = userProgramme.programme.activities.find(
       (a) =>
-        (a.activityType === "WORKOUT" && a.workoutId === activityId) ||
-        (a.activityType === "YOGA" && a.yogaVideoId === activityId)
+        (a.activityType === 'WORKOUT' && a.workoutId === activityId) ||
+        (a.activityType === 'YOGA' && a.yogaVideoId === activityId),
     );
 
     if (activity) {

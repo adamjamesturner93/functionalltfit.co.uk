@@ -1,65 +1,51 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import {
-  useForm,
-  useFieldArray,
-  Controller,
-  FieldErrors,
-  FieldError,
-} from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { SetType, Exercise } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm, useFieldArray, Controller, FieldErrors, FieldError } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { SetType, Exercise } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  createWorkout,
-  updateWorkout,
-  WorkoutWithSets,
-} from "@/app/actions/workouts";
-import { getExercises } from "@/app/actions/exercises";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp, ArrowUp, ArrowDown } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+} from '@/components/ui/select';
+import { createWorkout, updateWorkout, WorkoutWithSets } from '@/app/actions/workouts';
+import { getExercises } from '@/app/actions/exercises';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, ChevronUp, ArrowUp, ArrowDown } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const workoutSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
-  totalLength: z.number().min(0, "Total length cannot be negative"),
+  totalLength: z.number().min(0, 'Total length cannot be negative'),
   equipment: z.array(z.string()),
   muscleGroups: z.array(z.string()),
   sets: z.array(
     z.object({
       type: z.nativeEnum(SetType),
-      rounds: z.number().min(1, "Rounds must be at least 1"),
-      rest: z.number().min(0, "Rest time cannot be negative"),
-      gap: z.number().min(0, "Gap time cannot be negative").optional(),
+      rounds: z.number().min(1, 'Rounds must be at least 1'),
+      rest: z.number().min(0, 'Rest time cannot be negative'),
+      gap: z.number().min(0, 'Gap time cannot be negative').optional(),
       exercises: z.array(
         z.object({
-          exerciseId: z.string().min(1, "Exercise is required"),
-          targetReps: z.number().min(1, "Target reps must be at least 1"),
-          order: z.number().min(1, "Order must be at least 1"),
-        })
+          exerciseId: z.string().min(1, 'Exercise is required'),
+          targetReps: z.number().min(1, 'Target reps must be at least 1'),
+          order: z.number().min(1, 'Order must be at least 1'),
+        }),
       ),
-    })
+    }),
   ),
 });
 
@@ -86,7 +72,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
     defaultValues: workout
       ? {
           name: workout.name,
-          description: workout.description || "",
+          description: workout.description || '',
           totalLength: workout.totalLength,
           equipment: workout.equipment,
           muscleGroups: workout.muscleGroups,
@@ -103,8 +89,8 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
           })),
         }
       : {
-          name: "",
-          description: "",
+          name: '',
+          description: '',
           totalLength: 0,
           equipment: [],
           muscleGroups: [],
@@ -126,7 +112,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
     move: moveSet,
   } = useFieldArray({
     control,
-    name: "sets",
+    name: 'sets',
   });
 
   useEffect(() => {
@@ -138,7 +124,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
   }, []);
 
   const onSubmit = async (data: WorkoutInput) => {
-    console.log("submitting...");
+    console.log('submitting...');
     try {
       // Ensure exercises are ordered correctly before submission
       const orderedData = {
@@ -154,19 +140,19 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
 
       if (workout) {
         await updateWorkout(workout.id, orderedData);
-        toast({ title: "Workout updated successfully" });
+        toast({ title: 'Workout updated successfully' });
       } else {
         await createWorkout(orderedData);
-        toast({ title: "Workout created successfully" });
+        toast({ title: 'Workout created successfully' });
       }
-      router.push("/admin/content/workouts");
+      router.push('/admin/content/workouts');
     } catch (error) {
       console.error(error);
-      toast({ title: "Error saving workout", variant: "destructive" });
+      toast({ title: 'Error saving workout', variant: 'destructive' });
     }
   };
 
-  const watchedSets = watch("sets");
+  const watchedSets = watch('sets');
 
   const { totalTime, equipment, muscleGroups } = useMemo(() => {
     let totalTime = 0;
@@ -177,13 +163,9 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
       const setTime =
         set.rounds *
           (set.exercises.reduce((acc, exercise) => {
-            const exerciseData = exercises.find(
-              (e) => e.id === exercise.exerciseId
-            );
+            const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
             if (exerciseData) {
-              exerciseData.muscleGroups.forEach((mg) =>
-                muscleGroupsSet.add(mg)
-              );
+              exerciseData.muscleGroups.forEach((mg) => muscleGroupsSet.add(mg));
             }
             return acc + exercise.targetReps * 3; // Assuming 3 seconds per rep
           }, 0) +
@@ -194,11 +176,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
     });
 
     exercises.forEach((exercise) => {
-      if (
-        watchedSets.some((set) =>
-          set.exercises.some((e) => e.exerciseId === exercise.id)
-        )
-      ) {
+      if (watchedSets.some((set) => set.exercises.some((e) => e.exerciseId === exercise.id))) {
         if (exercise.equipment) {
           equipmentSet.add(exercise.equipment);
         }
@@ -214,9 +192,9 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
   }, [watchedSets, exercises]);
 
   useEffect(() => {
-    setValue("totalLength", totalTime);
-    setValue("equipment", equipment);
-    setValue("muscleGroups", Array.from(muscleGroups));
+    setValue('totalLength', totalTime);
+    setValue('equipment', equipment);
+    setValue('muscleGroups', Array.from(muscleGroups));
   }, [totalTime, equipment, muscleGroups, setValue]);
 
   const toggleSet = (index: number) => {
@@ -241,48 +219,36 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
   const getSetTitle = (setIndex: number) => {
     const set = watchedSets[setIndex];
     const exerciseNames = set.exercises
-      .map(
-        (exercise) =>
-          exercises.find((e) => e.id === exercise.exerciseId)?.name || "Unknown"
-      )
-      .join(", ");
+      .map((exercise) => exercises.find((e) => e.id === exercise.exerciseId)?.name || 'Unknown')
+      .join(', ');
     return `Set ${setIndex + 1}: ${exerciseNames}`;
   };
 
   const renderFormErrors = () => {
-    const errorMessages = Object.entries(
-      errors as FieldErrors<WorkoutInput>
-    ).flatMap(([key, value]) => {
-      if (key === "sets") {
-        return (value as FieldErrors<WorkoutInput["sets"]>[]).flatMap(
-          (setError, setIndex) =>
+    const errorMessages = Object.entries(errors as FieldErrors<WorkoutInput>).flatMap(
+      ([key, value]) => {
+        if (key === 'sets') {
+          return (value as FieldErrors<WorkoutInput['sets']>[]).flatMap((setError, setIndex) =>
             Object.entries(setError || {}).map(([setKey, setValue]) => {
-              if (setKey === "exercises") {
-                return (
-                  (setValue as FieldErrors<
-                    WorkoutInput["sets"][number]["exercises"]
-                  >) || []
-                )
+              if (setKey === 'exercises') {
+                return ((setValue as FieldErrors<WorkoutInput['sets'][number]['exercises']>) || [])
                   .map((exerciseError, exerciseIndex) => {
                     const firstError = Object.values(exerciseError || {})[0] as
                       | FieldError
                       | undefined;
                     return firstError
-                      ? `Set ${setIndex + 1}, Exercise ${exerciseIndex + 1}: ${
-                          firstError.message
-                        }`
+                      ? `Set ${setIndex + 1}, Exercise ${exerciseIndex + 1}: ${firstError.message}`
                       : null;
                   })
                   .filter((message): message is string => message !== null);
               }
-              return `Set ${setIndex + 1}: ${
-                (setValue as FieldError)?.message || "Unknown error"
-              }`;
-            })
-        );
-      }
-      return `${key}: ${(value as FieldError)?.message || "Unknown error"}`;
-    });
+              return `Set ${setIndex + 1}: ${(setValue as FieldError)?.message || 'Unknown error'}`;
+            }),
+          );
+        }
+        return `${key}: ${(value as FieldError)?.message || 'Unknown error'}`;
+      },
+    );
 
     if (errorMessages.length === 0) return null;
 
@@ -300,12 +266,9 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
     );
   };
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-6 h-[calc(100vh-100px)]"
-    >
-      <div className="flex gap-6 flex-grow">
-        <div className="w-1/3 space-y-6 flex flex-col">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex h-[calc(100vh-100px)] flex-col gap-6">
+      <div className="flex flex-grow gap-6">
+        <div className="flex w-1/3 flex-col space-y-6">
           <Card className="flex-grow">
             <CardHeader>
               <CardTitle>Workout Details</CardTitle>
@@ -325,9 +288,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => (
-                    <Textarea {...field} id="description" />
-                  )}
+                  render={({ field }) => <Textarea {...field} id="description" />}
                 />
               </div>
 
@@ -340,12 +301,12 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
 
               <div>
                 <Label>Equipment Needed</Label>
-                <p>{equipment.join(", ") || "None"}</p>
+                <p>{equipment.join(', ') || 'None'}</p>
               </div>
 
               <div>
                 <Label>Muscle Groups</Label>
-                <p>{Array.from(muscleGroups).join(", ") || "None"}</p>
+                <p>{Array.from(muscleGroups).join(', ') || 'None'}</p>
               </div>
             </CardContent>
           </Card>
@@ -371,9 +332,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                   >
                     <Card className="mb-4">
                       <CardHeader className="flex flex-row items-center justify-between p-2">
-                        <CardTitle className="text-lg">
-                          {getSetTitle(setIndex)}
-                        </CardTitle>
+                        <CardTitle className="text-lg">{getSetTitle(setIndex)}</CardTitle>
                         <div className="flex items-center space-x-2">
                           <Button
                             type="button"
@@ -403,11 +362,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                           </Button>
                           <CollapsibleTrigger asChild>
                             <Button variant="ghost" size="sm">
-                              {openSets[setIndex] ? (
-                                <ChevronUp />
-                              ) : (
-                                <ChevronDown />
-                              )}
+                              {openSets[setIndex] ? <ChevronUp /> : <ChevronDown />}
                             </Button>
                           </CollapsibleTrigger>
                         </div>
@@ -416,9 +371,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                         <CardContent className="space-y-4">
                           <div className="flex items-center space-x-2">
                             <div className="flex-1">
-                              <Label htmlFor={`sets.${setIndex}.type`}>
-                                Type
-                              </Label>
+                              <Label htmlFor={`sets.${setIndex}.type`}>Type</Label>
                               <Controller
                                 name={`sets.${setIndex}.type`}
                                 control={control}
@@ -426,21 +379,12 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                   <Select
                                     onValueChange={(value) => {
                                       field.onChange(value);
-                                      const maxExercises = getMaxExercises(
-                                        value as SetType
-                                      );
-                                      const currentExercises = watch(
-                                        `sets.${setIndex}.exercises`
-                                      );
-                                      if (
-                                        currentExercises.length > maxExercises
-                                      ) {
+                                      const maxExercises = getMaxExercises(value as SetType);
+                                      const currentExercises = watch(`sets.${setIndex}.exercises`);
+                                      if (currentExercises.length > maxExercises) {
                                         setValue(
                                           `sets.${setIndex}.exercises`,
-                                          currentExercises.slice(
-                                            0,
-                                            maxExercises
-                                          )
+                                          currentExercises.slice(0, maxExercises),
                                         );
                                       }
                                     }}
@@ -461,9 +405,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                               />
                             </div>
                             <div className="flex-1">
-                              <Label htmlFor={`sets.${setIndex}.rounds`}>
-                                Rounds
-                              </Label>
+                              <Label htmlFor={`sets.${setIndex}.rounds`}>Rounds</Label>
                               <Controller
                                 name={`sets.${setIndex}.rounds`}
                                 control={control}
@@ -472,17 +414,13 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                     {...field}
                                     type="number"
                                     id={`sets.${setIndex}.rounds`}
-                                    onChange={(e) =>
-                                      field.onChange(+e.target.value)
-                                    }
+                                    onChange={(e) => field.onChange(+e.target.value)}
                                   />
                                 )}
                               />
                             </div>
                             <div className="flex-1">
-                              <Label htmlFor={`sets.${setIndex}.rest`}>
-                                Rest (s)
-                              </Label>
+                              <Label htmlFor={`sets.${setIndex}.rest`}>Rest (s)</Label>
                               <Controller
                                 name={`sets.${setIndex}.rest`}
                                 control={control}
@@ -491,19 +429,14 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                     {...field}
                                     type="number"
                                     id={`sets.${setIndex}.rest`}
-                                    onChange={(e) =>
-                                      field.onChange(+e.target.value)
-                                    }
+                                    onChange={(e) => field.onChange(+e.target.value)}
                                   />
                                 )}
                               />
                             </div>
-                            {watch(`sets.${setIndex}.type`) !==
-                              SetType.MULTISET && (
+                            {watch(`sets.${setIndex}.type`) !== SetType.MULTISET && (
                               <div className="flex-1">
-                                <Label htmlFor={`sets.${setIndex}.gap`}>
-                                  Gap (s)
-                                </Label>
+                                <Label htmlFor={`sets.${setIndex}.gap`}>Gap (s)</Label>
                                 <Controller
                                   name={`sets.${setIndex}.gap`}
                                   control={control}
@@ -512,9 +445,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                       {...field}
                                       type="number"
                                       id={`sets.${setIndex}.gap`}
-                                      onChange={(e) =>
-                                        field.onChange(+e.target.value)
-                                      }
+                                      onChange={(e) => field.onChange(+e.target.value)}
                                     />
                                   )}
                                 />
@@ -523,147 +454,116 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                           </div>
 
                           <div>
-                            <h5 className="text-md font-medium mb-2">
-                              Exercises
-                            </h5>
-                            {watch(`sets.${setIndex}.exercises`).map(
-                              (exercise, exerciseIndex) => (
-                                <Card key={exerciseIndex} className="mb-2">
-                                  <CardContent className="py-2 flex items-center space-x-2">
-                                    <div className="flex-1">
-                                      <Label
-                                        htmlFor={`sets.${setIndex}.exercises.${exerciseIndex}.exerciseId`}
-                                      >
-                                        Exercise
-                                      </Label>
-                                      <Controller
-                                        name={`sets.${setIndex}.exercises.${exerciseIndex}.exerciseId`}
-                                        control={control}
-                                        render={({ field }) => (
-                                          <Select
-                                            onValueChange={field.onChange}
-                                            value={field.value}
-                                          >
-                                            <SelectTrigger>
-                                              <SelectValue placeholder="Select exercise" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              {exercises.map((exercise) => (
-                                                <SelectItem
-                                                  key={exercise.id}
-                                                  value={exercise.id}
-                                                >
-                                                  {exercise.name}
-                                                </SelectItem>
-                                              ))}
-                                            </SelectContent>
-                                          </Select>
-                                        )}
-                                      />
-                                    </div>
-                                    <div className="flex-1">
-                                      <Label
-                                        htmlFor={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
-                                      >
-                                        Target Reps
-                                      </Label>
-                                      <Controller
-                                        name={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
-                                        control={control}
-                                        render={({ field }) => (
-                                          <Input
-                                            {...field}
-                                            type="number"
-                                            id={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
-                                            onChange={(e) =>
-                                              field.onChange(+e.target.value)
-                                            }
-                                          />
-                                        )}
-                                      />
-                                    </div>
-                                    <div className="flex flex-col space-y-1">
-                                      <Button
-                                        type="button"
-                                        onClick={() => {
-                                          const exercises = watch(
-                                            `sets.${setIndex}.exercises`
-                                          );
-                                          if (exerciseIndex > 0) {
-                                            const newExercises = [...exercises];
-                                            [
-                                              newExercises[exerciseIndex - 1],
-                                              newExercises[exerciseIndex],
-                                            ] = [
-                                              newExercises[exerciseIndex],
-                                              newExercises[exerciseIndex - 1],
-                                            ];
-                                            setValue(
-                                              `sets.${setIndex}.exercises`,
-                                              newExercises
-                                            );
-                                          }
-                                        }}
-                                        disabled={exerciseIndex === 0}
-                                        variant="outline"
-                                        size="sm"
-                                      >
-                                        <ArrowUp className="h-4 w-4" />
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        onClick={() => {
-                                          const exercises = watch(
-                                            `sets.${setIndex}.exercises`
-                                          );
-                                          if (
-                                            exerciseIndex <
-                                            exercises.length - 1
-                                          ) {
-                                            const newExercises = [...exercises];
-                                            [
-                                              newExercises[exerciseIndex],
-                                              newExercises[exerciseIndex + 1],
-                                            ] = [
-                                              newExercises[exerciseIndex + 1],
-                                              newExercises[exerciseIndex],
-                                            ];
-                                            setValue(
-                                              `sets.${setIndex}.exercises`,
-                                              newExercises
-                                            );
-                                          }
-                                        }}
-                                        disabled={
-                                          exerciseIndex ===
-                                          watch(`sets.${setIndex}.exercises`)
-                                            .length -
-                                            1
+                            <h5 className="text-md mb-2 font-medium">Exercises</h5>
+                            {watch(`sets.${setIndex}.exercises`).map((exercise, exerciseIndex) => (
+                              <Card key={exerciseIndex} className="mb-2">
+                                <CardContent className="flex items-center space-x-2 py-2">
+                                  <div className="flex-1">
+                                    <Label
+                                      htmlFor={`sets.${setIndex}.exercises.${exerciseIndex}.exerciseId`}
+                                    >
+                                      Exercise
+                                    </Label>
+                                    <Controller
+                                      name={`sets.${setIndex}.exercises.${exerciseIndex}.exerciseId`}
+                                      control={control}
+                                      render={({ field }) => (
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select exercise" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {exercises.map((exercise) => (
+                                              <SelectItem key={exercise.id} value={exercise.id}>
+                                                {exercise.name}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                      )}
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <Label
+                                      htmlFor={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
+                                    >
+                                      Target Reps
+                                    </Label>
+                                    <Controller
+                                      name={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
+                                      control={control}
+                                      render={({ field }) => (
+                                        <Input
+                                          {...field}
+                                          type="number"
+                                          id={`sets.${setIndex}.exercises.${exerciseIndex}.targetReps`}
+                                          onChange={(e) => field.onChange(+e.target.value)}
+                                        />
+                                      )}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col space-y-1">
+                                    <Button
+                                      type="button"
+                                      onClick={() => {
+                                        const exercises = watch(`sets.${setIndex}.exercises`);
+                                        if (exerciseIndex > 0) {
+                                          const newExercises = [...exercises];
+                                          [
+                                            newExercises[exerciseIndex - 1],
+                                            newExercises[exerciseIndex],
+                                          ] = [
+                                            newExercises[exerciseIndex],
+                                            newExercises[exerciseIndex - 1],
+                                          ];
+                                          setValue(`sets.${setIndex}.exercises`, newExercises);
                                         }
-                                        variant="outline"
-                                        size="sm"
-                                      >
-                                        <ArrowDown className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              )
-                            )}
+                                      }}
+                                      disabled={exerciseIndex === 0}
+                                      variant="outline"
+                                      size="sm"
+                                    >
+                                      <ArrowUp className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      onClick={() => {
+                                        const exercises = watch(`sets.${setIndex}.exercises`);
+                                        if (exerciseIndex < exercises.length - 1) {
+                                          const newExercises = [...exercises];
+                                          [
+                                            newExercises[exerciseIndex],
+                                            newExercises[exerciseIndex + 1],
+                                          ] = [
+                                            newExercises[exerciseIndex + 1],
+                                            newExercises[exerciseIndex],
+                                          ];
+                                          setValue(`sets.${setIndex}.exercises`, newExercises);
+                                        }
+                                      }}
+                                      disabled={
+                                        exerciseIndex ===
+                                        watch(`sets.${setIndex}.exercises`).length - 1
+                                      }
+                                      variant="outline"
+                                      size="sm"
+                                    >
+                                      <ArrowDown className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
                             {watch(`sets.${setIndex}.exercises`).length <
-                              getMaxExercises(
-                                watch(`sets.${setIndex}.type`)
-                              ) && (
+                              getMaxExercises(watch(`sets.${setIndex}.type`)) && (
                               <Button
                                 type="button"
                                 onClick={() => {
-                                  const exercises = watch(
-                                    `sets.${setIndex}.exercises`
-                                  );
+                                  const exercises = watch(`sets.${setIndex}.exercises`);
                                   setValue(`sets.${setIndex}.exercises`, [
                                     ...exercises,
                                     {
-                                      exerciseId: "",
+                                      exerciseId: '',
                                       targetReps: 1,
                                       order: exercises.length + 1,
                                     },

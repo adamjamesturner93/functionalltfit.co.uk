@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   Card,
   CardContent,
@@ -11,12 +11,12 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { addBodyMeasurement, BodyMeasurementInput } from "@/app/actions/health";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { addBodyMeasurement, BodyMeasurementInput } from '@/app/actions/health';
 
 const bodyMeasurementSchema = z.object({
   date: z.string(),
@@ -31,9 +31,9 @@ const bodyMeasurementSchema = z.object({
 });
 
 const steps = [
-  { name: "Basic", fields: ["date", "weight"] },
-  { name: "Lower Body", fields: ["calve", "thigh", "waist", "hips", "butt"] },
-  { name: "Upper Body", fields: ["chest", "arm"] },
+  { name: 'Basic', fields: ['date', 'weight'] },
+  { name: 'Lower Body', fields: ['calve', 'thigh', 'waist', 'hips', 'butt'] },
+  { name: 'Upper Body', fields: ['chest', 'arm'] },
 ];
 
 export function BodyMeasurementForm() {
@@ -56,21 +56,20 @@ export function BodyMeasurementForm() {
 
     if (result.error) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: result.error,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } else {
       toast({
-        title: "Success",
-        description: "Body measurements added successfully",
+        title: 'Success',
+        description: 'Body measurements added successfully',
       });
       setCurrentStep(0);
     }
   };
 
-  const nextStep = () =>
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
   return (
@@ -82,20 +81,18 @@ export function BodyMeasurementForm() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           {steps[currentStep].fields.map((field) => (
-            <div key={field} className="space-y-2 mb-4">
-              <Label htmlFor={field}>
-                {field.charAt(0).toUpperCase() + field.slice(1)}
-              </Label>
+            <div key={field} className="mb-4 space-y-2">
+              <Label htmlFor={field}>{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
               <Input
                 id={field}
-                type={field === "date" ? "date" : "number"}
-                step={field === "date" ? undefined : "0.1"}
+                type={field === 'date' ? 'date' : 'number'}
+                step={field === 'date' ? undefined : '0.1'}
                 {...register(field as keyof BodyMeasurementInput, {
-                  valueAsNumber: field !== "date",
+                  valueAsNumber: field !== 'date',
                 })}
               />
               {errors[field as keyof BodyMeasurementInput] && (
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors[field as keyof BodyMeasurementInput]?.message}
                 </p>
               )}
@@ -113,7 +110,7 @@ export function BodyMeasurementForm() {
           <Button onClick={nextStep}>Next</Button>
         ) : (
           <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         )}
       </CardFooter>

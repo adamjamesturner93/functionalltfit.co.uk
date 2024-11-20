@@ -1,22 +1,22 @@
-import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
-import { nanoid } from "nanoid";
-import { put as localPut } from "@/lib/local-blob-storage";
+import { NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
+import { nanoid } from 'nanoid';
+import { put as localPut } from '@/lib/local-blob-storage';
 
 export async function POST(request: Request) {
   const formData = await request.formData();
-  const file = formData.get("file") as File;
+  const file = formData.get('file') as File;
 
   if (!file) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
   try {
     let url: string;
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === 'production') {
       const blob = await put(`images/${nanoid()}-${file.name}`, file, {
-        access: "public",
+        access: 'public',
       });
       url = blob.url;
     } else {
@@ -26,10 +26,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url });
   } catch (error) {
-    console.error("Error uploading file:", error);
-    return NextResponse.json(
-      { error: "Failed to upload file" },
-      { status: 500 }
-    );
+    console.error('Error uploading file:', error);
+    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
   }
 }

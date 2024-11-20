@@ -1,15 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { BookmarkIcon, PlayCircle, XCircle } from "lucide-react";
-import {
-  toggleProgrammeSave,
-  startProgramme,
-  leaveProgramme,
-} from "@/app/actions/programmes";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { BookmarkIcon, PlayCircle, XCircle } from 'lucide-react';
+import { toggleProgrammeSave, startProgramme, leaveProgramme } from '@/app/actions/programmes';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProgrammeActionsProps {
   programmeId: string;
@@ -32,9 +28,9 @@ export function ProgrammeActions({
   const handleToggleSave = async () => {
     if (!userId) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to save programmes",
-        variant: "destructive",
+        title: 'Authentication required',
+        description: 'Please sign in to save programmes',
+        variant: 'destructive',
       });
       return;
     }
@@ -43,15 +39,15 @@ export function ProgrammeActions({
       await toggleProgrammeSave(programmeId, userId);
       setSaved(!saved);
       toast({
-        title: saved ? "Programme removed from saved" : "Programme saved",
+        title: saved ? 'Programme removed from saved' : 'Programme saved',
         duration: 2000,
       });
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error",
-        description: "Failed to save programme",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to save programme',
+        variant: 'destructive',
       });
     }
   };
@@ -59,9 +55,9 @@ export function ProgrammeActions({
   const handleStartProgramme = async () => {
     if (!userId) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to start a programme",
-        variant: "destructive",
+        title: 'Authentication required',
+        description: 'Please sign in to start a programme',
+        variant: 'destructive',
       });
       return;
     }
@@ -70,16 +66,16 @@ export function ProgrammeActions({
     try {
       await startProgramme(userId, programmeId);
       toast({
-        title: "Programme started",
-        description: "You can now track your progress in the dashboard",
+        title: 'Programme started',
+        description: 'You can now track your progress in the dashboard',
       });
-      router.push("/dashboard");
+      router.push('/dashboard');
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error",
-        description: "Failed to start programme",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to start programme',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -89,9 +85,9 @@ export function ProgrammeActions({
   const handleLeaveProgramme = async () => {
     if (!userId) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to leave a programme",
-        variant: "destructive",
+        title: 'Authentication required',
+        description: 'Please sign in to leave a programme',
+        variant: 'destructive',
       });
       return;
     }
@@ -100,16 +96,16 @@ export function ProgrammeActions({
     try {
       await leaveProgramme(userId, programmeId);
       toast({
-        title: "Programme left",
-        description: "You have successfully left the programme",
+        title: 'Programme left',
+        description: 'You have successfully left the programme',
       });
       router.refresh();
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error",
-        description: "Failed to leave programme",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to leave programme',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -119,19 +115,12 @@ export function ProgrammeActions({
   return (
     <div className="flex gap-2">
       <Button variant="secondary" size="sm" onClick={handleToggleSave}>
-        <BookmarkIcon
-          className={`h-4 w-4 mr-2 ${saved ? "fill-current" : ""}`}
-        />
-        {saved ? "Saved" : "Save Programme"}
+        <BookmarkIcon className={`mr-2 h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+        {saved ? 'Saved' : 'Save Programme'}
       </Button>
 
       {isActive ? (
-        <Button
-          onClick={handleLeaveProgramme}
-          disabled={isLoading}
-          size="sm"
-          variant="destructive"
-        >
+        <Button onClick={handleLeaveProgramme} disabled={isLoading} size="sm" variant="destructive">
           <XCircle className="mr-2 h-4 w-4" />
           Leave Programme
         </Button>

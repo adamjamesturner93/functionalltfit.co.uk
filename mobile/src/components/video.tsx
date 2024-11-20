@@ -1,38 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Video, AVPlaybackStatus } from 'expo-av'
-import { recordVideoWatch } from '../api/videoWatch'
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Video, AVPlaybackStatus } from 'expo-av';
+import { recordVideoWatch } from '../api/videoWatch';
 
 interface VideoPlayerProps {
-  videoUrl: string
-  videoId: string
+  videoUrl: string;
+  videoId: string;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl, videoId }) => {
-  const videoRef = useRef<Video>(null)
-  const [status, setStatus] = useState<AVPlaybackStatus | null>(null)
-  const [hasRecordedWatch, setHasRecordedWatch] = useState(false)
+  const videoRef = useRef<Video>(null);
+  const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
+  const [hasRecordedWatch, setHasRecordedWatch] = useState(false);
 
   useEffect(() => {
     return () => {
       if (videoRef.current) {
-        videoRef.current.unloadAsync()
+        videoRef.current.unloadAsync();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    setStatus(status)
+    setStatus(status);
 
     if (status.isLoaded && !hasRecordedWatch) {
       // Record the watch event when the video starts playing
       if (status.isPlaying) {
         recordVideoWatch(videoId)
           .then(() => setHasRecordedWatch(true))
-          .catch((error) => console.error('Failed to record video watch:', error))
+          .catch((error) => console.error('Failed to record video watch:', error));
       }
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -45,8 +45,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl, videoId }) =
         onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
       />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -58,4 +58,4 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
   },
-})
+});

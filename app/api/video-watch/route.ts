@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authorizeUser, unauthorizedResponse } from "@/lib/auth-utils";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
 export const config = {
-  runtime: "edge",
+  runtime: 'edge',
 };
 
 export async function POST(request: NextRequest) {
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
     const { videoId } = await request.json();
 
     if (!videoId) {
-      return NextResponse.json(
-        { error: "Video ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Video ID is required' }, { status: 400 });
     }
 
     const userId = session.user.id;
@@ -31,7 +28,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!video) {
-      return NextResponse.json({ error: "Video not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Video not found' }, { status: 404 });
     }
 
     // Record the watch event
@@ -42,15 +39,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Watch event recorded successfully" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Watch event recorded successfully' }, { status: 200 });
   } catch (error) {
-    console.error("Error recording watch event:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Error recording watch event:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   LineChart,
   Line,
@@ -18,7 +18,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 
 type HealthData = {
   date: Date;
@@ -35,8 +35,8 @@ type HealthDataGraphProps = {
 };
 
 export function HealthDataGraph({ data }: HealthDataGraphProps) {
-  const [timeRange, setTimeRange] = useState("30");
-  const [metric, setMetric] = useState("weight");
+  const [timeRange, setTimeRange] = useState('30');
+  const [metric, setMetric] = useState('weight');
 
   const filteredData = data.slice(-parseInt(timeRange));
 
@@ -46,7 +46,7 @@ export function HealthDataGraph({ data }: HealthDataGraphProps) {
         <CardTitle>Health Data Trends</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex space-x-4 mb-4">
+        <div className="mb-4 flex space-x-4">
           <Select onValueChange={setTimeRange} defaultValue={timeRange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select time range" />
@@ -64,15 +64,9 @@ export function HealthDataGraph({ data }: HealthDataGraphProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="weight">Weight</SelectItem>
-              <SelectItem value="bloodPressureSystolic">
-                Blood Pressure (Systolic)
-              </SelectItem>
-              <SelectItem value="bloodPressureDiastolic">
-                Blood Pressure (Diastolic)
-              </SelectItem>
-              <SelectItem value="restingHeartRate">
-                Resting Heart Rate
-              </SelectItem>
+              <SelectItem value="bloodPressureSystolic">Blood Pressure (Systolic)</SelectItem>
+              <SelectItem value="bloodPressureDiastolic">Blood Pressure (Diastolic)</SelectItem>
+              <SelectItem value="restingHeartRate">Resting Heart Rate</SelectItem>
               <SelectItem value="sleepHours">Sleep Hours</SelectItem>
               <SelectItem value="stressLevel">Stress Level</SelectItem>
             </SelectContent>
@@ -85,12 +79,7 @@ export function HealthDataGraph({ data }: HealthDataGraphProps) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line
-              type="monotone"
-              dataKey={metric}
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
+            <Line type="monotone" dataKey={metric} stroke="#8884d8" activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

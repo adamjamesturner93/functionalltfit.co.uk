@@ -1,20 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { Workout, SetType, Prisma, ExerciseMode } from "@prisma/client";
-import { autoUpdateActivityCompletion } from "./programmes";
-import { redirect } from "next/navigation";
-import {
-  calculateImprovements,
-  calculateNextWorkoutWeight,
-} from "@/lib/workout-calculations";
+import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { Workout, SetType, Prisma, ExerciseMode } from '@prisma/client';
+import { autoUpdateActivityCompletion } from './programmes';
+import { redirect } from 'next/navigation';
+import { calculateImprovements, calculateNextWorkoutWeight } from '@/lib/workout-calculations';
 
-import {
-  WorkoutActivity,
-  WorkoutActivitySet,
-  WorkoutActivityExercise,
-} from "@prisma/client";
+import { WorkoutActivity, WorkoutActivitySet, WorkoutActivityExercise } from '@prisma/client';
 
 interface WorkoutActivityWithSets extends WorkoutActivity {
   sets: (WorkoutActivitySet & {
@@ -136,9 +129,9 @@ export type WorkoutInput = {
 export async function getWorkouts(
   page: number = 1,
   pageSize: number = 10,
-  search: string = "",
+  search: string = '',
   filters: WorkoutFilters = {},
-  userId?: string | null
+  userId?: string | null,
 ) {
   const skip = (page - 1) * pageSize;
 
@@ -146,8 +139,8 @@ export async function getWorkouts(
 
   if (search) {
     where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { description: { contains: search, mode: 'insensitive' } },
     ];
   }
 
@@ -182,7 +175,7 @@ export async function getWorkouts(
       where,
       skip,
       take: pageSize,
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       include: {
         savedBy: userId
           ? {
@@ -260,7 +253,7 @@ export async function toggleWorkoutSave(workoutId: string, userId: string) {
     });
   }
 
-  revalidatePath("/workouts");
+  revalidatePath('/workouts');
   revalidatePath(`/workouts/${workoutId}`);
 }
 
@@ -301,14 +294,11 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
     },
   });
 
-  revalidatePath("/admin/content/workouts");
+  revalidatePath('/admin/content/workouts');
   return workout;
 }
 
-export async function updateWorkout(
-  id: string,
-  data: WorkoutInput
-): Promise<Workout> {
+export async function updateWorkout(id: string, data: WorkoutInput): Promise<Workout> {
   await prisma.setExercise.deleteMany({
     where: {
       set: {
@@ -359,7 +349,7 @@ export async function updateWorkout(
     },
   });
 
-  revalidatePath("/admin/content/workouts");
+  revalidatePath('/admin/content/workouts');
   revalidatePath(`/admin/content/workouts/${id}`);
   return workout;
 }
@@ -368,7 +358,7 @@ export async function deleteWorkout(id: string): Promise<Workout> {
   const workout = await prisma.workout.delete({
     where: { id },
   });
-  revalidatePath("/admin/content/workouts");
+  revalidatePath('/admin/content/workouts');
   return workout;
 }
 
@@ -379,7 +369,7 @@ export async function startWorkout(workoutId: string, userId: string) {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const workout = await prisma.workout.findUnique({
@@ -398,7 +388,7 @@ export async function startWorkout(workoutId: string, userId: string) {
     });
 
     if (!workout) {
-      throw new Error("Workout not found");
+      throw new Error('Workout not found');
     }
 
     const userExerciseWeights = await prisma.userExerciseWeight.findMany({
@@ -414,7 +404,7 @@ export async function startWorkout(workoutId: string, userId: string) {
         workoutId: workoutId,
       },
       orderBy: {
-        startedAt: "desc",
+        startedAt: 'desc',
       },
       include: {
         sets: {
@@ -450,7 +440,7 @@ export async function startWorkout(workoutId: string, userId: string) {
       sets: workout.sets.map((set) => {
         const setExercises = set.exercises.map((exerciseInSet) => {
           const userWeight = userExerciseWeights.find(
-            (uw) => uw.exerciseId === exerciseInSet.exercise.id
+            (uw) => uw.exerciseId === exerciseInSet.exercise.id,
           );
           const previousExercises = previousWorkoutActivity?.sets
             .flatMap((set) => set.exercises)
@@ -512,9 +502,9 @@ export async function startWorkout(workoutId: string, userId: string) {
         const setEquipment = Array.from(
           new Set(
             setExercises.flatMap((exercise) =>
-              exercise.equipment.split(",").map((item) => item.trim())
-            )
-          )
+              exercise.equipment.split(',').map((item) => item.trim()),
+            ),
+          ),
         ).sort();
 
         return {
@@ -527,7 +517,7 @@ export async function startWorkout(workoutId: string, userId: string) {
 
     return combinedWorkout;
   } catch (error) {
-    console.error("Error starting workout:", error);
+    console.error('Error starting workout:', error);
     throw error;
   }
 }
@@ -543,7 +533,7 @@ export async function completeWorkout(
     time?: { [roundNumber: number]: number };
     distance?: { [roundNumber: number]: number };
   }[],
-  userId: string
+  userId: string,
 ) {
   try {
     const workoutActivity = await prisma.workoutActivity.findUnique({
@@ -575,7 +565,7 @@ export async function completeWorkout(
     });
 
     if (!workoutActivity) {
-      throw new Error("Workout activity not found");
+      throw new Error('Workout activity not found');
     }
 
     const previousActivities = await prisma.workoutActivity.findMany({
@@ -586,7 +576,7 @@ export async function completeWorkout(
         endedAt: { not: null },
       },
       orderBy: {
-        endedAt: "desc",
+        endedAt: 'desc',
       },
       include: {
         sets: {
@@ -608,9 +598,7 @@ export async function completeWorkout(
           .find((e) => e.exerciseId === exercise.exerciseId);
 
         if (!workoutExercise) {
-          throw new Error(
-            `Exercise with id ${exercise.exerciseId} not found in workout`
-          );
+          throw new Error(`Exercise with id ${exercise.exerciseId} not found in workout`);
         }
 
         const roundNumbers = Object.keys(exercise.weight).map(Number);
@@ -671,9 +659,7 @@ export async function completeWorkout(
               case ExerciseMode.TIME:
                 return (current.time || 0) > (best.time || 0) ? current : best;
               case ExerciseMode.DISTANCE:
-                return (current.distance || 0) > (best.distance || 0)
-                  ? current
-                  : best;
+                return (current.distance || 0) > (best.distance || 0) ? current : best;
               default:
                 return best;
             }
@@ -698,29 +684,23 @@ export async function completeWorkout(
           workoutExercise.exercise.mode === ExerciseMode.REPS
             ? averageReps >= workoutExercise.targetReps
             : workoutExercise.exercise.mode === ExerciseMode.TIME
-            ? averageTime >= workoutExercise.targetReps
-            : workoutExercise.exercise.mode === ExerciseMode.DISTANCE
-            ? averageDistance >= workoutExercise.targetReps
-            : false;
+              ? averageTime >= workoutExercise.targetReps
+              : workoutExercise.exercise.mode === ExerciseMode.DISTANCE
+                ? averageDistance >= workoutExercise.targetReps
+                : false;
 
         const nextWorkoutWeight = targetReached
-          ? Math.ceil(
-              ((userExerciseWeight?.weight || averageWeight) * 1.05) / 2.5
-            ) * 2.5
+          ? Math.ceil(((userExerciseWeight?.weight || averageWeight) * 1.05) / 2.5) * 2.5
           : userExerciseWeight?.weight || averageWeight;
 
         const improvement = {
           reps: bestPerformance?.reps ? averageReps - bestPerformance.reps : 0,
           weight: bestPerformance ? averageWeight - bestPerformance.weight : 0,
           time: bestPerformance ? averageTime - (bestPerformance.time || 0) : 0,
-          distance: bestPerformance
-            ? averageDistance - (bestPerformance.distance || 0)
-            : 0,
+          distance: bestPerformance ? averageDistance - (bestPerformance.distance || 0) : 0,
           totalWeight:
             totalWeightLifted -
-            (bestPerformance?.reps
-              ? bestPerformance.weight * bestPerformance.reps
-              : 0),
+            (bestPerformance?.reps ? bestPerformance.weight * bestPerformance.reps : 0),
         };
 
         return {
@@ -733,17 +713,14 @@ export async function completeWorkout(
           distance: averageDistance,
           targetReps: workoutExercise.targetReps,
           targetRounds: totalRounds,
-          targetWeight:
-            userExerciseWeight?.weight ||
-            bestPerformance?.weight ||
-            averageWeight,
+          targetWeight: userExerciseWeight?.weight || bestPerformance?.weight || averageWeight,
           improvement,
           targetReached,
           nextWorkoutWeight,
           performanceByRound,
           mode: workoutExercise.exercise.mode,
         };
-      })
+      }),
     );
 
     await prisma.workoutActivity.update({
@@ -799,14 +776,14 @@ export async function completeWorkout(
       }
     }
 
-    await autoUpdateActivityCompletion(userId, "WORKOUT", workoutId);
+    await autoUpdateActivityCompletion(userId, 'WORKOUT', workoutId);
 
-    revalidatePath("/dashboard");
-    revalidatePath("/workouts");
+    revalidatePath('/dashboard');
+    revalidatePath('/workouts');
 
     redirect(`/workouts/${activityId}/summary`);
   } catch (error) {
-    console.error("Error completing workout:", error);
+    console.error('Error completing workout:', error);
     throw error;
   }
 }
@@ -822,7 +799,7 @@ export async function updateWorkoutActivity(
     distance?: number;
     roundNumber: number;
     mode: ExerciseMode;
-  }[]
+  }[],
 ) {
   try {
     const workoutActivity = await prisma.workoutActivity.findUnique({
@@ -845,15 +822,13 @@ export async function updateWorkoutActivity(
     });
 
     if (!workoutActivity) {
-      throw new Error("Workout activity not found");
+      throw new Error('Workout activity not found');
     }
 
     const { sets } = workoutActivity.workout;
 
     for (const exercise of exercises) {
-      const set = sets.find((s) =>
-        s.exercises.some((e) => e.exerciseId === exercise.exerciseId)
-      );
+      const set = sets.find((s) => s.exercises.some((e) => e.exerciseId === exercise.exerciseId));
 
       if (set) {
         const workoutActivitySet = await prisma.workoutActivitySet.upsert({
@@ -876,8 +851,7 @@ export async function updateWorkoutActivity(
           weight: exercise.weight,
           reps: exercise.mode === ExerciseMode.REPS ? exercise.reps : null,
           time: exercise.mode === ExerciseMode.TIME ? exercise.time : null,
-          distance:
-            exercise.mode === ExerciseMode.DISTANCE ? exercise.distance : null,
+          distance: exercise.mode === ExerciseMode.DISTANCE ? exercise.distance : null,
         };
 
         await prisma.workoutActivityExercise.upsert({
@@ -902,7 +876,7 @@ export async function updateWorkoutActivity(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating workout activity:", error);
+    console.error('Error updating workout activity:', error);
     throw error;
   }
 }
@@ -911,7 +885,7 @@ export async function updateUserExerciseWeight(
   workoutActivityId: string,
   exerciseId: string,
   newWeight: number,
-  userId: string
+  userId: string,
 ): Promise<void> {
   try {
     const workoutActivity = await prisma.workoutActivity.findUnique({
@@ -920,7 +894,7 @@ export async function updateUserExerciseWeight(
     });
 
     if (!workoutActivity) {
-      throw new Error("Workout activity not found");
+      throw new Error('Workout activity not found');
     }
 
     const workoutId = workoutActivity.workoutId;
@@ -956,19 +930,19 @@ export async function updateUserExerciseWeight(
       },
     });
 
-    console.log("********");
-    console.log("********");
-    console.log("********");
-    console.log("********");
-    console.log("********");
+    console.log('********');
+    console.log('********');
+    console.log('********');
+    console.log('********');
+    console.log('********');
     console.log({ newWeight });
-    console.log("********");
-    console.log("********");
-    console.log("********");
-    console.log("********");
-    console.log("********");
+    console.log('********');
+    console.log('********');
+    console.log('********');
+    console.log('********');
+    console.log('********');
   } catch (error) {
-    console.error("Error updating user exercise weight:", error);
+    console.error('Error updating user exercise weight:', error);
     throw error;
   }
 }
@@ -1012,7 +986,7 @@ export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
         endedAt: { not: null },
       },
       orderBy: {
-        endedAt: "desc",
+        endedAt: 'desc',
       },
       select: {
         id: true,
@@ -1047,22 +1021,19 @@ export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
         (total, set) =>
           total +
           set.exercises.reduce(
-            (setTotal, exercise) =>
-              setTotal + (exercise.weight || 0) * (exercise.reps || 1),
-            0
+            (setTotal, exercise) => setTotal + (exercise.weight || 0) * (exercise.reps || 1),
+            0,
           ),
-        0
+        0,
       ),
     }));
   } catch (error) {
-    console.error("Error fetching completed workouts:", error);
+    console.error('Error fetching completed workouts:', error);
     throw error;
   }
 }
 
-export async function getWorkoutSummary(
-  workoutActivityId: string
-): Promise<WorkoutSummary | null> {
+export async function getWorkoutSummary(workoutActivityId: string): Promise<WorkoutSummary | null> {
   const workoutActivity = await prisma.workoutActivity.findUnique({
     where: { id: workoutActivityId },
     include: {
@@ -1097,43 +1068,41 @@ export async function getWorkoutSummary(
 
   const totalDuration =
     workoutActivity.endedAt && workoutActivity.startedAt
-      ? (workoutActivity.endedAt.getTime() -
-          workoutActivity.startedAt.getTime()) /
-        1000
+      ? (workoutActivity.endedAt.getTime() - workoutActivity.startedAt.getTime()) / 1000
       : 0;
 
   // Group exercises by exerciseId
-  const exerciseGroups = workoutActivity.sets.reduce<
-    Record<string, ExerciseGroup>
-  >((groups, set) => {
-    set.exercises.forEach((exercise) => {
-      if (!groups[exercise.exerciseId]) {
-        groups[exercise.exerciseId] = {
-          exercise: exercise.exercise,
-          performances: [],
-        };
-      }
-      groups[exercise.exerciseId].performances.push({
-        ...exercise,
-        roundNumber: set.roundNumber,
+  const exerciseGroups = workoutActivity.sets.reduce<Record<string, ExerciseGroup>>(
+    (groups, set) => {
+      set.exercises.forEach((exercise) => {
+        if (!groups[exercise.exerciseId]) {
+          groups[exercise.exerciseId] = {
+            exercise: exercise.exercise,
+            performances: [],
+          };
+        }
+        groups[exercise.exerciseId].performances.push({
+          ...exercise,
+          roundNumber: set.roundNumber,
+        });
       });
-    });
-    return groups;
-  }, {});
+      return groups;
+    },
+    {},
+  );
 
   const exercises: ExerciseSummary[] = await Promise.all(
     Object.entries(exerciseGroups).map(async ([exerciseId, group]) => {
-      const previousPerformance =
-        await prisma.workoutActivityExercise.findFirst({
-          where: {
-            exerciseId,
-            workoutActivity: {
-              userId: workoutActivity.userId,
-              endedAt: { lt: workoutActivity.startedAt },
-            },
+      const previousPerformance = await prisma.workoutActivityExercise.findFirst({
+        where: {
+          exerciseId,
+          workoutActivity: {
+            userId: workoutActivity.userId,
+            endedAt: { lt: workoutActivity.startedAt },
           },
-          orderBy: { workoutActivity: { endedAt: "desc" } },
-        });
+        },
+        orderBy: { workoutActivity: { endedAt: 'desc' } },
+      });
 
       // Get the target from the workout's exercise configuration
       const workoutExercise = workoutActivity.workout.sets
@@ -1143,22 +1112,10 @@ export async function getWorkoutSummary(
       const targetReps = workoutExercise?.targetReps || 0;
 
       // Calculate averages across all performances
-      const totalWeight = group.performances.reduce(
-        (sum, p) => sum + p.weight,
-        0
-      );
-      const totalReps = group.performances.reduce(
-        (sum, p) => sum + (p.reps || 0),
-        0
-      );
-      const totalTime = group.performances.reduce(
-        (sum, p) => sum + (p.time || 0),
-        0
-      );
-      const totalDistance = group.performances.reduce(
-        (sum, p) => sum + (p.distance || 0),
-        0
-      );
+      const totalWeight = group.performances.reduce((sum, p) => sum + p.weight, 0);
+      const totalReps = group.performances.reduce((sum, p) => sum + (p.reps || 0), 0);
+      const totalTime = group.performances.reduce((sum, p) => sum + (p.time || 0), 0);
+      const totalDistance = group.performances.reduce((sum, p) => sum + (p.distance || 0), 0);
 
       const averageWeight = totalWeight / group.performances.length;
       const averageReps = totalReps / group.performances.length;
@@ -1168,28 +1125,23 @@ export async function getWorkoutSummary(
       // Check if target is reached based on the best performance
       const bestPerformance = group.performances.reduce((best, current) => {
         switch (group.exercise.mode) {
-          case "REPS":
+          case 'REPS':
             return (current.reps || 0) > (best.reps || 0) ? current : best;
-          case "TIME":
+          case 'TIME':
             return (current.time || 0) > (best.time || 0) ? current : best;
-          case "DISTANCE":
-            return (current.distance || 0) > (best.distance || 0)
-              ? current
-              : best;
+          case 'DISTANCE':
+            return (current.distance || 0) > (best.distance || 0) ? current : best;
           default:
             return best;
         }
       }, group.performances[0]);
 
       const targetReached =
-        group.exercise.mode === "REPS"
-          ? (bestPerformance.reps || 0) >= targetReps &&
-            (bestPerformance.reps || 0) > 0
-          : group.exercise.mode === "TIME"
-          ? (bestPerformance.time || 0) >= targetReps &&
-            (bestPerformance.time || 0) > 0
-          : (bestPerformance.distance || 0) >= targetReps &&
-            (bestPerformance.distance || 0) > 0;
+        group.exercise.mode === 'REPS'
+          ? (bestPerformance.reps || 0) >= targetReps && (bestPerformance.reps || 0) > 0
+          : group.exercise.mode === 'TIME'
+            ? (bestPerformance.time || 0) >= targetReps && (bestPerformance.time || 0) > 0
+            : (bestPerformance.distance || 0) >= targetReps && (bestPerformance.distance || 0) > 0;
 
       const improvement = calculateImprovements(
         {
@@ -1201,9 +1153,7 @@ export async function getWorkoutSummary(
           time: averageTime,
           distance: averageDistance,
           targetReps,
-          targetRounds: Math.max(
-            ...group.performances.map((p) => p.roundNumber)
-          ),
+          targetRounds: Math.max(...group.performances.map((p) => p.roundNumber)),
           targetWeight: averageWeight,
           targetReached,
           improvement: {
@@ -1227,9 +1177,7 @@ export async function getWorkoutSummary(
               time: previousPerformance.time || 0,
               distance: previousPerformance.distance || 0,
               targetReps,
-              targetRounds: Math.max(
-                ...group.performances.map((p) => p.roundNumber)
-              ),
+              targetRounds: Math.max(...group.performances.map((p) => p.roundNumber)),
               targetWeight: previousPerformance.weight,
               targetReached: false,
               improvement: {
@@ -1243,13 +1191,10 @@ export async function getWorkoutSummary(
               performanceByRound: [],
               mode: group.exercise.mode,
             }
-          : null
+          : null,
       );
 
-      const nextWorkoutWeight = calculateNextWorkoutWeight(
-        averageWeight,
-        targetReached
-      );
+      const nextWorkoutWeight = calculateNextWorkoutWeight(averageWeight, targetReached);
 
       return {
         id: bestPerformance.id,
@@ -1276,14 +1221,13 @@ export async function getWorkoutSummary(
           .sort((a, b) => a.round - b.round),
         mode: group.exercise.mode,
       };
-    })
+    }),
   );
 
   const totalWeightLifted = exercises.reduce(
     (total, exercise) =>
-      total +
-      exercise.weight * exercise.reps * exercise.performanceByRound.length,
-    0
+      total + exercise.weight * exercise.reps * exercise.performanceByRound.length,
+    0,
   );
 
   const previousWorkout = await prisma.workoutActivity.findFirst({
@@ -1292,7 +1236,7 @@ export async function getWorkoutSummary(
       userId: workoutActivity.userId,
       endedAt: { lt: workoutActivity.startedAt },
     },
-    orderBy: { endedAt: "desc" },
+    orderBy: { endedAt: 'desc' },
     include: {
       sets: {
         include: {
@@ -1317,17 +1261,14 @@ export async function getWorkoutSummary(
   };
 }
 
-function calculateTotalWeightLifted(
-  workoutActivity: WorkoutActivityWithSets
-): number {
+function calculateTotalWeightLifted(workoutActivity: WorkoutActivityWithSets): number {
   return workoutActivity.sets.reduce(
     (total, set) =>
       total +
       set.exercises.reduce(
-        (setTotal, exercise) =>
-          setTotal + (exercise.weight || 0) * (exercise.reps || 1),
-        0
+        (setTotal, exercise) => setTotal + (exercise.weight || 0) * (exercise.reps || 1),
+        0,
       ),
-    0
+    0,
   );
 }

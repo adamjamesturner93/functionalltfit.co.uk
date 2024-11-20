@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Heart, Activity, Clock, Check } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { MailingListPopup } from "./mailingList";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Heart, Activity, Clock, Check } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { MailingListPopup } from './mailingList';
 
 export default function Home() {
   return (
     <>
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-b from-primary/20 to-background">
+      <section className="w-full bg-gradient-to-b from-primary/20 to-background py-12 md:py-24 lg:py-32 xl:py-48">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -18,19 +18,15 @@ export default function Home() {
                   FunctionallyFit: Coming Soon
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Tailored workouts and expert guidance for people with
-                  disabilities, long-term health conditions, busy parents, and
-                  time-strapped adults. Your journey to better health starts
-                  here, on your terms.
+                  Tailored workouts and expert guidance for people with disabilities, long-term
+                  health conditions, busy parents, and time-strapped adults. Your journey to better
+                  health starts here, on your terms.
                 </p>
               </div>
               <div className="space-y-4">
-                <p className="text-lg font-semibold text-primary">
-                  Launching January 2025
-                </p>
+                <p className="text-lg font-semibold text-primary">Launching January 2025</p>
                 <p className="text-muted-foreground">
-                  Sign up for our beta release and get a 30% discount on annual
-                  memberships!
+                  Sign up for our beta release and get a 30% discount on annual memberships!
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Input type="email" placeholder="Enter your email" />
@@ -40,7 +36,7 @@ export default function Home() {
             </div>
             <Image
               alt="FunctionallyFit App Interface Preview"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last shadow-2xl"
+              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center shadow-2xl sm:w-full lg:order-last"
               height={550}
               src="/placeholder.svg"
               width={550}
@@ -50,7 +46,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/5">
+      <section className="w-full bg-secondary/5 py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -58,11 +54,10 @@ export default function Home() {
                 Meet the Founder
               </h2>
               <p className="text-xl text-muted-foreground">
-                FunctionallyFit was created by a certified personal trainer with
-                over a decade of experience and a PhD in Exercise Physiology.
-                Our founder&apos;s expertise in adaptive fitness and passion for
-                inclusive health drives our mission to make fitness accessible
-                to everyone.
+                FunctionallyFit was created by a certified personal trainer with over a decade of
+                experience and a PhD in Exercise Physiology. Our founder&apos;s expertise in
+                adaptive fitness and passion for inclusive health drives our mission to make fitness
+                accessible to everyone.
               </p>
             </div>
             <Image
@@ -76,48 +71,39 @@ export default function Home() {
         </div>
       </section>
 
-      <section
-        className="w-full py-12 md:py-24 lg:py-32"
-        id="why-functionallyfit"
-      >
+      <section className="w-full py-12 md:py-24 lg:py-32" id="why-functionallyfit">
         <div className="container px-4 md:px-6">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl">
             Why FunctionallyFit?
           </h2>
           <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
                 <Activity className="h-12 w-12 text-primary" />
-                <h3 className="text-2xl font-bold text-center">
-                  Personalised for You
-                </h3>
-                <p className="text-muted-foreground text-center">
-                  Our AI-driven algorithm adapts workouts to your specific
-                  needs, abilities, and health conditions.
+                <h3 className="text-center text-2xl font-bold">Personalised for You</h3>
+                <p className="text-center text-muted-foreground">
+                  Our AI-driven algorithm adapts workouts to your specific needs, abilities, and
+                  health conditions.
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
                 <Clock className="h-12 w-12 text-primary" />
-                <h3 className="text-2xl font-bold text-center">
-                  Flexible Scheduling
-                </h3>
-                <p className="text-muted-foreground text-center">
-                  From quick 10-minute sessions to comprehensive routines, fit
-                  exercise into your busy life.
+                <h3 className="text-center text-2xl font-bold">Flexible Scheduling</h3>
+                <p className="text-center text-muted-foreground">
+                  From quick 10-minute sessions to comprehensive routines, fit exercise into your
+                  busy life.
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
                 <Heart className="h-12 w-12 text-primary" />
-                <h3 className="text-2xl font-bold text-center">
-                  Expert-Led Content
-                </h3>
-                <p className="text-muted-foreground text-center">
-                  Programmes designed by certified trainers and health
-                  professionals for safe, effective workouts.
+                <h3 className="text-center text-2xl font-bold">Expert-Led Content</h3>
+                <p className="text-center text-muted-foreground">
+                  Programmes designed by certified trainers and health professionals for safe,
+                  effective workouts.
                 </p>
               </CardContent>
             </Card>
@@ -127,13 +113,13 @@ export default function Home() {
 
       <section
         aria-labelledby="features-heading"
-        className="w-full py-12 md:py-24 lg:py-32 bg-secondary/5"
+        className="w-full bg-secondary/5 py-12 md:py-24 lg:py-32"
         id="features"
       >
         <div className="container px-4 md:px-6">
           <h2
             id="features-heading"
-            className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12"
+            className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl"
           >
             Fitness That Fits Your Life
           </h2>
@@ -142,43 +128,37 @@ export default function Home() {
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
                   <Activity className="h-12 w-12 text-primary" />
-                  <h3 className="text-2xl font-bold text-center">
-                    Adaptive Workouts
-                  </h3>
-                  <p className="text-muted-foreground text-center">
-                    Customised routines for all abilities and health conditions.
-                    Your fitness journey, your way.
+                  <h3 className="text-center text-2xl font-bold">Adaptive Workouts</h3>
+                  <p className="text-center text-muted-foreground">
+                    Customised routines for all abilities and health conditions. Your fitness
+                    journey, your way.
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
                   <Clock className="h-12 w-12 text-primary" />
-                  <h3 className="text-2xl font-bold text-center">
-                    Quick Fitness Fixes
-                  </h3>
-                  <p className="text-muted-foreground text-center">
-                    Effective 10-minute workouts for busy parents and
-                    time-strapped adults. Every minute counts.
+                  <h3 className="text-center text-2xl font-bold">Quick Fitness Fixes</h3>
+                  <p className="text-center text-muted-foreground">
+                    Effective 10-minute workouts for busy parents and time-strapped adults. Every
+                    minute counts.
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
                   <Heart className="h-12 w-12 text-primary" />
-                  <h3 className="text-2xl font-bold text-center">
-                    Health-Focused Approach
-                  </h3>
-                  <p className="text-muted-foreground text-center">
-                    Programmes designed with your long-term health in mind,
-                    supporting you every step of the way.
+                  <h3 className="text-center text-2xl font-bold">Health-Focused Approach</h3>
+                  <p className="text-center text-muted-foreground">
+                    Programmes designed with your long-term health in mind, supporting you every
+                    step of the way.
                   </p>
                 </CardContent>
               </Card>
             </div>
             <div className="relative aspect-video">
               <iframe
-                className="absolute inset-0 w-full h-full rounded-xl"
+                className="absolute inset-0 h-full w-full rounded-xl"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="FunctionallyFit App Demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -197,69 +177,61 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <h2
             id="pricing-heading"
-            className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12"
+            className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl"
           >
             Early Bird Pricing
           </h2>
-          <p className="text-center text-muted-foreground mb-8">
+          <p className="mb-8 text-center text-muted-foreground">
             Join our beta and get 30% off these prices for the first year!
           </p>
           <div className="grid gap-6 lg:grid-cols-4 lg:gap-8">
             {[
               {
-                title: "Free",
-                price: { monthly: "£0", annual: "£0" },
+                title: 'Free',
+                price: { monthly: '£0', annual: '£0' },
                 features: [
-                  "Ad-supported",
-                  "Programmes capped at 2 weeks",
-                  "Create your own workout (2 max)",
-                  "Basic tracking",
+                  'Ad-supported',
+                  'Programmes capped at 2 weeks',
+                  'Create your own workout (2 max)',
+                  'Basic tracking',
                 ],
               },
               {
-                title: "Bronze",
-                price: { monthly: "£4.99", annual: "£49.99" },
+                title: 'Bronze',
+                price: { monthly: '£4.99', annual: '£49.99' },
                 features: [
-                  "Ad-free experience",
-                  "Create unlimited programmes and workouts",
-                  "Unlimited pre-made programmes",
-                  "Monthly updated nutrition recommendations",
+                  'Ad-free experience',
+                  'Create unlimited programmes and workouts',
+                  'Unlimited pre-made programmes',
+                  'Monthly updated nutrition recommendations',
                 ],
               },
               {
-                title: "Silver",
-                price: { monthly: "£49.99", annual: "£499.99" },
+                title: 'Silver',
+                price: { monthly: '£49.99', annual: '£499.99' },
                 features: [
-                  "All Bronze features",
-                  "Personalised PT programmes updated monthly",
-                  "Weekly updated nutrition recommendations",
-                  "Priority support",
+                  'All Bronze features',
+                  'Personalised PT programmes updated monthly',
+                  'Weekly updated nutrition recommendations',
+                  'Priority support',
                 ],
               },
               {
-                title: "Gold",
-                price: { monthly: "£99.99", annual: "£999.99" },
+                title: 'Gold',
+                price: { monthly: '£99.99', annual: '£999.99' },
                 features: [
-                  "All Silver features",
-                  "Personalised PT programme updated weekly",
-                  "1-on-1 virtual coaching session monthly",
-                  "VIP support",
+                  'All Silver features',
+                  'Personalised PT programme updated weekly',
+                  '1-on-1 virtual coaching session monthly',
+                  'VIP support',
                 ],
               },
             ].map((plan) => {
-              const monthlyPrice = parseFloat(
-                plan.price.monthly.replace("£", "")
-              );
-              const annualPrice = parseFloat(
-                plan.price.annual.replace("£", "")
-              );
+              const monthlyPrice = parseFloat(plan.price.monthly.replace('£', ''));
+              const annualPrice = parseFloat(plan.price.annual.replace('£', ''));
               const annualDiscount =
                 monthlyPrice > 0
-                  ? +(
-                      ((monthlyPrice * 12 - annualPrice) /
-                        (monthlyPrice * 12)) *
-                      100
-                    ).toFixed(0)
+                  ? +(((monthlyPrice * 12 - annualPrice) / (monthlyPrice * 12)) * 100).toFixed(0)
                   : 0;
               const betaAnnualPrice = (annualPrice * 0.7).toFixed(2);
 
@@ -277,19 +249,15 @@ export default function Home() {
                       <p className="text-xl font-bold">{plan.price.annual}</p>
                       <p className="text-muted-foreground">per year</p>
                       {annualDiscount > 0 && (
-                        <p className="text-green-600 font-semibold">
+                        <p className="font-semibold text-green-600">
                           Save {annualDiscount}% annually
                         </p>
                       )}
                     </div>
-                    {plan.title !== "Free" && (
+                    {plan.title !== 'Free' && (
                       <div className="mb-4">
-                        <p className="text-xl font-bold text-primary">
-                          £{betaAnnualPrice}
-                        </p>
-                        <p className="text-muted-foreground">
-                          Beta price (30% off annual)
-                        </p>
+                        <p className="text-xl font-bold text-primary">£{betaAnnualPrice}</p>
+                        <p className="text-muted-foreground">Beta price (30% off annual)</p>
                       </div>
                     )}
                     <ul className="space-y-2">
@@ -300,7 +268,7 @@ export default function Home() {
                         </li>
                       ))}
                     </ul>
-                    <Button className="w-full mt-4">Join Beta Waitlist</Button>
+                    <Button className="mt-4 w-full">Join Beta Waitlist</Button>
                   </CardContent>
                 </Card>
               );
@@ -309,21 +277,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-secondary/5">
-        <div className="container px-4 md:px-6 text-center">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
+      <section className="w-full bg-secondary/5 py-12 md:py-24 lg:py-32">
+        <div className="container px-4 text-center md:px-6">
+          <h2 className="mb-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Be the First to Experience FunctionallyFit
           </h2>
-          <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto mb-8">
-            Sign up for our beta release and get exclusive early access plus a
-            30% discount on your first year&apos;s annual membership.
+          <p className="mx-auto mb-8 max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+            Sign up for our beta release and get exclusive early access plus a 30% discount on your
+            first year&apos;s annual membership.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="max-w-sm"
-            />
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <Input type="email" placeholder="Enter your email" className="max-w-sm" />
             <Button>Join Beta & Save 30%</Button>
           </div>
         </div>
@@ -331,7 +295,7 @@ export default function Home() {
 
       <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
+          <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-5xl">
             Connect With Us
           </h2>
           <div className="flex justify-center space-x-6">

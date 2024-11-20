@@ -1,65 +1,43 @@
-import { Suspense } from "react";
-import { Metadata } from "next";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { getProgrammes } from "@/app/actions/programmes";
-import { getCurrentUserId } from "@/lib/auth-utils";
-import { ProgrammeCard } from "./programme-card";
-import { ProgrammeFilters } from "./programme-filters";
-import { Pagination } from "@/components/ui/pagination";
+import { Suspense } from 'react';
+import { Metadata } from 'next';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { getProgrammes } from '@/app/actions/programmes';
+import { getCurrentUserId } from '@/lib/auth-utils';
+import { ProgrammeCard } from './programme-card';
+import { ProgrammeFilters } from './programme-filters';
+import { Pagination } from '@/components/ui/pagination';
 
 export const metadata: Metadata = {
-  title: "Fitness Programmes | FunctionallyFit",
+  title: 'Fitness Programmes | FunctionallyFit',
   description:
-    "Explore our range of fitness programmes designed to help you achieve your health and fitness goals.",
+    'Explore our range of fitness programmes designed to help you achieve your health and fitness goals.',
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-export default async function ProgrammesPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const page = Number(searchParams.page) || 1;
+export default async function ProgrammesPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams;
+  const page = Number(params.page) || 1;
   const pageSize = 9;
-  const search =
-    typeof searchParams.search === "string" ? searchParams.search : "";
+  const search = typeof params.search === 'string' ? params.search : '';
   const userId = await getCurrentUserId();
 
   const filters = {
-    intention:
-      typeof searchParams.intention === "string"
-        ? searchParams.intention
-        : undefined,
-    length:
-      typeof searchParams.length === "string" ? searchParams.length : undefined,
-    minSessions:
-      typeof searchParams.minSessions === "string"
-        ? parseInt(searchParams.minSessions)
-        : undefined,
-    maxSessions:
-      typeof searchParams.maxSessions === "string"
-        ? parseInt(searchParams.maxSessions)
-        : undefined,
-    saved: searchParams.saved === "true",
+    intention: typeof params.intention === 'string' ? params.intention : undefined,
+    length: typeof params.length === 'string' ? params.length : undefined,
+    minSessions: typeof params.minSessions === 'string' ? parseInt(params.minSessions) : undefined,
+    maxSessions: typeof params.maxSessions === 'string' ? parseInt(params.maxSessions) : undefined,
+    saved: params.saved === 'true',
   };
 
-  const { programmes, total } = await getProgrammes(
-    page,
-    pageSize,
-    search,
-    filters,
-    userId!
-  );
+  const { programmes, total } = await getProgrammes(page, pageSize, search, filters, userId!);
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto space-y-8 p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Fitness Programmes
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Fitness Programmes</h1>
           <p className="text-muted-foreground">
             Choose from our collection of pre-built programmes
           </p>
@@ -84,24 +62,17 @@ export default async function ProgrammesPage({
           fallback={Array(pageSize)
             .fill(null)
             .map((_, i) => (
-              <div
-                key={i}
-                className="h-64 bg-gray-200 animate-pulse rounded-lg"
-              ></div>
+              <div key={i} className="h-64 animate-pulse rounded-lg bg-gray-200"></div>
             ))}
         >
           {programmes.length === 0 ? (
-            <p className="text-center col-span-full">
+            <p className="col-span-full text-center">
               No programmes found. Try adjusting your search or filters.
             </p>
           ) : (
             <>
               {programmes.map((programme) => (
-                <ProgrammeCard
-                  key={programme.id}
-                  {...programme}
-                  userId={userId}
-                />
+                <ProgrammeCard key={programme.id} {...programme} userId={userId} />
               ))}
               <div className="col-span-full mt-6">
                 <Pagination
@@ -109,7 +80,7 @@ export default async function ProgrammesPage({
                   pageSize={pageSize}
                   currentPage={page}
                   baseUrl="/programmes"
-                  searchParams={searchParams}
+                  searchParams={await searchParams}
                 />
               </div>
             </>

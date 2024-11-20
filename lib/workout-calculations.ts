@@ -1,10 +1,10 @@
-import { ExerciseSummary } from "@/app/actions/workouts";
-import { ExerciseMode } from "@prisma/client";
+import { ExerciseSummary } from '@/app/actions/workouts';
+import { ExerciseMode } from '@prisma/client';
 
 export function calculateImprovements(
   currentPerformance: ExerciseSummary,
-  previousPerformance: ExerciseSummary | null
-): ExerciseSummary["improvement"] {
+  previousPerformance: ExerciseSummary | null,
+): ExerciseSummary['improvement'] {
   if (!previousPerformance) {
     return {
       reps: 0,
@@ -19,8 +19,7 @@ export function calculateImprovements(
     reps: currentPerformance.reps - previousPerformance.reps,
     weight: currentPerformance.weight - previousPerformance.weight,
     time: (currentPerformance.time || 0) - (previousPerformance.time || 0),
-    distance:
-      (currentPerformance.distance || 0) - (previousPerformance.distance || 0),
+    distance: (currentPerformance.distance || 0) - (previousPerformance.distance || 0),
     totalWeight: 0,
   };
 
@@ -31,10 +30,7 @@ export function calculateImprovements(
   return improvement;
 }
 
-export function calculateNextWorkoutWeight(
-  currentWeight: number,
-  targetReached: boolean
-): number {
+export function calculateNextWorkoutWeight(currentWeight: number, targetReached: boolean): number {
   if (targetReached) {
     return Math.ceil((currentWeight * 1.05) / 2.5) * 2.5;
   }
@@ -43,7 +39,7 @@ export function calculateNextWorkoutWeight(
 
 export function isPersonalBest(
   currentPerformance: ExerciseSummary,
-  previousBest: ExerciseSummary | null
+  previousBest: ExerciseSummary | null,
 ): boolean {
   if (!previousBest) return true;
 

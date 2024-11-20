@@ -1,19 +1,13 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { BookmarkIcon, Calendar, Timer } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
-import { toggleProgrammeSave } from "@/app/actions/programmes";
+import Image from 'next/image';
+import Link from 'next/link';
+import { BookmarkIcon, Calendar, Timer } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useState } from 'react';
+import { toggleProgrammeSave } from '@/app/actions/programmes';
 
 interface ProgrammeCardProps {
   id: string;
@@ -46,14 +40,14 @@ export function ProgrammeCard({
       await toggleProgrammeSave(id, userId);
       setSaved(!saved);
     } catch (error) {
-      console.error("Failed to toggle save:", error);
+      console.error('Failed to toggle save:', error);
     }
   };
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="border-b p-0">
-        <div className="aspect-video relative">
+        <div className="relative aspect-video">
           <Image
             src={thumbnail}
             alt={title}
@@ -67,23 +61,12 @@ export function ProgrammeCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <CardTitle className="line-clamp-1">{title}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {description}
-            </p>
+            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{description}</p>
           </div>
           {userId && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              onClick={handleToggleSave}
-            >
-              <BookmarkIcon
-                className={`h-4 w-4 ${saved ? "fill-primary" : ""}`}
-              />
-              <span className="sr-only">
-                {saved ? "Remove from saved" : "Save programme"}
-              </span>
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={handleToggleSave}>
+              <BookmarkIcon className={`h-4 w-4 ${saved ? 'fill-primary' : ''}`} />
+              <span className="sr-only">{saved ? 'Remove from saved' : 'Save programme'}</span>
             </Button>
           )}
         </div>

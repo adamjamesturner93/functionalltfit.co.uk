@@ -1,4 +1,4 @@
-import { Unit } from "@prisma/client";
+import { Unit } from '@prisma/client';
 
 export function convertWeight(weight: number, unit: Unit): number {
   if (unit === Unit.IMPERIAL) {
@@ -11,7 +11,7 @@ export function convertWeight(weight: number, unit: Unit): number {
 
 export function formatWeight(weight: number, unit: Unit): string {
   const convertedWeight = convertWeight(weight, unit);
-  return `${convertedWeight} ${unit === Unit.IMPERIAL ? "lbs" : "kg"}`;
+  return `${convertedWeight} ${unit === Unit.IMPERIAL ? 'lbs' : 'kg'}`;
 }
 
 export function convertDistance(distance: number, unit: Unit): number {
@@ -25,5 +25,5 @@ export function convertDistance(distance: number, unit: Unit): number {
 
 export function formatDistance(distance: number, unit: Unit): string {
   const convertedDistance = convertDistance(distance, unit);
-  return `${convertedDistance} ${unit === Unit.IMPERIAL ? "mi" : "km"}`;
+  return `${convertedDistance} ${unit === Unit.IMPERIAL ? 'mi' : 'km'}`;
 }
