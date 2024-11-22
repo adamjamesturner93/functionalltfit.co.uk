@@ -1,8 +1,11 @@
 'use client';
 
-import { Plus, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Goal } from '@prisma/client';
+import { ChevronRight, Plus } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { GoalCard } from './goal-card';
-import { AddGoalForm } from './add-goal-form';
-import { Goal } from '@prisma/client';
 
-import Link from 'next/link';
+import { AddGoalForm } from './add-goal-form';
+import { GoalCard } from './goal-card';
 
 type GoalsSectionProps = {
   goals: Goal[];
@@ -35,7 +36,7 @@ export function GoalsSection({ goals }: GoalsSectionProps) {
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="icon">
-                <Plus className="h-4 w-4" />
+                <Plus className="size-4" />
                 <span className="sr-only">Add Goal</span>
               </Button>
             </DialogTrigger>
@@ -49,7 +50,7 @@ export function GoalsSection({ goals }: GoalsSectionProps) {
           </Dialog>
           <Button variant="ghost" size="icon" asChild>
             <Link href="/goals">
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="size-4" />
               <span className="sr-only">View all goals</span>
             </Link>
           </Button>

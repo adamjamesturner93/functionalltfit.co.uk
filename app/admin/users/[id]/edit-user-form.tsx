@@ -1,12 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { MembershipPlan, MembershipStatus, User, UserRole } from '@prisma/client';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { User, MembershipStatus, MembershipPlan, UserRole } from '@prisma/client';
+
+import { updateUser, UserInput } from '@/app/actions/users';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -15,10 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { updateUser, UserInput } from '@/app/actions/users';
 import { useToast } from '@/hooks/use-toast';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -104,15 +104,10 @@ export function EditUserForm({ user }: EditUserFormProps) {
               Date of Birth
             </label>
             <DatePicker
-              wrapperClassName="w-full"
               selected={field.value}
               onChange={(date: Date | null) => field.onChange(date)}
               dateFormat="dd MMM yyyy"
-              showYearDropdown
-              scrollableYearDropdown
-              yearDropdownItemNumber={100}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholderText="Select date of birth"
             />
             {errors.dateOfBirth && (
               <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>

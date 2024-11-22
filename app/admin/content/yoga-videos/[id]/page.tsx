@@ -1,7 +1,8 @@
 import { getYogaVideoById } from '@/app/actions/yoga-videos';
+
 import YogaVideoFormClient from './yoga-video-form-client';
 
-export default async function YogaVideoFormPage({ params }: { params: { id: string } }) {
+export default async function YogaVideoFormPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const isNewYogaVideo = id === 'new';
 

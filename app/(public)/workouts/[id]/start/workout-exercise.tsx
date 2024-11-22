@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { ExerciseMode, Unit } from '@prisma/client';
+import { ChevronRight, Dumbbell, Info, Pause, Play, RotateCcw, Timer } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { ExerciseMode, Unit } from '@prisma/client';
-import { Info, Dumbbell, Timer, ChevronRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { convertDistance, convertWeight, formatDistance } from '@/lib/unit-conversion';
 import { cn } from '@/lib/utils';
-import { convertWeight, convertDistance, formatDistance } from '@/lib/unit-conversion';
 
 interface Exercise {
   id: string;
@@ -129,12 +130,12 @@ export function WorkoutExercise({
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <Info className="h-4 w-4" />
+                  <Info className="size-4" />
                 </Button>
               </DialogTrigger>
               <DialogContent className="border-slate-800 bg-slate-900">
                 <div className="mb-4 aspect-video w-full overflow-hidden rounded-lg">
-                  <video src={exercise.videoUrl} controls className="h-full w-full object-cover" />
+                  <video src={exercise.videoUrl} controls className="size-full object-cover" />
                 </div>
                 <div className="space-y-2">
                   <h4 className="text-lg font-semibold">Instructions</h4>
@@ -144,7 +145,7 @@ export function WorkoutExercise({
             </Dialog>
           </div>
           <div className="flex items-center gap-2 text-sm text-slate-400">
-            <Timer className="h-4 w-4" />
+            <Timer className="size-4" />
             <span>
               Round {currentRound} of {totalRounds}
             </span>
@@ -165,7 +166,7 @@ export function WorkoutExercise({
           <div className="space-y-2">
             <Label className="text-sm text-slate-400">Equipment</Label>
             <div className="flex items-center gap-2 text-2xl font-bold">
-              <Dumbbell className="h-5 w-5" />
+              <Dumbbell className="size-5" />
               {exercise.equipment}
             </div>
           </div>
@@ -222,9 +223,9 @@ export function WorkoutExercise({
                   >
                     {isTimerRunning ? 'Pause' : 'Start'}
                     {isTimerRunning ? (
-                      <Pause className="ml-2 h-4 w-4" />
+                      <Pause className="ml-2 size-4" />
                     ) : (
-                      <Play className="ml-2 h-4 w-4" />
+                      <Play className="ml-2 size-4" />
                     )}
                   </Button>
                   <Button
@@ -234,7 +235,7 @@ export function WorkoutExercise({
                     onClick={handleResetTimer}
                   >
                     Reset
-                    <RotateCcw className="ml-2 h-4 w-4" />
+                    <RotateCcw className="ml-2 size-4" />
                   </Button>
                 </div>
               </div>
@@ -284,7 +285,7 @@ export function WorkoutExercise({
           className="h-12 w-full bg-indigo-600 text-lg hover:bg-indigo-700"
         >
           Complete Exercise
-          <ChevronRight className="ml-2 h-5 w-5" />
+          <ChevronRight className="ml-2 size-5" />
         </Button>
       </CardContent>
     </Card>

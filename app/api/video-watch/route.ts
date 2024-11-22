@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
+import { prisma } from '@/lib/prisma';
 
 export const config = {
   runtime: 'edge',

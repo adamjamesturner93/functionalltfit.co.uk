@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Upload, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import Image from 'next/image';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface ImageUploadProps {
   onImageUpload: (url: string) => void;
@@ -92,7 +93,7 @@ export function ImageUpload({ onImageUpload, initialImage }: ImageUploadProps) {
             className="absolute right-2 top-2"
             onClick={handleRemoveImage}
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
           </Button>
         </div>
       ) : (
@@ -102,7 +103,7 @@ export function ImageUpload({ onImageUpload, initialImage }: ImageUploadProps) {
           onDrop={handleDrop}
         >
           <div className="mx-auto flex flex-col items-center gap-6">
-            <Upload className="h-8 w-8 text-muted-foreground" />
+            <Upload className="size-8 text-muted-foreground" />
             <div className="text-xl font-medium text-white">Drop an image file here to upload</div>
             <div className="text-base text-muted-foreground">or</div>
             <div>

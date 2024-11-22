@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { X, Check } from 'lucide-react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
+import { Check, X } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,7 +73,7 @@ export function MultiSelect({
                       handleRemove(value);
                     }}
                   >
-                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                    <X className="size-3 text-muted-foreground hover:text-foreground" />
                   </button>
                 </Badge>
               );
@@ -103,7 +104,7 @@ export function MultiSelect({
                 onClick={() => handleSelect(option.value)}
               >
                 <Check
-                  className={`mr-2 h-4 w-4 ${
+                  className={`mr-2 size-4 ${
                     selected.includes(option.value) ? 'opacity-100' : 'opacity-0'
                   }`}
                 />

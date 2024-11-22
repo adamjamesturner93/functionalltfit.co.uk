@@ -1,30 +1,31 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useRef, useState } from 'react';
+import { Unit } from '@prisma/client';
 import {
-  Trophy,
-  Clock,
-  Weight,
-  Target,
-  TrendingUp,
-  Share2,
   ChevronRight,
+  Clock,
   Facebook,
   Instagram,
   LinkIcon,
+  Share2,
+  Target,
+  TrendingUp,
+  Trophy,
   Twitter,
+  Weight,
 } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
 import { shareWorkout, updateUserExerciseWeight } from '@/app/actions/workouts';
+import { WorkoutSummary as WorkoutSummaryType } from '@/app/actions/workouts';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
-import { WorkoutSummary as WorkoutSummaryType } from '@/app/actions/workouts';
-import { Unit } from '@prisma/client';
 import { formatWeight } from '@/lib/unit-conversion';
 
 interface WorkoutSummaryProps {
@@ -206,7 +207,7 @@ export function WorkoutSummary({
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="space-y-2 text-center">
           <div className="flex items-center justify-center gap-3">
-            <Trophy className="h-8 w-8 text-yellow-500" />
+            <Trophy className="size-8 text-yellow-500" />
             <h1 className="text-3xl font-bold">Workout Complete!</h1>
           </div>
         </div>
@@ -214,7 +215,7 @@ export function WorkoutSummary({
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <Card className="border-slate-800 bg-slate-900">
             <CardContent className="space-y-2 p-6 text-center">
-              <Clock className="mx-auto h-6 w-6 text-slate-400" />
+              <Clock className="mx-auto size-6 text-slate-400" />
               <div className="text-sm text-slate-400">Duration</div>
               <div className="font-mono text-2xl font-bold">
                 {formatTime(summary.totalDuration)}
@@ -224,7 +225,7 @@ export function WorkoutSummary({
 
           <Card className="border-slate-800 bg-slate-900">
             <CardContent className="space-y-2 p-6 text-center">
-              <Weight className="mx-auto h-6 w-6 text-slate-400" />
+              <Weight className="mx-auto size-6 text-slate-400" />
               <div className="text-sm text-slate-400">Weight Lifted</div>
               <div className="text-2xl font-bold">
                 {formatWeight(summary.totalWeightLifted, userPreferences.weightUnit)}
@@ -234,7 +235,7 @@ export function WorkoutSummary({
 
           <Card className="border-slate-800 bg-slate-900">
             <CardContent className="space-y-2 p-6 text-center">
-              <Target className="mx-auto h-6 w-6 text-slate-400" />
+              <Target className="mx-auto size-6 text-slate-400" />
               <div className="text-sm text-slate-400">Ready to Progress</div>
               <div className="text-2xl font-bold">{readyToProgressCount}</div>
             </CardContent>
@@ -242,7 +243,7 @@ export function WorkoutSummary({
 
           <Card className="border-slate-800 bg-slate-900">
             <CardContent className="space-y-2 p-6 text-center">
-              <TrendingUp className="mx-auto h-6 w-6 text-slate-400" />
+              <TrendingUp className="mx-auto size-6 text-slate-400" />
               <div className="text-sm text-slate-400">Personal Bests</div>
               <div className="text-2xl font-bold">{personalBestsCount}</div>
             </CardContent>
@@ -298,7 +299,7 @@ export function WorkoutSummary({
                                       exercise.nextWorkoutWeight,
                                       userPreferences.weightUnit,
                                     )}
-                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                    <ChevronRight className="ml-2 size-4" />
                                   </Button>
                                 )}
                               </div>
@@ -380,7 +381,7 @@ export function WorkoutSummary({
             variant="outline"
             className="flex-1 border-slate-700 hover:bg-slate-800"
           >
-            <Share2 className="mr-2 h-4 w-4" />
+            <Share2 className="mr-2 size-4" />
             {isLoading ? 'Generating...' : 'Share Achievements'}
           </Button>
 
@@ -396,7 +397,7 @@ export function WorkoutSummary({
                 <div className="flex items-center space-x-2">
                   <Input value={shareLink} readOnly />
                   <Button size="icon" onClick={copyLinkToClipboard}>
-                    <LinkIcon className="h-4 w-4" />
+                    <LinkIcon className="size-4" />
                   </Button>
                 </div>
                 <div className="flex justify-center space-x-4">
@@ -410,7 +411,7 @@ export function WorkoutSummary({
                       )
                     }
                   >
-                    <Twitter className="mr-2 h-4 w-4" />
+                    <Twitter className="mr-2 size-4" />
                     Twitter
                   </Button>
                   <Button
@@ -423,15 +424,15 @@ export function WorkoutSummary({
                       )
                     }
                   >
-                    <Facebook className="mr-2 h-4 w-4" />
+                    <Facebook className="mr-2 size-4" />
                     Facebook
                   </Button>
                   <Button onClick={shareToWhatsApp}>
-                    <Share2 className="mr-2 h-4 w-4" />
+                    <Share2 className="mr-2 size-4" />
                     WhatsApp
                   </Button>
                   <Button onClick={shareToInstagram}>
-                    <Instagram className="mr-2 h-4 w-4" />
+                    <Instagram className="mr-2 size-4" />
                     Instagram
                   </Button>
                 </div>

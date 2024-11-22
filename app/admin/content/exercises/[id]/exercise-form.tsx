@@ -1,13 +1,18 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Exercise, ExerciseMode, ExerciseType } from '@prisma/client';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { Exercise, ExerciseType, ExerciseMode } from '@prisma/client';
+
+import { createExercise, updateExercise } from '@/app/actions/exercises';
+import { ImageUpload } from '@/components/image-upload';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { MultiSelect } from '@/components/ui/multi-select';
 import {
   Select,
   SelectContent,
@@ -15,13 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { createExercise, updateExercise } from '@/app/actions/exercises';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { ImageUpload } from '@/components/image-upload';
+import { Textarea } from '@/components/ui/textarea';
 import { VideoUpload } from '@/components/video-upload';
+import { useToast } from '@/hooks/use-toast';
 
 const exerciseSchema = z.object({
   name: z.string().min(1, 'Name is required'),

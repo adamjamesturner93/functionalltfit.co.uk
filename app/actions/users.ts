@@ -1,8 +1,9 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
+import { MembershipPlan, MembershipStatus, User, UserRole } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { User, MembershipStatus, MembershipPlan, UserRole } from '@prisma/client';
+
+import { prisma } from '@/lib/prisma';
 
 export type UserFilters = {
   status?: MembershipStatus | 'ALL';
@@ -20,7 +21,6 @@ export async function getUsers(
 
   const searchTerms = search.split(' ').filter(Boolean);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
   if (searchTerms.length > 0) {

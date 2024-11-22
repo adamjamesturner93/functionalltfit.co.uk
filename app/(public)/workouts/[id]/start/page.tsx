@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ExerciseMode, Unit } from '@prisma/client';
+import { Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { startWorkout, completeWorkout, updateWorkoutActivity } from '@/app/actions/workouts';
-import { getCurrentUserId } from '@/lib/auth-utils';
+
 import { getCurrentUser } from '@/app/actions/profile';
+import { completeWorkout, startWorkout, updateWorkoutActivity } from '@/app/actions/workouts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { getCurrentUserId } from '@/lib/auth-utils';
+
+import { SetRest } from './set-rest';
 import { WorkoutExercise } from './workout-exercise';
 import { WorkoutProgress } from './workout-progress';
-import { SetRest } from './set-rest';
-import { ExerciseMode, Unit } from '@prisma/client';
-import { Progress } from '@/components/ui/progress';
-import { Clock } from 'lucide-react';
 
 interface Exercise {
   id: string;
@@ -342,7 +344,7 @@ export default function WorkoutPage() {
             <div className="py-8 text-center">
               <h3 className="mb-4 text-2xl font-bold">Rest Time</h3>
               <div className="mb-4 flex items-center justify-center gap-2">
-                <Clock className="h-6 w-6" />
+                <Clock className="size-6" />
                 <p className="font-mono text-4xl">{timeLeft}s</p>
               </div>
               <Progress value={(1 - timeLeft / currentSet.rest) * 100} className="mb-4 w-full" />
@@ -352,7 +354,7 @@ export default function WorkoutPage() {
             <div className="py-8 text-center">
               <h3 className="mb-4 text-2xl font-bold">Gap Time</h3>
               <div className="mb-4 flex items-center justify-center gap-2">
-                <Clock className="h-6 w-6" />
+                <Clock className="size-6" />
                 <p className="font-mono text-4xl">{timeLeft}s</p>
               </div>
               <Progress value={(1 - timeLeft / currentSet.gap) * 100} className="mb-4 w-full" />

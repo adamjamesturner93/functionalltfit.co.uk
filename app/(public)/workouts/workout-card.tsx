@@ -1,9 +1,10 @@
-import Link from 'next/link';
-import { Dumbbell, BookmarkIcon } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { BookmarkIcon, Dumbbell } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface WorkoutCardProps {
   id: string;
@@ -40,7 +41,7 @@ export function WorkoutCard({
         />
       </div>
 
-      <CardHeader className="flex-grow space-y-1">
+      <CardHeader className="grow space-y-1">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="line-clamp-1 text-xl">{name}</CardTitle>
           <Badge variant="secondary" className="ml-2 shrink-0">
@@ -49,7 +50,7 @@ export function WorkoutCard({
         </div>
         <CardDescription className="line-clamp-2">{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-grow flex-col justify-end">
+      <CardContent className="flex grow flex-col justify-end">
         <div className="space-y-4">
           {muscleGroups.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -64,7 +65,7 @@ export function WorkoutCard({
             </div>
           )}
           <div className="flex items-center gap-2 text-sm">
-            <Dumbbell className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <Dumbbell className="size-4 shrink-0 text-muted-foreground" />
             <span className="line-clamp-1 text-muted-foreground">
               {equipment.length ? equipment.join(', ') : 'No equipment'}
             </span>
@@ -81,7 +82,7 @@ export function WorkoutCard({
                   size="icon"
                   className={isSaved ? 'text-primary' : 'text-muted-foreground hover:text-primary'}
                 >
-                  <BookmarkIcon className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                  <BookmarkIcon className={`size-4 ${isSaved ? 'fill-current' : ''}`} />
                   <span className="sr-only">{isSaved ? 'Unsave workout' : 'Save workout'}</span>
                 </Button>
               </form>

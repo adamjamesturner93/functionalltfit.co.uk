@@ -1,14 +1,15 @@
 'use client';
 
+import { User } from '@prisma/client';
+import { Dumbbell, GlassWater, Heart, LayoutDashboard, LogOut, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { Dumbbell, GlassWater, Heart, LayoutDashboard, LogOut, UserIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User } from '@prisma/client';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface NavItem {
   title: string;
@@ -55,7 +56,7 @@ export function Navigation({ user }: { user: User }) {
     <div className="flex h-screen w-64 flex-col gap-4 border-r bg-card/50 backdrop-blur">
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <Heart className="h-6 w-6 text-primary" />
+          <Heart className="size-6 text-primary" />
           <span>FunctionallyFit</span>
         </Link>
       </div>
@@ -77,7 +78,7 @@ export function Navigation({ user }: { user: User }) {
                   asChild
                 >
                   <Link href={item.href}>
-                    <item.icon className="mr-2 h-4 w-4" />
+                    <item.icon className="mr-2 size-4" />
                     {item.title}
                     {item.badge && (
                       <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
@@ -105,7 +106,7 @@ export function Navigation({ user }: { user: User }) {
                   asChild
                 >
                   <Link href={item.href}>
-                    <item.icon className="mr-2 h-4 w-4" />
+                    <item.icon className="mr-2 size-4" />
                     {item.title}
                   </Link>
                 </Button>
@@ -126,7 +127,7 @@ export function Navigation({ user }: { user: User }) {
           </div>
           <Button variant="ghost" size="icon" asChild>
             <Link href="/logout">
-              <LogOut className="h-4 w-4" />
+              <LogOut className="size-4" />
               <span className="sr-only">Log out</span>
             </Link>
           </Button>

@@ -1,5 +1,6 @@
-import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
+
+import { Card, CardContent } from '@/components/ui/card';
 
 interface QuickStatsCardProps {
   title: string;
@@ -32,7 +33,7 @@ export function QuickStatsCard({
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className={`rounded-full ${colorClasses[iconColor]} w-fit p-3`}>
-            <Icon className="h-6 w-6" />
+            <Icon className="size-6" />
           </div>
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>

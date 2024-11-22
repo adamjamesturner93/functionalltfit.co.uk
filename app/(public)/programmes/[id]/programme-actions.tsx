@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { BookmarkIcon, PlayCircle, XCircle } from 'lucide-react';
-import { toggleProgrammeSave, startProgramme, leaveProgramme } from '@/app/actions/programmes';
 import { useRouter } from 'next/navigation';
+
+import { leaveProgramme, startProgramme, toggleProgrammeSave } from '@/app/actions/programmes';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProgrammeActionsProps {
@@ -115,18 +116,18 @@ export function ProgrammeActions({
   return (
     <div className="flex gap-2">
       <Button variant="secondary" size="sm" onClick={handleToggleSave}>
-        <BookmarkIcon className={`mr-2 h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+        <BookmarkIcon className={`mr-2 size-4 ${saved ? 'fill-current' : ''}`} />
         {saved ? 'Saved' : 'Save Programme'}
       </Button>
 
       {isActive ? (
         <Button onClick={handleLeaveProgramme} disabled={isLoading} size="sm" variant="destructive">
-          <XCircle className="mr-2 h-4 w-4" />
+          <XCircle className="mr-2 size-4" />
           Leave Programme
         </Button>
       ) : (
         <Button onClick={handleStartProgramme} disabled={isLoading} size="sm">
-          <PlayCircle className="mr-2 h-4 w-4" />
+          <PlayCircle className="mr-2 size-4" />
           Start Programme
         </Button>
       )}

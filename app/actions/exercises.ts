@@ -1,7 +1,8 @@
 'use server';
 
+import { Exercise, ExerciseMode, ExerciseType } from '@prisma/client';
+
 import { prisma } from '@/lib/prisma';
-import { Exercise, ExerciseType, ExerciseMode } from '@prisma/client';
 
 export type ExerciseFilters = {
   type?: ExerciseType | 'ALL';
@@ -20,7 +21,6 @@ export async function getExercises(
 
   const searchTerms = search.split(' ').filter(Boolean);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
   if (searchTerms.length > 0) {

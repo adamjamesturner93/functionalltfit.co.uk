@@ -1,9 +1,10 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
-import { programmeSchema, ProgrammeFormData, Programme } from '@/lib/schemas/programme';
 import { Prisma, ProgrammeActivity, UserProgramme } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+
+import { prisma } from '@/lib/prisma';
+import { Programme, ProgrammeFormData, programmeSchema } from '@/lib/schemas/programme';
 
 export type ProgrammeActivityWithName = Omit<ProgrammeActivity, 'activityType'> & {
   activityType: 'WORKOUT' | 'YOGA';

@@ -1,13 +1,17 @@
+import { ArrowLeft, BarChart, Calendar, Clock, Dumbbell, Target } from 'lucide-react';
 import Link from 'next/link';
-import { ArrowLeft, Clock, Calendar, Dumbbell, Target, BarChart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { getProgramme, getUserProgramme } from '@/app/actions/programmes';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCurrentUserId } from '@/lib/auth-utils';
+
 import { ProgrammeActions } from './programme-actions';
 
-export default async function ProgrammePage({ params }: { params: { id: string } }) {
+type Params = Promise<{ id: string }>;
+
+export default async function ProgrammePage({ params }: { params: Params }) {
   const userId = await getCurrentUserId();
   const { id } = await params;
   const [programme, activeProgramme] = await Promise.all([
@@ -16,7 +20,7 @@ export default async function ProgrammePage({ params }: { params: { id: string }
   ]);
 
   if (!programme) {
-    return <div>Programme not found</div>;
+    return <div className="container mx-auto p-6 text-center">Programme not found</div>;
   }
 
   const isActive = activeProgramme?.programme.id === id;
@@ -28,8 +32,8 @@ export default async function ProgrammePage({ params }: { params: { id: string }
           href="/programmes"
           className="flex items-center text-sm text-muted-foreground hover:text-primary"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Programmes
+          <ArrowLeft className="mr-2 size-4" aria-hidden="true" />
+          <span>Back to Programmes</span>
         </Link>
         <ProgrammeActions
           programmeId={id}
@@ -47,28 +51,28 @@ export default async function ProgrammePage({ params }: { params: { id: string }
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Calendar className="mb-2 h-6 w-6 text-primary" />
+            <Calendar className="mb-2 size-6 text-primary" aria-hidden="true" />
             <p className="text-sm font-medium">{programme.weeks} weeks</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Clock className="mb-2 h-6 w-6 text-primary" />
+            <Clock className="mb-2 size-6 text-primary" aria-hidden="true" />
             <p className="text-sm font-medium">{programme.sessionsPerWeek} sessions/week</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <Target className="mb-2 h-6 w-6 text-primary" />
+            <Target className="mb-2 size-6 text-primary" aria-hidden="true" />
             <p className="text-sm font-medium">{programme.intention}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-4">
-            <BarChart className="mb-2 h-6 w-6 text-primary" />
+            <BarChart className="mb-2 size-6 text-primary" aria-hidden="true" />
             <p className="text-sm font-medium">
               {programme.activities.some((a) => a.activityType === 'WORKOUT') &&
-                programme.activities.some((a) => a.activityType === 'YOGA')
+              programme.activities.some((a) => a.activityType === 'YOGA')
                 ? 'Mixed'
                 : programme.activities[0]?.activityType || 'N/A'}
             </p>
@@ -79,7 +83,7 @@ export default async function ProgrammePage({ params }: { params: { id: string }
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Dumbbell className="h-5 w-5" />
+            <Dumbbell className="size-5" aria-hidden="true" />
             Equipment Needed
           </CardTitle>
         </CardHeader>
@@ -126,7 +130,7 @@ export default async function ProgrammePage({ params }: { params: { id: string }
                         <span className="mr-2 capitalize">
                           {activity.activityType.toLowerCase()}
                         </span>
-                        <span>•</span>
+                        <span aria-hidden="true">•</span>
                         <span className="ml-2">
                           {activity.activityType === 'WORKOUT' && activity.workout
                             ? `${Math.floor(activity.workout.totalLength / 60)} mins`

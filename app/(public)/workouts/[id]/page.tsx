@@ -1,16 +1,22 @@
 import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
+import { ArrowLeft, BookmarkIcon, Clock, Dumbbell, Play, Target } from 'lucide-react';
 import { Metadata } from 'next';
-import { Clock, Dumbbell, Target, ArrowLeft, BookmarkIcon, Play } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { getWorkoutById, toggleWorkoutSave } from '@/app/actions/workouts';
-import { WorkoutStructure } from './workout-structure';
-import { getCurrentUserId } from '@/lib/auth-utils';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+import { getWorkoutById, toggleWorkoutSave } from '@/app/actions/workouts';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { getCurrentUserId } from '@/lib/auth-utils';
+
+import { WorkoutStructure } from './workout-structure';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const userId = await getCurrentUserId();
   const workout = await getWorkoutById(id, userId);
@@ -27,7 +33,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function WorkoutPage({ params }: { params: { id: string } }) {
+export default async function WorkoutPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const userId = await getCurrentUserId();
   const workout = await getWorkoutById(id, userId);
@@ -51,7 +57,7 @@ export default async function WorkoutPage({ params }: { params: { id: string } }
             href="/workouts"
             className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Back to Workouts
           </Link>
           <h1 className="mb-2 text-3xl font-bold tracking-tight">{workout.name}</h1>
@@ -61,14 +67,14 @@ export default async function WorkoutPage({ params }: { params: { id: string } }
           {userId && (
             <form action={handleToggleSave}>
               <Button variant="secondary" size="sm">
-                <BookmarkIcon className={`mr-2 h-4 w-4 ${workout.isSaved ? 'fill-current' : ''}`} />
+                <BookmarkIcon className={`mr-2 size-4 ${workout.isSaved ? 'fill-current' : ''}`} />
                 {workout.isSaved ? 'Saved' : 'Save Workout'}
               </Button>
             </form>
           )}
           <Button asChild size="sm">
             <Link href={`/workouts/${id}/start`}>
-              <Play className="mr-2 h-4 w-4" />
+              <Play className="mr-2 size-4" />
               Start Workout
             </Link>
           </Button>
@@ -78,15 +84,15 @@ export default async function WorkoutPage({ params }: { params: { id: string } }
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-muted-foreground" />
+            <Clock className="size-5 text-muted-foreground" />
             <span>{Math.floor(workout.totalLength / 60)} minutes</span>
           </div>
           <div className="flex items-center gap-2">
-            <Dumbbell className="h-5 w-5 text-muted-foreground" />
+            <Dumbbell className="size-5 text-muted-foreground" />
             <span>{workout.equipment.join(', ') || 'No equipment needed'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-muted-foreground" />
+            <Target className="size-5 text-muted-foreground" />
             <span>{workout.muscleGroups.join(', ')}</span>
           </div>
         </div>

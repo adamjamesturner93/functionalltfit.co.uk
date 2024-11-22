@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
-import { completeYogaVideo } from '@/app/actions/yoga-videos';
 import { useRouter } from 'next/navigation';
+
+import { completeYogaVideo } from '@/app/actions/yoga-videos';
+import { Button } from '@/components/ui/button';
 
 interface CompleteButtonProps {
   yogaVideoId: string;
@@ -36,7 +37,7 @@ export function CompleteButton({ yogaVideoId, userId }: CompleteButtonProps) {
       className="bg-primary hover:bg-primary/90"
       disabled={isLoading || isCompleted}
     >
-      <CheckCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+      <CheckCircle className="mr-2 size-4" aria-hidden="true" />
       {isCompleted ? 'Class Completed' : 'Mark as Completed'}
     </Button>
   );

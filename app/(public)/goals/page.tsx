@@ -1,10 +1,9 @@
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import { getAllGoals } from '@/app/actions/goals';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { redirect } from 'next/navigation';
+
+import { getAllGoals } from '@/app/actions/goals';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { auth } from '@/lib/auth';
+
 import { AddGoalForm } from '../components/goals/add-goal-form';
 import { GoalCard } from '../components/goals/goal-card';
 
@@ -36,7 +38,7 @@ export default async function GoalsPage() {
         <Dialog>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Add Goal
             </Button>
           </DialogTrigger>

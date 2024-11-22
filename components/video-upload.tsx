@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useCallback, useEffect, useState } from 'react';
 import MuxUploader from '@mux/mux-uploader-react';
+import { X } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface VideoUploadProps {
   onVideoUpload: (muxPlaybackId: string, muxAssetId: string, duration: number) => void;
@@ -85,7 +86,7 @@ export function VideoUpload({ onVideoUpload, initialVideo }: VideoUploadProps) {
           <video
             src={`https://stream.mux.com/${video}.m3u8`}
             controls
-            className="h-full w-full rounded-xl bg-[#0A0A0A] object-cover"
+            className="size-full rounded-xl bg-[#0A0A0A] object-cover"
           />
           <Button
             variant="destructive"
@@ -93,7 +94,7 @@ export function VideoUpload({ onVideoUpload, initialVideo }: VideoUploadProps) {
             className="absolute right-2 top-2"
             onClick={handleRemoveVideo}
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
           </Button>
         </div>
       ) : (

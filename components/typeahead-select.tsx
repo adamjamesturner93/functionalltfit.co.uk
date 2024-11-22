@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -45,7 +46,7 @@ export function TypeaheadSelect({ items, value, onChange, placeholder }: Typeahe
           className="w-full justify-between"
         >
           {selectedItem ? selectedItem.label : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>

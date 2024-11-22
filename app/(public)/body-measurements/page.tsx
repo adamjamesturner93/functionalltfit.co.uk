@@ -1,8 +1,11 @@
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { BodyMeasurementForm } from './body-measurement-form';
-import { BodyMeasurementGraph } from '../components/body-measurement-graph';
+
 import { getBodyMeasurements } from '@/app/actions/health';
+import { auth } from '@/lib/auth';
+
+import { BodyMeasurementGraph } from '../components/body-measurement-graph';
+
+import { BodyMeasurementForm } from './body-measurement-form';
 
 export default async function BodyMeasurementsPage() {
   const session = await auth();

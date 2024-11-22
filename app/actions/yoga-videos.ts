@@ -1,11 +1,12 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { prisma } from '@/lib/prisma';
-import { YogaType, YogaVideo, Prisma } from '@prisma/client';
-import { autoUpdateActivityCompletion } from './programmes';
-
 import { Mux } from '@mux/mux-node';
+import { Prisma, YogaType, YogaVideo } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+
+import { prisma } from '@/lib/prisma';
+
+import { autoUpdateActivityCompletion } from './programmes';
 
 const { video } = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,

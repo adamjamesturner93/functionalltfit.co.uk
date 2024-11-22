@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { generateAuthCode, sendAuthCode } from '@/lib/auth';
 import { User } from 'next-auth';
+
+import { generateAuthCode, sendAuthCode } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   const { email } = await request.json();
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error(error.response.body);
+    console.error(error);
     return NextResponse.json({ message: 'Error sending auth code', error }, { status: 500 });
   }
 }

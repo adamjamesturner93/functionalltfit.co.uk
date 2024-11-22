@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getActivityHistory, ActivityHistoryItem } from '@/app/actions/activity';
 import { format } from 'date-fns';
+import { Dumbbell, GlassWater } from 'lucide-react';
+
+import { ActivityHistoryItem, getActivityHistory } from '@/app/actions/activity';
 import {
   Table,
   TableBody,
@@ -11,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Dumbbell, GlassWater } from 'lucide-react';
 
 interface ActivityHistoryProps {
   userId: string;
@@ -56,9 +57,9 @@ export function ActivityHistory({ userId }: ActivityHistoryProps) {
           <TableRow key={activity.id}>
             <TableCell>
               {activity.type === 'workout' ? (
-                <Dumbbell className="h-5 w-5 text-blue-500" />
+                <Dumbbell className="size-5 text-blue-500" />
               ) : (
-                <GlassWater className="h-5 w-5 text-green-500" />
+                <GlassWater className="size-5 text-green-500" />
               )}
             </TableCell>
             <TableCell>{activity.name}</TableCell>

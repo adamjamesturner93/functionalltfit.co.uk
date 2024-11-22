@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
-import { startWorkout } from '@/app/actions/workouts';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+import { startWorkout } from '@/app/actions/workouts';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
+
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await authorizeUser(request);
+  const { id } = await params;
 
   if (!session) {
     return unauthorizedResponse();
   }
 
-  const workoutId = params.id;
+  const workoutId = id;
 
   if (!workoutId) {
     return NextResponse.json({ error: 'Workout ID is required' }, { status: 400 });

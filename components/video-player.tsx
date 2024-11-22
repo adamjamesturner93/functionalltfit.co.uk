@@ -65,7 +65,7 @@ export function VideoPlayer({ playbackId, token, onProgress }: VideoPlayerProps)
 
   return (
     <div className="aspect-video">
-      <video ref={videoRef} controls playsInline className="h-full w-full rounded-lg" />
+      <video ref={videoRef} controls playsInline className="size-full rounded-lg" />
     </div>
   );
 }

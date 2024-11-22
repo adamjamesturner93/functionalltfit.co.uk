@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { BookmarkIcon, Play } from 'lucide-react';
-import { toggleYogaVideoSave } from '@/app/actions/yoga-videos';
 import { useRouter } from 'next/navigation';
+
+import { toggleYogaVideoSave } from '@/app/actions/yoga-videos';
+import { Button } from '@/components/ui/button';
 
 interface YogaVideoActionsProps {
   yogaVideoId: string;
@@ -43,12 +44,12 @@ export function YogaVideoActions({ yogaVideoId, userId, isSaved }: YogaVideoActi
           className="min-w-[100px]"
           disabled={isLoading}
         >
-          <BookmarkIcon className={`mr-2 h-4 w-4 ${saved ? 'fill-current' : ''}`} />
+          <BookmarkIcon className={`mr-2 size-4 ${saved ? 'fill-current' : ''}`} />
           {saved ? 'Saved' : 'Save'}
         </Button>
       )}
       <Button size="sm" className="min-w-[140px]" onClick={handleStartPractice}>
-        <Play className="mr-2 h-4 w-4" />
+        <Play className="mr-2 size-4" />
         Start Practice
       </Button>
     </div>

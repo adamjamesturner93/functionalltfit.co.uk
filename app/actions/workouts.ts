@@ -1,19 +1,21 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
+import { ExerciseMode, Prisma, SetType, Workout } from '@prisma/client';
+import { WorkoutActivity, WorkoutActivityExercise, WorkoutActivitySet } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { Workout, SetType, Prisma, ExerciseMode } from '@prisma/client';
-import { autoUpdateActivityCompletion } from './programmes';
 import { redirect } from 'next/navigation';
+
+import { prisma } from '@/lib/prisma';
 import { calculateImprovements, calculateNextWorkoutWeight } from '@/lib/workout-calculations';
 
-import { WorkoutActivity, WorkoutActivitySet, WorkoutActivityExercise } from '@prisma/client';
+import { autoUpdateActivityCompletion } from './programmes';
 
 interface WorkoutActivityWithSets extends WorkoutActivity {
   sets: (WorkoutActivitySet & {
     exercises: WorkoutActivityExercise[];
   })[];
 }
+
 interface ExerciseGroup {
   exercise: {
     id: string;
@@ -83,6 +85,7 @@ export interface WorkoutWithCount extends Workout {
   _count: {
     WorkoutActivity: number;
   };
+  isSaved?: boolean;
 }
 
 export type WorkoutWithSets = Prisma.WorkoutGetPayload<{
@@ -132,7 +135,7 @@ export async function getWorkouts(
   search: string = '',
   filters: WorkoutFilters = {},
   userId?: string | null,
-) {
+): Promise<{ workouts: WorkoutWithCount[]; total: number }> {
   const skip = (page - 1) * pageSize;
 
   const where: Prisma.WorkoutWhereInput = {};
@@ -183,6 +186,9 @@ export async function getWorkouts(
               select: { id: true },
             }
           : false,
+        _count: {
+          select: { WorkoutActivity: true },
+        },
       },
     }),
     prisma.workout.count({ where }),

@@ -1,9 +1,11 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { prisma } from '@/lib/prisma';
 import sgMail from '@sendgrid/mail';
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+
+import { prisma } from '@/lib/prisma';
+
 import { formatAuthCodeEmail } from './formatAuthCodeEmail';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({

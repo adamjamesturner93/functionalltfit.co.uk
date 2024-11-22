@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await authorizeUser(request);
+  const { id } = await params;
 
   if (!session) {
     return unauthorizedResponse();
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       where: {
         userId_workoutId_exerciseId: {
           userId: session.user.id,
-          workoutId: params.id,
+          workoutId: id,
           exerciseId: exerciseId,
         },
       },
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       },
       create: {
         userId: session.user.id,
-        workoutId: params.id,
+        workoutId: id,
         exerciseId: exerciseId,
         weight: newWeight,
       },

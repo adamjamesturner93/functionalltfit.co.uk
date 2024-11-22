@@ -1,14 +1,16 @@
 import { Suspense } from 'react';
-import { Metadata } from 'next';
+import { YogaType } from '@prisma/client';
 import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Metadata } from 'next';
+
 import { getYogaVideos, YogaVideoFilters } from '@/app/actions/yoga-videos';
-import { YogaFilters } from './yoga-filters';
+import { Input } from '@/components/ui/input';
+import { Pagination } from '@/components/ui/pagination';
+import { getCurrentUserId } from '@/lib/auth-utils';
+
 import { YogaCard } from './yoga-card';
 import { YogaCardSkeleton } from './yoga-card-skeleton';
-import { Pagination } from '@/components/ui/pagination';
-import { YogaType } from '@prisma/client';
-import { getCurrentUserId } from '@/lib/auth-utils';
+import { YogaFilters } from './yoga-filters';
 
 export const metadata: Metadata = {
   title: 'Yoga Videos | FunctionallyFit',
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 export default async function YogaPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     type?: string;
@@ -27,7 +29,7 @@ export default async function YogaPage({
     minDuration?: string;
     maxDuration?: string;
     saved?: string;
-  };
+  }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
@@ -53,7 +55,7 @@ export default async function YogaPage({
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <form action="/yoga" method="GET" className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
               name="search"
               placeholder="Search videos..."

@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
+import { YogaType } from '@prisma/client';
 import { Filter } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { getYogaFilterOptions } from '@/app/actions/yoga-videos';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -20,9 +24,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Checkbox } from '@/components/ui/checkbox';
-import { getYogaFilterOptions } from '@/app/actions/yoga-videos';
-import { YogaType } from '@prisma/client';
 
 type FilterOptions = {
   types: YogaType[];
@@ -88,7 +89,7 @@ export function YogaFilters() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="mr-2 size-4" />
           Filters
         </Button>
       </SheetTrigger>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
+
 import { getWorkouts } from '@/app/actions/workouts';
+import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
 export async function GET(request: NextRequest) {
   const session = await authorizeUser(request);

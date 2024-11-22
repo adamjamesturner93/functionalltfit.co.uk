@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { sign } from 'jsonwebtoken';
+import { NextRequest, NextResponse } from 'next/server';
+
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   const { userId, authCode } = await request.json();
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Remove sensitive information from the user object
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { authCode: _, authCodeExpiry: __, ...safeUser } = user;
 
     console.log('Success');

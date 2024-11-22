@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { BookmarkIcon, PlayCircle } from 'lucide-react';
 import Image from 'next/image';
-import { PlayCircle, BookmarkIcon } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+
 import { toggleYogaVideoSave } from '@/app/actions/yoga-videos';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
 interface YogaCardProps {
@@ -68,7 +69,7 @@ export function YogaCard({
           className="object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-          <PlayCircle className="h-12 w-12 text-white" />
+          <PlayCircle className="size-12 text-white" />
         </div>
       </div>
       <CardHeader className="flex-1 space-y-1">
@@ -103,7 +104,7 @@ export function YogaCard({
               onClick={handleToggleSave}
               className={isSaved ? 'text-primary' : 'text-muted-foreground hover:text-primary'}
             >
-              <BookmarkIcon className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+              <BookmarkIcon className={`size-4 ${isSaved ? 'fill-current' : ''}`} />
               <span className="sr-only">{isSaved ? 'Unsave yoga video' : 'Save yoga video'}</span>
             </Button>
           )}

@@ -1,15 +1,21 @@
-import { getYogaVideoById } from '@/app/actions/yoga-videos';
-import { notFound } from 'next/navigation';
+import { ArrowLeft, Clock, Dumbbell, Target } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Clock, ArrowLeft, Dumbbell, Target } from 'lucide-react';
-import { getPlaybackToken } from '@/lib/mux';
+import { notFound } from 'next/navigation';
+
+import { getYogaVideoById } from '@/app/actions/yoga-videos';
 import { VideoPlayer } from '@/components/video-player';
 import { getCurrentUserId } from '@/lib/auth-utils';
-import { YogaVideoActions } from './yoga-video-actions';
-import { CompleteButton } from './complete-button';
+import { getPlaybackToken } from '@/lib/mux';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+import { CompleteButton } from './complete-button';
+import { YogaVideoActions } from './yoga-video-actions';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const { id } = await params;
   const userId = await getCurrentUserId();
   const yogaVideo = await getYogaVideoById(id, userId);
@@ -55,7 +61,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function YogaVideoPage({ params }: { params: { id: string } }) {
+export default async function YogaVideoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const userId = await getCurrentUserId();
   const yogaVideo = await getYogaVideoById(id, userId);
@@ -75,7 +81,7 @@ export default async function YogaVideoPage({ params }: { params: { id: string }
             href="/yoga"
             className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 size-4" />
             Back to Yoga Videos
           </Link>
           <h1 className="mb-2 text-3xl font-bold tracking-tight">{yogaVideo.title}</h1>
@@ -86,15 +92,15 @@ export default async function YogaVideoPage({ params }: { params: { id: string }
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-muted-foreground" />
+            <Clock className="size-5 text-muted-foreground" />
             <span>{minutes} minutes</span>
           </div>
           <div className="flex items-center gap-2">
-            <Dumbbell className="h-5 w-5 text-muted-foreground" />
+            <Dumbbell className="size-5 text-muted-foreground" />
             <span>{yogaVideo.props.join(', ') || 'No equipment needed'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-muted-foreground" />
+            <Target className="size-5 text-muted-foreground" />
             <span>{yogaVideo.type}</span>
           </div>
         </div>

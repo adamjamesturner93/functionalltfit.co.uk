@@ -1,38 +1,21 @@
 'use client';
 
-import { useEffect, useCallback, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Workout, YogaVideo } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+
+import { ProgrammeWithActivitiesAndSaved } from '@/app/actions/programmes';
 import { createProgramme, updateProgramme } from '@/app/actions/programmes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { ImageUpload } from '@/components/image-upload';
-import { Checkbox } from '@/components/ui/checkbox';
-import { TypeaheadSelect } from '@/components/typeahead-select';
-import { Programme, ProgrammeFormData, programmeSchema, Activity } from '@/lib/schemas/programme';
-
-interface Workout {
-  id: string;
-  name: string;
-}
-
-interface YogaVideo {
-  id: string;
-  title: string;
-}
+import { Programme, programmeSchema } from '@/lib/schemas/programme';
 
 interface ProgrammeFormClientProps {
-  initialProgramme: Programme | null;
+  initialProgramme: ProgrammeWithActivitiesAndSaved | null;
   workouts: Workout[];
   yogaVideos: YogaVideo[];
   id: string;
@@ -40,327 +23,154 @@ interface ProgrammeFormClientProps {
 
 export default function ProgrammeFormClient({
   initialProgramme,
-  workouts = [],
-  yogaVideos = [],
+  workouts,
+  yogaVideos,
   id,
 }: ProgrammeFormClientProps) {
   const router = useRouter();
-  const isNewProgramme = id === 'new';
-  const [sameAsWeekOne, setSameAsWeekOne] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const defaultValues: ProgrammeFormData = useMemo(() => {
-    if (initialProgramme) {
-      return {
+  // Transform initialProgramme to match the expected Programme type
+  const transformedInitialProgramme: Programme | null = initialProgramme
+    ? {
         ...initialProgramme,
         activities: initialProgramme.activities.map((activity) => ({
+          id: activity.id,
           week: activity.week,
           day: activity.day,
-          activityType: activity.workoutId ? 'WORKOUT' : 'YOGA',
-          workoutId: activity.workoutId,
-          yogaVideoId: activity.yogaVideoId,
+          activityType: activity.activityType as 'WORKOUT' | 'YOGA',
+          workoutId: activity.workout?.id || null,
+          yogaVideoId: activity.yogaVideo?.id || null,
         })),
-      };
-    }
-    return {
+      }
+    : null;
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Programme>({
+    resolver: zodResolver(programmeSchema),
+    defaultValues: transformedInitialProgramme || {
       title: '',
       description: '',
       thumbnail: '',
-      sessionsPerWeek: 2,
+      sessionsPerWeek: 0,
       intention: '',
-      weeks: 2,
+      weeks: 0,
       activities: [],
-    };
-  }, [initialProgramme]);
-
-  const { control, handleSubmit, watch, setValue } = useForm<ProgrammeFormData>({
-    resolver: zodResolver(programmeSchema),
-    defaultValues,
+    },
   });
 
-  const { fields, replace } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'activities',
   });
 
-  const weeks = watch('weeks');
-  const sessionsPerWeek = watch('sessionsPerWeek');
-
-  const updateActivities = useCallback(
-    (currentWeeks: number, currentSessionsPerWeek: number, currentFields: Activity[]) => {
-      const newActivities: Activity[] = [];
-      for (let week = 1; week <= currentWeeks; week++) {
-        for (let day = 1; day <= currentSessionsPerWeek; day++) {
-          const existingActivity = currentFields.find((f) => f.week === week && f.day === day);
-          if (existingActivity) {
-            newActivities.push(existingActivity);
-          } else {
-            newActivities.push({
-              week,
-              day,
-              activityType: 'WORKOUT',
-              workoutId: null,
-              yogaVideoId: null,
-            });
-          }
-        }
-      }
-      return newActivities;
-    },
-    [],
-  );
-
-  useEffect(() => {
-    const newActivities = updateActivities(weeks, sessionsPerWeek, fields);
-    if (JSON.stringify(newActivities) !== JSON.stringify(fields)) {
-      replace(newActivities);
-    }
-  }, [weeks, sessionsPerWeek, updateActivities, fields, replace]);
-
-  const onSubmit = async (data: ProgrammeFormData) => {
+  const onSubmit = async (data: Programme) => {
+    setIsSubmitting(true);
     try {
-      if (isNewProgramme) {
+      if (id === 'new') {
         await createProgramme(data);
       } else {
         await updateProgramme(id, data);
       }
       router.push('/admin/content/programmes');
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error submitting programme:', error);
+      // Handle error (e.g., show error message to user)
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const workoutItems = useMemo(
-    () =>
-      workouts.map((workout) => ({
-        id: workout.id,
-        label: workout.name,
-      })) || [],
-    [workouts],
-  );
-
-  const yogaVideoItems = useMemo(
-    () =>
-      yogaVideos.map((yogaVideo) => ({
-        id: yogaVideo.id,
-        label: yogaVideo.title,
-      })) || [],
-    [yogaVideos],
-  );
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6">
-      <h1 className="mb-6 text-2xl font-bold">
-        {isNewProgramme ? 'Create New Programme' : 'Edit Programme'}
-      </h1>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <Input {...register('title')} placeholder="Title" />
+      {errors.title && <span>{errors.title.message}</span>}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Controller
-              name="title"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <Input id="title" {...field} />
-                  {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                </>
-              )}
+      <Textarea {...register('description')} placeholder="Description" />
+      {errors.description && <span>{errors.description.message}</span>}
+
+      <Input {...register('thumbnail')} placeholder="Thumbnail URL" />
+      {errors.thumbnail && <span>{errors.thumbnail.message}</span>}
+
+      <Input
+        {...register('sessionsPerWeek', { valueAsNumber: true })}
+        type="number"
+        placeholder="Sessions per week"
+      />
+      {errors.sessionsPerWeek && <span>{errors.sessionsPerWeek.message}</span>}
+
+      <Input {...register('intention')} placeholder="Intention" />
+      {errors.intention && <span>{errors.intention.message}</span>}
+
+      <Input
+        {...register('weeks', { valueAsNumber: true })}
+        type="number"
+        placeholder="Number of weeks"
+      />
+      {errors.weeks && <span>{errors.weeks.message}</span>}
+
+      <div>
+        <h3>Activities</h3>
+        {fields.map((field, index) => (
+          <div key={field.id} className="space-y-2">
+            <Input
+              {...register(`activities.${index}.week` as const, { valueAsNumber: true })}
+              type="number"
+              placeholder="Week"
             />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <Textarea id="description" {...field} />
-                  {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                </>
-              )}
+            <Input
+              {...register(`activities.${index}.day` as const, { valueAsNumber: true })}
+              type="number"
+              placeholder="Day"
             />
-          </div>
-
-          <div>
-            <Label htmlFor="intention">Intention</Label>
-            <Controller
-              name="intention"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <Input id="intention" {...field} />
-                  {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                </>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="sessionsPerWeek">Sessions per Week</Label>
-              <Controller
-                name="sessionsPerWeek"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value.toString()}
-                    >
-                      <SelectTrigger id="sessionsPerWeek">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[2, 3, 4, 5].map((n) => (
-                          <SelectItem key={n} value={n.toString()}>
-                            {n}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="weeks">Number of Weeks</Label>
-              <Controller
-                name="weeks"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value.toString()}
-                    >
-                      <SelectTrigger id="weeks">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[2, 3, 4, 5, 6, 7, 8].map((n) => (
-                          <SelectItem key={n} value={n.toString()}>
-                            {n}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                  </>
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label>Thumbnail</Label>
-            <Controller
-              name="thumbnail"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <ImageUpload
-                    onImageUpload={(url: string) => field.onChange(url)}
-                    initialImage={field.value}
-                  />
-                  {error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
-                </>
-              )}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Activities</h2>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="sameAsWeekOne"
-            checked={sameAsWeekOne}
-            onCheckedChange={(checked) => setSameAsWeekOne(checked as boolean)}
-          />
-          <label
-            htmlFor="sameAsWeekOne"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Make all weeks the same as week one
-          </label>
-        </div>
-        {Array.from({ length: sameAsWeekOne ? 1 : weeks }).map((_, weekIndex) => (
-          <div key={weekIndex} className="rounded-md border bg-surface-grey p-4">
-            <h3 className="mb-2 text-lg font-medium">
-              Week {sameAsWeekOne ? 'All' : weekIndex + 1}
-            </h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {fields
-                .filter((field) => field.week === weekIndex + 1)
-                .map((field) => {
-                  const fieldIndex = fields.findIndex((f) => f.id === field.id);
-                  return (
-                    <div key={field.id} className="space-y-2">
-                      <span className="font-medium">Day {field.day}:</span>
-                      <Controller
-                        name={`activities.${fieldIndex}.activityType`}
-                        control={control}
-                        render={({ field }) => (
-                          <Select
-                            onValueChange={(value: 'WORKOUT' | 'YOGA') => {
-                              field.onChange(value);
-                              setValue(`activities.${fieldIndex}.workoutId`, null);
-                              setValue(`activities.${fieldIndex}.yogaVideoId`, null);
-                            }}
-                            value={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="WORKOUT">Workout</SelectItem>
-                              <SelectItem value="YOGA">Yoga</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                      {watch(`activities.${fieldIndex}.activityType`) === 'WORKOUT' ? (
-                        <Controller
-                          name={`activities.${fieldIndex}.workoutId`}
-                          control={control}
-                          render={({ field }) => (
-                            <TypeaheadSelect
-                              items={workoutItems}
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select a workout"
-                            />
-                          )}
-                        />
-                      ) : (
-                        <Controller
-                          name={`activities.${fieldIndex}.yogaVideoId`}
-                          control={control}
-                          render={({ field }) => (
-                            <TypeaheadSelect
-                              items={yogaVideoItems}
-                              value={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select a yoga video"
-                            />
-                          )}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-            </div>
+            <Select {...register(`activities.${index}.activityType` as const)}>
+              <option value="WORKOUT">Workout</option>
+              <option value="YOGA">Yoga</option>
+            </Select>
+            <Select
+              {...register(`activities.${index}.workoutId` as const)}
+              disabled={field.activityType === 'YOGA'}
+            >
+              <option value="">Select a workout</option>
+              {workouts.map((workout) => (
+                <option key={workout.id} value={workout.id}>
+                  {workout.name}
+                </option>
+              ))}
+            </Select>
+            <Select
+              {...register(`activities.${index}.yogaVideoId` as const)}
+              disabled={field.activityType === 'WORKOUT'}
+            >
+              <option value="">Select a yoga video</option>
+              {yogaVideos.map((video) => (
+                <option key={video.id} value={video.id}>
+                  {video.title}
+                </option>
+              ))}
+            </Select>
+            <Button type="button" onClick={() => remove(index)}>
+              Remove Activity
+            </Button>
           </div>
         ))}
+        <Button
+          type="button"
+          onClick={() =>
+            append({ week: 1, day: 1, activityType: 'WORKOUT', workoutId: null, yogaVideoId: null })
+          }
+        >
+          Add Activity
+        </Button>
       </div>
 
-      <Button type="submit">{isNewProgramme ? 'Create Programme' : 'Update Programme'}</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : 'Submit'}
+      </Button>
     </form>
   );
 }

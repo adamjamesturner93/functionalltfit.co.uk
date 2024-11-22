@@ -1,13 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Goal, GoalType } from '@prisma/client';
-import { markGoalComplete, markGoalInactive, getGoalProgress } from '@/app/actions/goals';
-import { useToast } from '@/hooks/use-toast';
-import { Confetti } from '@/components/ui/confetti';
 import { Trophy, X } from 'lucide-react';
+
+import { getGoalProgress, markGoalComplete, markGoalInactive } from '@/app/actions/goals';
+import { Button } from '@/components/ui/button';
+import { Confetti } from '@/components/ui/confetti';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 
 type GoalCardProps = Goal & {
   showActions?: boolean;
@@ -120,7 +121,7 @@ export function GoalCard({
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">{title || type}</h3>
-          {isCompleted && <Trophy className="h-4 w-4 text-primary" />}
+          {isCompleted && <Trophy className="size-4 text-primary" />}
         </div>
         {showActions && !isCompleted && (
           <div className="flex items-center gap-2">
@@ -128,7 +129,7 @@ export function GoalCard({
               Complete
             </Button>
             <Button size="icon" variant="ghost" onClick={handleMarkInactive} disabled={isLoading}>
-              <X className="h-4 w-4" />
+              <X className="size-4" />
               <span className="sr-only">Mark as inactive</span>
             </Button>
           </div>

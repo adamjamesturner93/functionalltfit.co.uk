@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
 import { Filter } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { getUniqueIntentions, getUniqueLengths } from '@/app/actions/programmes';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -19,10 +24,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { getUniqueIntentions, getUniqueLengths } from '@/app/actions/programmes';
 
 export function ProgrammeFilters() {
   const router = useRouter();
@@ -82,7 +83,7 @@ export function ProgrammeFilters() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="mr-2 size-4" />
           Filters
         </Button>
       </SheetTrigger>

@@ -1,14 +1,16 @@
 import { Suspense } from 'react';
-import { Metadata } from 'next';
 import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Metadata } from 'next';
+
 import { getWorkouts } from '@/app/actions/workouts';
-import { WorkoutFilters } from './workout-filters';
-import { WorkoutCard } from './workout-card';
-import { WorkoutCardSkeleton } from './workout-card-skeleton';
+import { toggleWorkoutSave } from '@/app/actions/workouts';
+import { Input } from '@/components/ui/input';
 import { Pagination } from '@/components/ui/pagination';
 import { getCurrentUserId } from '@/lib/auth-utils';
-import { toggleWorkoutSave } from '@/app/actions/workouts';
+
+import { WorkoutCard } from './workout-card';
+import { WorkoutCardSkeleton } from './workout-card-skeleton';
+import { WorkoutFilters } from './workout-filters';
 
 export const metadata: Metadata = {
   title: 'Workouts | FunctionallyFit',
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 export default async function WorkoutsPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     search?: string;
     equipment?: string;
@@ -27,7 +29,7 @@ export default async function WorkoutsPage({
     minDuration?: string;
     maxDuration?: string;
     saved?: string;
-  };
+  }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
@@ -54,7 +56,7 @@ export default async function WorkoutsPage({
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <form className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
               name="search"
               placeholder="Search workouts..."

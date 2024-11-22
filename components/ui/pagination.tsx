@@ -1,6 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 
 interface PaginationProps {
@@ -20,7 +21,7 @@ export function Pagination({
 }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  const createPageUrl = async (page: number) => {
+  const createPageUrl = (page: number) => {
     const params = new URLSearchParams();
 
     // Add all existing search params
@@ -43,7 +44,7 @@ export function Pagination({
 
   const PreviousButton = () => (
     <Button variant="outline" size="sm" disabled={isPreviousDisabled}>
-      <ChevronLeft className="mr-2 h-4 w-4" />
+      <ChevronLeft className="mr-2 size-4" />
       Previous
     </Button>
   );
@@ -51,7 +52,7 @@ export function Pagination({
   const NextButton = () => (
     <Button variant="outline" size="sm" disabled={isNextDisabled}>
       Next
-      <ChevronRight className="ml-2 h-4 w-4" />
+      <ChevronRight className="ml-2 size-4" />
     </Button>
   );
 

@@ -1,14 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { del } from '@vercel/blob';
+import { useRouter } from 'next/navigation';
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import * as z from 'zod';
+
+import {
+  createYogaVideo,
+  fetchViewStats,
+  updateYogaVideo,
+  YogaVideoInput,
+} from '@/app/actions/yoga-videos';
+import { ImageUpload } from '@/components/image-upload';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { MultiSelect } from '@/components/ui/multi-select';
 import {
   Select,
   SelectContent,
@@ -16,28 +37,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  createYogaVideo,
-  updateYogaVideo,
-  YogaVideoInput,
-  fetchViewStats,
-} from '@/app/actions/yoga-videos';
-import { ImageUpload } from '@/components/image-upload';
+import { Textarea } from '@/components/ui/textarea';
 import { VideoUpload } from '@/components/video-upload';
-import { del } from '@vercel/blob';
-import { Label } from '@/components/ui/label';
-import {
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 
 const yogaProps = [
   { value: 'mat', label: 'Yoga Mat' },

@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { nanoid } from 'nanoid';
+import { NextResponse } from 'next/server';
+
 import { put as localPut } from '@/lib/local-blob-storage';
 
 export async function POST(request: Request) {

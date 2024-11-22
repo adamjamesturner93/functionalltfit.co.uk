@@ -1,19 +1,25 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { getExercises, ExerciseFilters } from '@/app/actions/exercises';
+import { useEffect, useMemo, useState } from 'react';
+import { Exercise, ExerciseMode, ExerciseType } from '@prisma/client';
+import { rankItem } from '@tanstack/match-sorter-utils';
+import {
+  ColumnDef,
+  FilterFn,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { ExerciseFilters, getExercises } from '@/app/actions/exercises';
+import { deleteExercise } from '@/app/actions/exercises';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -29,21 +36,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  ColumnDef,
-  flexRender,
-  FilterFn,
-} from '@tanstack/react-table';
-import { rankItem } from '@tanstack/match-sorter-utils';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { deleteExercise } from '@/app/actions/exercises';
-import { Exercise, ExerciseType, ExerciseMode } from '@prisma/client';
 
 const fuzzyFilter: FilterFn<Exercise> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -95,7 +96,7 @@ export default function ExercisesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Name
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -109,7 +110,7 @@ export default function ExercisesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Type
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -123,7 +124,7 @@ export default function ExercisesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Mode
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -159,9 +160,9 @@ export default function ExercisesPage() {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button variant="ghost" className="size-8 p-0">
                   <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
+                  <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -169,12 +170,12 @@ export default function ExercisesPage() {
                 <DropdownMenuItem
                   onClick={() => router.push(`/admin/content/exercises/${exercise.id}`)}
                 >
-                  <Pencil className="mr-2 h-4 w-4" />
+                  <Pencil className="mr-2 size-4" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleDelete}>
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="mr-2 size-4" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -208,7 +209,6 @@ export default function ExercisesPage() {
       if (value && value !== 'ALL') {
         return { ...prev, [key]: value };
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [key]: _, ...rest } = prev;
         return rest;
       }
@@ -219,7 +219,7 @@ export default function ExercisesPage() {
     <div className="min-h-screen bg-surface">
       <div className="container mx-auto py-10">
         <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
-          <div className="bg-bg-surface-light-grey border-b border-gray-200 p-6">
+          <div className="border-b border-gray-200 bg-surface-light-grey p-6">
             <div className="mb-6 flex items-center justify-between">
               <h1 className="text-3xl font-bold text-foreground">Exercises</h1>
               <Link href="/admin/content/exercises/new">

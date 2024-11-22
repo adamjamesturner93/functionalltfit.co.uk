@@ -1,12 +1,14 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { getUserById } from '@/app/actions/users';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EditUserForm } from './edit-user-form';
-import { ActivityHistory } from './activity-history';
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+import { getUserById } from '@/app/actions/users';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { ActivityHistory } from './activity-history';
+import { EditUserForm } from './edit-user-form';
+
+export default async function UserPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getUserById(id);
 
@@ -42,7 +44,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
               <TabsTrigger value="edit">Edit User</TabsTrigger>
               <TabsTrigger value="activity">Activity History</TabsTrigger>
             </TabsList>
-            <TabsContent value="edit" className="flex-grow">
+            <TabsContent value="edit" className="grow">
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle>Edit User</CardTitle>
@@ -52,7 +54,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
                 </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="activity" className="flex-grow">
+            <TabsContent value="activity" className="grow">
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle>Activity History</CardTitle>

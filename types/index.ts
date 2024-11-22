@@ -2,7 +2,7 @@ import { User as PrismaUser, UserRole } from '@prisma/client';
 
 export interface User extends PrismaUser {
   id: string;
-  name: string | null;
+  name: string;
   email: string;
   emailVerified: Date | null;
   image: string | null;

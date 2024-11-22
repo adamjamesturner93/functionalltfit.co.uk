@@ -1,6 +1,4 @@
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import { Suspense } from 'react';
 import {
   BarChart3,
   CalendarDays,
@@ -8,16 +6,26 @@ import {
   Dumbbell,
   Flame,
   GlassWater,
+  Heart,
   Plus,
   Ruler,
   Target,
   Trophy,
   Weight,
-  Heart,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+
+import { getActiveGoals } from '@/app/actions/goals';
+import { getBodyMeasurements } from '@/app/actions/health';
+import {
+  getUserProgramme,
+  ProgrammeActivityWithName,
+  UserProgrammeWithProgress,
+} from '@/app/actions/programmes';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -26,21 +34,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { auth } from '@/lib/auth';
+
 import { BodyMeasurementGraph } from '../components/body-measurement-graph';
-import { QuickAddForm } from '../components/quick-add-form';
 import { GoalsSection } from '../components/goals/goals-section';
-import { QuickStatsCard } from '../components/quick-stats-card';
-import {
-  getUserProgramme,
-  ProgrammeActivityWithName,
-  UserProgrammeWithProgress,
-} from '@/app/actions/programmes';
-import { getBodyMeasurements } from '@/app/actions/health';
-import { getActiveGoals } from '@/app/actions/goals';
-import { Suspense } from 'react';
 import { NextWorkoutCard } from '../components/next-workout-card';
+import { QuickAddForm } from '../components/quick-add-form';
+import { QuickStatsCard } from '../components/quick-stats-card';
 
 export default async function Dashboard() {
   const session = await auth();
@@ -78,7 +80,7 @@ export default async function Dashboard() {
     <Card className="bg-card/50 backdrop-blur transition-colors hover:bg-card/60">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Heart className="h-5 w-5 text-primary" />
+          <Heart className="size-5 text-primary" />
           Active Programme
         </CardTitle>
       </CardHeader>
@@ -164,7 +166,7 @@ export default async function Dashboard() {
           <Card className="bg-card/50 backdrop-blur transition-colors hover:bg-card/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-primary" />
+                <Target className="size-5 text-primary" />
                 Start Your Fitness Journey
               </CardTitle>
             </CardHeader>
@@ -184,7 +186,7 @@ export default async function Dashboard() {
           <Card className="bg-card/50 backdrop-blur transition-colors hover:bg-card/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-primary" />
+                <CalendarDays className="size-5 text-primary" />
                 Week {currentWeek} Sessions
               </CardTitle>
             </CardHeader>
@@ -204,9 +206,9 @@ export default async function Dashboard() {
                       className="flex flex-1 items-center space-x-2 hover:underline"
                     >
                       {activity.activityType === 'WORKOUT' ? (
-                        <Dumbbell className="h-4 w-4 text-primary" />
+                        <Dumbbell className="size-4 text-primary" />
                       ) : (
-                        <GlassWater className="h-4 w-4 text-primary" />
+                        <GlassWater className="size-4 text-primary" />
                       )}
                       <span>
                         {activity.name} - Day {activity.day}
@@ -232,7 +234,7 @@ export default async function Dashboard() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div className="space-y-1">
               <CardTitle className="flex items-center gap-2">
-                <Ruler className="h-5 w-5 text-primary" />
+                <Ruler className="size-5 text-primary" />
                 Body Measurement Trends
               </CardTitle>
               <CardDescription>Track your progress over time</CardDescription>
@@ -241,7 +243,7 @@ export default async function Dashboard() {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="icon">
-                    <Plus className="h-4 w-4" />
+                    <Plus className="size-4" />
                     <span className="sr-only">Quick Add</span>
                   </Button>
                 </DialogTrigger>
@@ -255,7 +257,7 @@ export default async function Dashboard() {
               </Dialog>
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/health/measurements">
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="size-4" />
                   <span className="sr-only">View all measurements</span>
                 </Link>
               </Button>
@@ -268,7 +270,7 @@ export default async function Dashboard() {
             <div className="mt-4 flex justify-end">
               <Button variant="outline" asChild>
                 <Link href="/health/measurements" className="flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
+                  <BarChart3 className="size-4" />
                   View Detailed Analytics
                 </Link>
               </Button>

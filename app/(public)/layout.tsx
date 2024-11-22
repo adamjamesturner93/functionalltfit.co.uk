@@ -1,9 +1,12 @@
 import { ReactNode } from 'react';
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
 import { Toaster } from '@/components/ui/toaster';
-import { Navigation } from './Navigation';
+import { auth } from '@/lib/auth';
+
 import { getUserById } from '../actions/users';
+
+import { Navigation } from './Navigation';
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const session = await auth();

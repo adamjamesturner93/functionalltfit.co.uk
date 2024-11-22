@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import Mux from '@mux/mux-node';
+import { NextResponse } from 'next/server';
 
 const muxClient = new Mux({
   tokenId: process.env.MUX_TOKEN_ID!,

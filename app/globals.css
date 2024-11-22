@@ -178,11 +178,7 @@
   }
 }
 
-.react-datepicker__month-select,
-.react-datepicker__year-select {
-  padding: 12px;
-  background-color: var(--background);
-}
+
 
 /* MuxUploader styles */
 .mux-uploader {

@@ -1,9 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Video, Dumbbell, Clipboard } from 'lucide-react';
+import { Clipboard, Dumbbell, Users, Video } from 'lucide-react';
+
 import { getUsers } from '@/app/actions/users';
-import { getYogaVideos } from '../actions/yoga-videos';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { getExercises } from '../actions/exercises';
 import { getWorkouts } from '../actions/workouts';
+import { getYogaVideos } from '../actions/yoga-videos';
 
 export default async function Dashboard() {
   const { total: totalMembers } = await getUsers();
@@ -18,7 +20,7 @@ export default async function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalMembers}</div>
@@ -27,7 +29,7 @@ export default async function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Yoga Videos</CardTitle>
-            <Video className="h-4 w-4 text-muted-foreground" />
+            <Video className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalYogaVideos}</div>
@@ -36,7 +38,7 @@ export default async function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Exercises</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
+            <Dumbbell className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalExercises}</div>
@@ -45,7 +47,7 @@ export default async function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Workouts</CardTitle>
-            <Clipboard className="h-4 w-4 text-muted-foreground" />
+            <Clipboard className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalWorkouts}</div>

@@ -1,10 +1,11 @@
 'use server';
 
-import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
-import { GoalType, GoalPeriod } from '@prisma/client';
+import { GoalPeriod, GoalType } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 const MAX_ACTIVE_GOALS = 5;
 

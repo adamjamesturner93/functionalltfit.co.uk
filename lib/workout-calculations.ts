@@ -1,5 +1,6 @@
-import { ExerciseSummary } from '@/app/actions/workouts';
 import { ExerciseMode } from '@prisma/client';
+
+import { ExerciseSummary } from '@/app/actions/workouts';
 
 export function calculateImprovements(
   currentPerformance: ExerciseSummary,

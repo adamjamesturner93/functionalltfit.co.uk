@@ -1,14 +1,22 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, useFieldArray, Controller, FieldErrors, FieldError } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { Controller, FieldError, FieldErrors, useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Exercise, SetType } from '@prisma/client';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { SetType, Exercise } from '@prisma/client';
+
+import { getExercises } from '@/app/actions/exercises';
+import { createWorkout, updateWorkout, WorkoutWithSets } from '@/app/actions/workouts';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -16,15 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { createWorkout, updateWorkout, WorkoutWithSets } from '@/app/actions/workouts';
-import { getExercises } from '@/app/actions/exercises';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronUp, ArrowUp, ArrowDown } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const workoutSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -267,9 +268,9 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex h-[calc(100vh-100px)] flex-col gap-6">
-      <div className="flex flex-grow gap-6">
+      <div className="flex grow gap-6">
         <div className="flex w-1/3 flex-col space-y-6">
-          <Card className="flex-grow">
+          <Card className="grow">
             <CardHeader>
               <CardTitle>Workout Details</CardTitle>
             </CardHeader>
@@ -349,7 +350,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                             variant="outline"
                             size="sm"
                           >
-                            <ArrowUp className="h-4 w-4" />
+                            <ArrowUp className="size-4" />
                           </Button>
                           <Button
                             type="button"
@@ -358,7 +359,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                             variant="outline"
                             size="sm"
                           >
-                            <ArrowDown className="h-4 w-4" />
+                            <ArrowDown className="size-4" />
                           </Button>
                           <CollapsibleTrigger asChild>
                             <Button variant="ghost" size="sm">
@@ -454,7 +455,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                           </div>
 
                           <div>
-                            <h5 className="text-md mb-2 font-medium">Exercises</h5>
+                            <h5 className="mb-2 font-medium">Exercises</h5>
                             {watch(`sets.${setIndex}.exercises`).map((exercise, exerciseIndex) => (
                               <Card key={exerciseIndex} className="mb-2">
                                 <CardContent className="flex items-center space-x-2 py-2">
@@ -523,7 +524,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                       variant="outline"
                                       size="sm"
                                     >
-                                      <ArrowUp className="h-4 w-4" />
+                                      <ArrowUp className="size-4" />
                                     </Button>
                                     <Button
                                       type="button"
@@ -548,7 +549,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
                                       variant="outline"
                                       size="sm"
                                     >
-                                      <ArrowDown className="h-4 w-4" />
+                                      <ArrowDown className="size-4" />
                                     </Button>
                                   </div>
                                 </CardContent>

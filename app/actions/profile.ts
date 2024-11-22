@@ -1,9 +1,10 @@
 'use server';
 
-import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
 import { Unit } from '@prisma/client';
+import { z } from 'zod';
+
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Name is required'),

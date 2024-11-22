@@ -1,4 +1,5 @@
-import { put as vercelPut, del as vercelDel } from '@vercel/blob';
+import { del as vercelDel, put as vercelPut } from '@vercel/blob';
+
 import * as localStorage from './local-blob-storage';
 
 export async function put(fileName: string, file: Buffer): Promise<string> {

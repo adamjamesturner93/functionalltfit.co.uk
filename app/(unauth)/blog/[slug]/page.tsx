@@ -1,8 +1,9 @@
+import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
 import { Metadata } from 'next';
-import { Button } from '@/components/ui/button';
-import { Calendar, Clock, ArrowLeft, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
 
 interface BlogPost {
   title: string;
@@ -44,13 +45,6 @@ const post: BlogPost = {
   categories: ['adaptive fitness', 'limited mobility', 'strength training', 'flexibility'],
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface PageParams {
-  params: {
-    slug: string;
-  };
-}
-
 export const generateMetadata = (): Metadata => {
   // In a real application, you would fetch the post data based on the slug
   // const post = await getPost(params.slug)
@@ -89,7 +83,7 @@ export default function BlogPost() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Link href="/blog" className="mb-6 inline-flex items-center text-primary hover:underline">
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ArrowLeft className="mr-2 size-4" />
         Back to Blog
       </Link>
       <article className="mx-auto max-w-3xl">
@@ -102,16 +96,16 @@ export default function BlogPost() {
         />
         <h1 className="mb-4 text-3xl font-bold">{post.title}</h1>
         <div className="mb-4 flex items-center text-sm text-muted-foreground">
-          <Calendar className="mr-2 h-4 w-4" />
+          <Calendar className="mr-2 size-4" />
           <span className="mr-4">{post.date}</span>
-          <Clock className="mr-2 h-4 w-4" />
+          <Clock className="mr-2 size-4" />
           <span>{post.readTime}</span>
         </div>
         <div className="mb-6 flex flex-wrap gap-2">
           {post.categories.map((category, i) => (
             <Link key={i} href={`/blog?category=${encodeURIComponent(category)}`}>
               <span className="inline-flex cursor-pointer items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary hover:bg-primary/20">
-                <Tag className="mr-1 h-3 w-3" />
+                <Tag className="mr-1 size-3" />
                 {category}
               </span>
             </Link>

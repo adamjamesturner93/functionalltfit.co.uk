@@ -1,5 +1,7 @@
-import { getCurrentUser } from '@/app/actions/profile';
 import { redirect } from 'next/navigation';
+
+import { getCurrentUser } from '@/app/actions/profile';
+
 import { ProfileForm } from './profile-form';
 
 export default async function ProfilePage() {

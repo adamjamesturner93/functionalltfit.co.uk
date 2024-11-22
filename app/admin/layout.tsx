@@ -1,8 +1,10 @@
 import { ReactNode } from 'react';
-import { Navigation } from '../components/admin/navigation';
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+
 import { Toaster } from '@/components/ui/toaster';
+import { auth } from '@/lib/auth';
+
+import { Navigation } from '../components/admin/navigation';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const session = await auth();

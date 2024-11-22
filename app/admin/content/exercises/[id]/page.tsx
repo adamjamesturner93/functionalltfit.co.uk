@@ -1,8 +1,10 @@
-import { getExerciseById } from '@/app/actions/exercises';
 import { notFound } from 'next/navigation';
+
+import { getExerciseById } from '@/app/actions/exercises';
+
 import { ExerciseForm } from './exercise-form';
 
-export default async function EditWorkoutPage({ params }: { params: { id: string } }) {
+export default async function EditWorkoutPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const exercise = id === 'new' ? null : await getExerciseById(id);
 

@@ -1,12 +1,14 @@
 import { Suspense } from 'react';
-import { Metadata } from 'next';
 import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Metadata } from 'next';
+
 import { getProgrammes } from '@/app/actions/programmes';
+import { Input } from '@/components/ui/input';
+import { Pagination } from '@/components/ui/pagination';
 import { getCurrentUserId } from '@/lib/auth-utils';
+
 import { ProgrammeCard } from './programme-card';
 import { ProgrammeFilters } from './programme-filters';
-import { Pagination } from '@/components/ui/pagination';
 
 export const metadata: Metadata = {
   title: 'Fitness Programmes | FunctionallyFit',
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
     'Explore our range of fitness programmes designed to help you achieve your health and fitness goals.',
 };
 
-type SearchParams = Record<string, string | string[] | undefined>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function ProgrammesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
@@ -44,7 +46,7 @@ export default async function ProgrammesPage({ searchParams }: { searchParams: S
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <form className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
               name="search"
               placeholder="Search programmes..."

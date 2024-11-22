@@ -1,8 +1,9 @@
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { HealthDataForm } from './health-data-form';
-import { HealthDataGraph } from './health-data-graph';
+
 import { getHealthData } from '@/app/actions/health';
+import { auth } from '@/lib/auth';
+
+import { HealthDataForm } from './health-data-form';
 
 export default async function HealthPage() {
   const session = await auth();
@@ -18,7 +19,6 @@ export default async function HealthPage() {
       <h1 className="mb-6 text-3xl font-bold">Monthly Health Check-in</h1>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <HealthDataForm />
-        <HealthDataGraph data={healthData} />
       </div>
     </div>
   );

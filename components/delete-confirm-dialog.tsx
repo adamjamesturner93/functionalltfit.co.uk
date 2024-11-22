@@ -1,4 +1,5 @@
 import { Trash2 } from 'lucide-react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +24,7 @@ export function DeleteConfirmDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" size="icon">
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="size-4" />
           <span className="sr-only">Delete</span>
         </Button>
       </AlertDialogTrigger>

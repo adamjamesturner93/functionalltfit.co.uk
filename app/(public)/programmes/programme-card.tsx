@@ -1,13 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+import { BookmarkIcon, Calendar, Timer } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookmarkIcon, Calendar, Timer } from 'lucide-react';
+
+import { toggleProgrammeSave } from '@/app/actions/programmes';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
-import { toggleProgrammeSave } from '@/app/actions/programmes';
 
 interface ProgrammeCardProps {
   id: string;
@@ -65,7 +66,7 @@ export function ProgrammeCard({
           </div>
           {userId && (
             <Button variant="ghost" size="icon" className="shrink-0" onClick={handleToggleSave}>
-              <BookmarkIcon className={`h-4 w-4 ${saved ? 'fill-primary' : ''}`} />
+              <BookmarkIcon className={`size-4 ${saved ? 'fill-primary' : ''}`} />
               <span className="sr-only">{saved ? 'Remove from saved' : 'Save programme'}</span>
             </Button>
           )}
@@ -74,11 +75,11 @@ export function ProgrammeCard({
           <Badge variant="secondary">{intention}</Badge>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
-              <Timer className="h-4 w-4" />
+              <Timer className="size-4" />
               <span>{sessionsPerWeek} sessions/week</span>
             </div>
             <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
+              <Calendar className="size-4" />
               <span>{weeks} weeks</span>
             </div>
           </div>

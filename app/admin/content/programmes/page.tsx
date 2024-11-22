@@ -1,9 +1,30 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { getProgrammes } from '@/app/actions/programmes';
+import { useEffect, useMemo, useState } from 'react';
+import { rankItem } from '@tanstack/match-sorter-utils';
+import {
+  ColumnDef,
+  FilterFn,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
+
+import { getProgrammes } from '@/app/actions/programmes';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
   Table,
@@ -13,27 +34,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Programme } from '@prisma/client';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  ColumnDef,
-  flexRender,
-  FilterFn,
-} from '@tanstack/react-table';
-import { rankItem } from '@tanstack/match-sorter-utils';
+
+// Define the Programme type based on the returned data structure
+interface Programme {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string;
+  thumbnail: string;
+  sessionsPerWeek: number;
+  intention: string;
+  weeks: number;
+  isSaved: boolean;
+}
 
 const fuzzyFilter: FilterFn<Programme> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -47,8 +61,8 @@ export default function ProgrammesPage() {
 
   useEffect(() => {
     const fetchProgrammes = async () => {
-      const data = await getProgrammes();
-      setProgrammes(data);
+      const { programmes } = await getProgrammes();
+      setProgrammes(programmes);
     };
     fetchProgrammes();
   }, []);
@@ -64,7 +78,7 @@ export default function ProgrammesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Title
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -83,7 +97,7 @@ export default function ProgrammesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Sessions/Week
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -97,7 +111,7 @@ export default function ProgrammesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Duration (Weeks)
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -111,7 +125,7 @@ export default function ProgrammesPage() {
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
               Created At
-              <ArrowUpDown className="ml-2 h-4 w-4" />
+              <ArrowUpDown className="ml-2 size-4" />
             </Button>
           );
         },
@@ -130,9 +144,9 @@ export default function ProgrammesPage() {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button variant="ghost" className="size-8 p-0">
                   <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
+                  <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -172,10 +186,9 @@ export default function ProgrammesPage() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {' '}
       <div className="container mx-auto py-10">
         <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
-          <div className="bg-bg-surface-light-grey border-b border-gray-200 p-6">
+          <div className="border-b border-gray-200 bg-surface-light-grey p-6">
             <div className="mb-6 flex items-center justify-between">
               <h1 className="text-3xl font-bold text-foreground">Programmes</h1>
               <Link href="/admin/content/programmes/new">

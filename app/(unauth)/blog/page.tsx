@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, Calendar, Tag } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+import { Calendar, Clock, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 interface BlogPost {
   title: string;
@@ -79,7 +81,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ categories, selectedCategory, onC
   );
 };
 
-export default function BlogPage() {
+function BlogContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>(
@@ -110,7 +112,7 @@ export default function BlogPage() {
           <h1 className="mb-4 text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
             FunctionallyFit Blog
           </h1>
-          <p className="mb-8 max-w-[700px] text-muted-foreground md:text-xl">
+          <p className="mb-8 max-w-[700px] text-muted md:text-xl">
             Discover expert tips, inspiring stories, and the latest in adaptive fitness and health
             management.
           </p>
@@ -138,11 +140,11 @@ export default function BlogPage() {
                 </CardHeader>
                 <CardContent>
                   <CardTitle className="mb-2">{post.title}</CardTitle>
-                  <p className="mb-4 text-muted-foreground">{post.excerpt}</p>
-                  <div className="mb-4 flex items-center text-sm text-muted-foreground">
-                    <Calendar className="mr-2 h-4 w-4" />
+                  <p className="mb-4 text-muted">{post.excerpt}</p>
+                  <div className="mb-4 flex items-center text-sm text-muted">
+                    <Calendar className="mr-2 size-4" />
                     <span className="mr-4">{post.date}</span>
-                    <Clock className="mr-2 h-4 w-4" />
+                    <Clock className="mr-2 size-4" />
                     <span>{post.readTime}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -151,7 +153,7 @@ export default function BlogPage() {
                         key={i}
                         className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
                       >
-                        <Tag className="mr-1 h-3 w-3" />
+                        <Tag className="mr-1 size-3" />
                         {category}
                       </span>
                     ))}
@@ -175,19 +177,23 @@ export default function BlogPage() {
           <h2 className="mb-4 text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Stay Updated
           </h2>
-          <p className="mx-auto mb-8 max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          <p className="mx-auto mb-8 max-w-[600px] text-muted md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
             Subscribe to our newsletter for the latest fitness tips, health advice, and app updates.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+            <Input type="email" placeholder="Enter your email" className="max-w-sm" />
             <Button>Subscribe</Button>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogContent />
+    </Suspense>
   );
 }

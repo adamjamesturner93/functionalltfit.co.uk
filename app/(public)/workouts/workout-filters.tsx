@@ -1,9 +1,12 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
 import { Filter } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+import { getUniqueBodyFocuses, getUniqueEquipment } from '@/app/actions/workouts';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -20,8 +23,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { getUniqueBodyFocuses, getUniqueEquipment } from '@/app/actions/workouts';
-import { Checkbox } from '@/components/ui/checkbox';
 
 export function WorkoutFilters() {
   const router = useRouter();
@@ -85,7 +86,7 @@ export function WorkoutFilters() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="mr-2 size-4" />
           Filters
         </Button>
       </SheetTrigger>

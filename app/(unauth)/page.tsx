@@ -1,9 +1,11 @@
+import { Activity, Check, Clock, Heart } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Heart, Activity, Clock, Check } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+
 import { MailingListPopup } from './mailingList';
 
 export default function Home() {
@@ -79,7 +81,7 @@ export default function Home() {
           <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Activity className="h-12 w-12 text-primary" />
+                <Activity className="size-12 text-primary" />
                 <h3 className="text-center text-2xl font-bold">Personalised for You</h3>
                 <p className="text-center text-muted-foreground">
                   Our AI-driven algorithm adapts workouts to your specific needs, abilities, and
@@ -89,7 +91,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Clock className="h-12 w-12 text-primary" />
+                <Clock className="size-12 text-primary" />
                 <h3 className="text-center text-2xl font-bold">Flexible Scheduling</h3>
                 <p className="text-center text-muted-foreground">
                   From quick 10-minute sessions to comprehensive routines, fit exercise into your
@@ -99,7 +101,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Heart className="h-12 w-12 text-primary" />
+                <Heart className="size-12 text-primary" />
                 <h3 className="text-center text-2xl font-bold">Expert-Led Content</h3>
                 <p className="text-center text-muted-foreground">
                   Programmes designed by certified trainers and health professionals for safe,
@@ -127,7 +129,7 @@ export default function Home() {
             <div className="space-y-4">
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
-                  <Activity className="h-12 w-12 text-primary" />
+                  <Activity className="size-12 text-primary" />
                   <h3 className="text-center text-2xl font-bold">Adaptive Workouts</h3>
                   <p className="text-center text-muted-foreground">
                     Customised routines for all abilities and health conditions. Your fitness
@@ -137,7 +139,7 @@ export default function Home() {
               </Card>
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
-                  <Clock className="h-12 w-12 text-primary" />
+                  <Clock className="size-12 text-primary" />
                   <h3 className="text-center text-2xl font-bold">Quick Fitness Fixes</h3>
                   <p className="text-center text-muted-foreground">
                     Effective 10-minute workouts for busy parents and time-strapped adults. Every
@@ -147,7 +149,7 @@ export default function Home() {
               </Card>
               <Card>
                 <CardContent className="flex flex-col items-center space-y-4 p-6">
-                  <Heart className="h-12 w-12 text-primary" />
+                  <Heart className="size-12 text-primary" />
                   <h3 className="text-center text-2xl font-bold">Health-Focused Approach</h3>
                   <p className="text-center text-muted-foreground">
                     Programmes designed with your long-term health in mind, supporting you every
@@ -158,7 +160,7 @@ export default function Home() {
             </div>
             <div className="relative aspect-video">
               <iframe
-                className="absolute inset-0 h-full w-full rounded-xl"
+                className="absolute inset-0 size-full rounded-xl"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="FunctionallyFit App Demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -263,7 +265,7 @@ export default function Home() {
                     <ul className="space-y-2">
                       {plan.features.map((feature) => (
                         <li key={feature} className="flex items-center">
-                          <Check className="mr-2 h-4 w-4 text-primary" />
+                          <Check className="mr-2 size-4 text-primary" />
                           {feature}
                         </li>
                       ))}

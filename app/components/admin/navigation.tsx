@@ -1,8 +1,8 @@
 'use client';
 
+import { Clipboard, Dumbbell, LayoutDashboard, Users, Video } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, Video, Dumbbell, Clipboard, LayoutDashboard } from 'lucide-react';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -34,7 +34,7 @@ export function Navigation() {
                     : 'text-muted hover:bg-muted hover:text-surface-grey'
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="size-5" />
                 <span>{item.label}</span>
               </Link>
             </li>
