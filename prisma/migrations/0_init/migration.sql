@@ -455,22 +455,22 @@ ALTER TABLE "WorkoutActivity" ADD CONSTRAINT "WorkoutActivity_workoutId_fkey" FO
 ALTER TABLE "WorkoutActivitySet" ADD CONSTRAINT "WorkoutActivitySet_workoutActivityId_fkey" FOREIGN KEY ("workoutActivityId") REFERENCES "WorkoutActivity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "WorkoutActivityExercise" ADD CONSTRAINT "WorkoutActivityExercise_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "Exercise"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "WorkoutActivityExercise" ADD CONSTRAINT "WorkoutActivityExercise_workoutActivityId_fkey" FOREIGN KEY ("workoutActivityId") REFERENCES "WorkoutActivity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "WorkoutActivityExercise" ADD CONSTRAINT "WorkoutActivityExercise_workoutActivitySetId_fkey" FOREIGN KEY ("workoutActivitySetId") REFERENCES "WorkoutActivitySet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkoutActivityExercise" ADD CONSTRAINT "WorkoutActivityExercise_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "Exercise"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserExerciseWeight" ADD CONSTRAINT "UserExerciseWeight_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "Exercise"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserExerciseWeight" ADD CONSTRAINT "UserExerciseWeight_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserExerciseWeight" ADD CONSTRAINT "UserExerciseWeight_workoutId_fkey" FOREIGN KEY ("workoutId") REFERENCES "Workout"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserExerciseWeight" ADD CONSTRAINT "UserExerciseWeight_exerciseId_fkey" FOREIGN KEY ("exerciseId") REFERENCES "Exercise"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProgrammeActivity" ADD CONSTRAINT "ProgrammeActivity_programmeId_fkey" FOREIGN KEY ("programmeId") REFERENCES "Programme"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -482,10 +482,10 @@ ALTER TABLE "ProgrammeActivity" ADD CONSTRAINT "ProgrammeActivity_workoutId_fkey
 ALTER TABLE "ProgrammeActivity" ADD CONSTRAINT "ProgrammeActivity_yogaVideoId_fkey" FOREIGN KEY ("yogaVideoId") REFERENCES "YogaVideo"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProgramme" ADD CONSTRAINT "UserProgramme_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserProgramme" ADD CONSTRAINT "UserProgramme_programmeId_fkey" FOREIGN KEY ("programmeId") REFERENCES "Programme"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProgramme" ADD CONSTRAINT "UserProgramme_programmeId_fkey" FOREIGN KEY ("programmeId") REFERENCES "Programme"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserProgramme" ADD CONSTRAINT "UserProgramme_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Goal" ADD CONSTRAINT "Goal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -503,7 +503,8 @@ ALTER TABLE "UserYogaVideoSave" ADD CONSTRAINT "UserYogaVideoSave_userId_fkey" F
 ALTER TABLE "UserYogaVideoSave" ADD CONSTRAINT "UserYogaVideoSave_yogaVideoId_fkey" FOREIGN KEY ("yogaVideoId") REFERENCES "YogaVideo"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProgrammeSave" ADD CONSTRAINT "UserProgrammeSave_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UserProgrammeSave" ADD CONSTRAINT "UserProgrammeSave_programmeId_fkey" FOREIGN KEY ("programmeId") REFERENCES "Programme"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserProgrammeSave" ADD CONSTRAINT "UserProgrammeSave_programmeId_fkey" FOREIGN KEY ("programmeId") REFERENCES "Programme"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "UserProgrammeSave" ADD CONSTRAINT "UserProgrammeSave_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
