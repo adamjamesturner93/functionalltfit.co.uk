@@ -21,21 +21,30 @@ jobs:
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
-        version: 8
+        version: 9
+        run_install: false
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
     - name: Cache pnpm modules
       uses: actions/cache@v4
       with:
-        path: ~/.pnpm-store
-        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-pnpm-
+          ${{ runner.os }}-pnpm-store-
 
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
 
     - name: Generate Prisma Client
-      run: pnpm prisma generate
+      run: pnpm exec prisma generate
+      env:
+        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
 
     - name: Lint
       run: pnpm run lint
@@ -44,12 +53,16 @@ jobs:
       run: pnpm test
 
     - name: Deploy database changes
-      run: pnpm prisma migrate deploy
+      run: pnpm exec prisma migrate deploy
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
 
     - name: Build
       run: pnpm run build
+      env:
+        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
 
     - name: Deploy to Vercel
       run: pnpm dlx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
