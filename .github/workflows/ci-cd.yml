@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
+    - name: Cache pnpm modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-pnpm-modules
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: Lint
+      run: pnpm run lint
+
+    - name: Run tests
+      run: pnpm test
+
+    - name: Deploy database changes
+      run: pnpm prisma migrate deploy
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    - name: Build
+      run: |
+        pnpm run build
+        pnpm prisma generate
+
+    - name: Deploy to Vercel
+      run: pnpm dlx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+      env:
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

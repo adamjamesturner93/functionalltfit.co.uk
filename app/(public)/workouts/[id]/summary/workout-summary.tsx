@@ -50,101 +50,101 @@ export function WorkoutSummary({
   const [shareLink, setShareLink] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
   const [increasedWeights, setIncreasedWeights] = useState<Record<string, boolean>>({});
 
-  const generateImage = (workoutData: WorkoutSummaryType) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
+  // const generateImage = (workoutData: WorkoutSummaryType) => {
+  //   const canvas = canvasRef.current;
+  //   if (!canvas) return null;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+  //   const ctx = canvas.getContext('2d');
+  //   if (!ctx) return null;
 
-    canvas.width = 1200;
-    canvas.height = 630;
+  //   canvas.width = 1200;
+  //   canvas.height = 630;
 
-    // Set background
-    ctx.fillStyle = '#1a202c';
-    ctx.fillRect(0, 0, 1200, 630);
+  //   // Set background
+  //   ctx.fillStyle = '#1a202c';
+  //   ctx.fillRect(0, 0, 1200, 630);
 
-    // Set text style
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
+  //   // Set text style
+  //   ctx.fillStyle = '#ffffff';
+  //   ctx.textAlign = 'center';
 
-    // Draw workout name
-    ctx.font = 'bold 60px system-ui';
-    ctx.fillText('Workout Summary', 600, 100);
+  //   // Draw workout name
+  //   ctx.font = 'bold 60px system-ui';
+  //   ctx.fillText('Workout Summary', 600, 100);
 
-    // Draw summary stats
-    ctx.font = '40px system-ui';
-    const stats = [
-      `Duration: ${Math.round(workoutData.totalDuration / 60)} minutes`,
-      `Total Weight: ${formatWeight(workoutData.totalWeightLifted, userPreferences.weightUnit)}`,
-      `Exercises: ${workoutData.exercisesCompleted}`,
-      `Personal Bests: ${
-        workoutData.exercises.filter(
-          (ex) =>
-            ex.improvement.reps > 0 ||
-            ex.improvement.weight > 0 ||
-            ex.improvement.time > 0 ||
-            ex.improvement.distance > 0,
-        ).length
-      }`,
-    ];
-    stats.forEach((stat, index) => {
-      ctx.fillText(stat, 600, 200 + index * 70);
-    });
+  //   // Draw summary stats
+  //   ctx.font = '40px system-ui';
+  //   const stats = [
+  //     `Duration: ${Math.round(workoutData.totalDuration / 60)} minutes`,
+  //     `Total Weight: ${formatWeight(workoutData.totalWeightLifted, userPreferences.weightUnit)}`,
+  //     `Exercises: ${workoutData.exercisesCompleted}`,
+  //     `Personal Bests: ${
+  //       workoutData.exercises.filter(
+  //         (ex) =>
+  //           ex.improvement.reps > 0 ||
+  //           ex.improvement.weight > 0 ||
+  //           ex.improvement.time > 0 ||
+  //           ex.improvement.distance > 0,
+  //       ).length
+  //     }`,
+  //   ];
+  //   stats.forEach((stat, index) => {
+  //     ctx.fillText(stat, 600, 200 + index * 70);
+  //   });
 
-    // Draw app logo or name
-    ctx.font = 'bold 30px system-ui';
-    ctx.fillText('Functionally Fit', 600, 580);
+  //   // Draw app logo or name
+  //   ctx.font = 'bold 30px system-ui';
+  //   ctx.fillText('Functionally Fit', 600, 580);
 
-    return canvas.toDataURL('image/png');
-  };
+  //   return canvas.toDataURL('image/png');
+  // };
 
-  const handleShare = async () => {
-    setIsLoading(true);
-    try {
-      const result = await shareWorkout(workoutActivityId, userId);
-      setShareLink(result.shareLink);
+  // const handleShare = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const result = await shareWorkout(workoutActivityId, userId);
+  //     setShareLink(result.shareLink);
 
-      const imageDataUrl = generateImage(summary);
-      if (imageDataUrl) {
-        const response = await fetch(imageDataUrl);
-        const blob = await response.blob();
+  //     const imageDataUrl = generateImage(summary);
+  //     if (imageDataUrl) {
+  //       const response = await fetch(imageDataUrl);
+  //       const blob = await response.blob();
 
-        const formData = new FormData();
-        formData.append('file', blob, `workout-summary-${workoutActivityId}.png`);
+  //       const formData = new FormData();
+  //       formData.append('file', blob, `workout-summary-${workoutActivityId}.png`);
 
-        const uploadResponse = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
+  //       const uploadResponse = await fetch('/api/upload', {
+  //         method: 'POST',
+  //         body: formData,
+  //       });
 
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload image');
-        }
+  //       if (!uploadResponse.ok) {
+  //         throw new Error('Failed to upload image');
+  //       }
 
-        const { url } = await uploadResponse.json();
-        setImageUrl(url);
-      }
+  //       const { url } = await uploadResponse.json();
+  //       setImageUrl(url);
+  //     }
 
-      setIsShareModalOpen(true);
-    } catch (error) {
-      console.error('Error sharing workout:', error);
-      toast({
-        title: 'Error',
-        description:
-          error instanceof Error
-            ? error.message
-            : 'Failed to generate share content. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     setIsShareModalOpen(true);
+  //   } catch (error) {
+  //     console.error('Error sharing workout:', error);
+  //     toast({
+  //       title: 'Error',
+  //       description:
+  //         error instanceof Error
+  //           ? error.message
+  //           : 'Failed to generate share content. Please try again.',
+  //       variant: 'destructive',
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const copyLinkToClipboard = () => {
     navigator.clipboard.writeText(shareLink);
@@ -202,7 +202,7 @@ export function WorkoutSummary({
 
   return (
     <div className="min-h-screen bg-slate-950 p-4 text-slate-50">
-      <canvas ref={canvasRef} className="hidden" />
+      {/* <canvas ref={canvasRef} className="hidden" /> */}
 
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="space-y-2 text-center">
@@ -375,7 +375,7 @@ export function WorkoutSummary({
           >
             Back to Workouts
           </Button>
-          <Button
+          {/* <Button
             onClick={handleShare}
             disabled={isLoading}
             variant="outline"
@@ -383,7 +383,7 @@ export function WorkoutSummary({
           >
             <Share2 className="mr-2 size-4" />
             {isLoading ? 'Generating...' : 'Share Achievements'}
-          </Button>
+          </Button> */}
 
           <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
             <DialogContent className="sm:max-w-md">
