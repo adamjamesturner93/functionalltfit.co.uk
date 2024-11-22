@@ -9,6 +9,12 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+      POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
     steps:
     - uses: actions/checkout@v4
@@ -37,35 +43,42 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
 
+    - name: Check Environment Variables
+      run: |
+        required_vars=("POSTGRES_PRISMA_URL" "POSTGRES_URL_NON_POOLING" "VERCEL_TOKEN" "VERCEL_PROJECT_ID" "VERCEL_ORG_ID")
+        for var in "${required_vars[@]}"; do
+          if [ -z "${!var}" ]; then
+            echo "Error: $var is not set or is empty"
+            exit 1
+          else
+            echo "$var is set and not empty"
+          fi
+        done
+
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
+  
 
     - name: Generate Prisma Client
       run: pnpm exec prisma generate
-      env:
-        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
-        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      if: success()
 
     - name: Lint
       run: pnpm run lint
+      if: success()
 
     - name: Run tests
       run: pnpm test
+      if: success()
 
     - name: Deploy database changes
       run: pnpm exec prisma migrate deploy
-      env:
-        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
-        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      if: success()
 
     - name: Build
       run: pnpm run build
-      env:
-        POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
-        POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+      if: success()
 
     - name: Deploy to Vercel
       run: pnpm dlx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-      env:
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      if: success()
