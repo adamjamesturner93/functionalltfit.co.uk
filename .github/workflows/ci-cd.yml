@@ -64,7 +64,11 @@ jobs:
       if: success() && github.ref == 'refs/heads/main'
 
     - name: Pull Vercel Environment Information
-      run: vercel pull .env --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
+      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
+      if: success() && github.ref == 'refs/heads/main'
+
+    - name: Pull Vercel Environment Variables
+      run: vercel env pull .env --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
       if: success() && github.ref == 'refs/heads/main'
 
     - name: Build Project Artifacts
