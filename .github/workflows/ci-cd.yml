@@ -64,12 +64,23 @@ jobs:
       if: success() && github.ref == 'refs/heads/main'
 
     - name: Pull Vercel Environment Information
-      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
+      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1 --debug
       if: success() && github.ref == 'refs/heads/main'
 
-    - name: Pull Vercel Environment Variables
-      run: vercel env pull .env --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
-      if: success() && github.ref == 'refs/heads/main'
+    - name: Check .env file
+      run: |
+        if [ -f ".env" ]; then
+          echo ".env file exists"
+          grep -v -e '^#' -e '^$' .env | sed 's/=.*/=****/' # This will show variable names but mask values
+        else
+          echo ".env file does not exist"
+        fi
+    - name: Check Build Environment
+      run: |
+        echo "Listing all environment variables (names only):"
+        env | cut -d= -f1
+        echo "NODE_ENV: $NODE_ENV"
+        echo "VERCEL_ENV: $VERCEL_ENV"
 
     - name: Build Project Artifacts
       run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} --scope=team_NOryLdxQkR0TFUg5DVKzQUX1
