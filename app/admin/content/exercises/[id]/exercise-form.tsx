@@ -26,7 +26,6 @@ import { useToast } from '@/hooks/use-toast';
 
 const exerciseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  description: z.string().optional(),
   muscleGroups: z.array(z.string()).min(1, 'At least one muscle group is required'),
   equipment: z.string().min(1, 'Equipment is required'),
   type: z.nativeEnum(ExerciseType),
@@ -43,6 +42,12 @@ interface ExerciseFormProps {
 }
 
 const muscleGroups = [
+  { label: 'Obliques', value: 'Obliques' },
+  { label: 'Abs', value: 'Abs' },
+  { label: 'Quadriceps', value: 'Quadriceps' },
+  { label: 'Hamstrings', value: 'Hamstrings' },
+  { label: 'Glutes', value: 'Glutes' },
+  { label: 'Calves', value: 'Calves' },
   { label: 'Chest', value: 'Chest' },
   { label: 'Back', value: 'Back' },
   { label: 'Shoulders', value: 'Shoulders' },
@@ -54,12 +59,16 @@ const muscleGroups = [
 ];
 
 const equipmentOptions = [
-  'None',
+  'Ab Wheel',
+  'Bench',
+  'Cable Machine',
+  'Box',
+  'Dumbbell',
   'Dumbbells',
   'Barbell',
   'Kettlebell',
   'Resistance Bands',
-  'Bodyweight',
+  'Pull-up Bar',
   'Machine',
   'Other',
 ];
@@ -76,7 +85,6 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
     resolver: zodResolver(exerciseSchema),
     defaultValues: exercise || {
       name: '',
-      description: '',
       muscleGroups: [],
       equipment: 'None',
       type: ExerciseType.STRENGTH,
@@ -208,14 +216,6 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                 {errors.equipment && (
                   <p className="text-sm text-red-500">{errors.equipment.message}</p>
                 )}
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => <Textarea {...field} id="description" />}
-                />
               </div>
               <div>
                 <Label htmlFor="instructions">Instructions</Label>

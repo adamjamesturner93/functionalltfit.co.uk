@@ -9,7 +9,8 @@
     "lint": "next lint --fix",
     "format": "npx prettier --write .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "deploy": "CI=true mv .env .env-temp && pnpm run test && vercel pull --yes --environment=production && cp ./.vercel/.env.production.local ./.env && prisma migrate deploy && vercel build --prod && vercel deploy --prebuilt --prod && mv .env-temp .env"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

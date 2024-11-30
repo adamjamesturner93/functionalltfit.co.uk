@@ -12,12 +12,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const user: User | null = await prisma.user.findUnique({
+    let user: User | null = await prisma.user.findUnique({
       where: { email },
     });
     if (!user) {
       console.log('no user found');
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      user = await prisma.user.create({
+        data: { email, name: '' },
+      });
     }
 
     const authCode = generateAuthCode();

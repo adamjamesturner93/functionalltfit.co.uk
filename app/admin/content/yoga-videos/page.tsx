@@ -242,7 +242,7 @@ export default function YogaVideosPage() {
       {' '}
       <div className="container mx-auto py-10">
         <div className="overflow-hidden rounded-lg bg-surface-grey shadow-md">
-          <div className="border-b border-gray-200 bg-surface-light-grey p-6">
+          <div className="border-b border-card bg-card p-6">
             <div className="mb-6 flex items-center justify-between">
               <h1 className="text-3xl font-bold text-foreground">Yoga Videos</h1>
               <Link href="/admin/content/yoga-videos/new">
