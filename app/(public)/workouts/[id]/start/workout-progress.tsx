@@ -37,10 +37,10 @@ export function WorkoutProgress({
         <p className="mt-1 text-sm text-muted-foreground">Progress: {progress.toFixed(2)}%</p>
       </div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{currentSet.type} Set</h2>
+        <h2 className="text-xl font-semibold">{currentSet.type}</h2>
         <div className="text-sm text-muted-foreground">
           <span>
-            Round {currentRoundIndex + 1} of {currentSet.rounds}
+            Set {currentRoundIndex + 1} of {currentSet.rounds}
           </span>
           <span className="mx-2">|</span>
           <span>

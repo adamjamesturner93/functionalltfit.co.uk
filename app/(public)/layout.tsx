@@ -22,9 +22,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex h-screen bg-surface">
+    <div className="flex h-screen flex-col overflow-hidden bg-surface lg:flex-row">
       <Navigation user={user} />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      <main className="relative flex-1 overflow-y-auto pb-16 lg:pb-0">{children}</main>
       <Toaster />
     </div>
   );

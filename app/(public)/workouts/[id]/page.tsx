@@ -51,18 +51,14 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <Link
-            href="/workouts"
-            className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            Back to Workouts
-          </Link>
-          <h1 className="mb-2 text-3xl font-bold tracking-tight">{workout.name}</h1>
-          <p className="text-muted-foreground">{workout.description}</p>
-        </div>
+      <div className="flex-col items-center justify-between space-y-2 lg:flex-row">
+        <Link
+          href="/workouts"
+          className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
+        >
+          <ArrowLeft className="mr-2 size-4" />
+          Back to Workouts
+        </Link>
         <div className="flex gap-2">
           {userId && (
             <form action={handleToggleSave}>
@@ -79,6 +75,11 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
             </Link>
           </Button>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <h1 className="mb-2 text-3xl font-bold tracking-tight">{workout.name}</h1>
+        <p className="text-muted-foreground">{workout.description}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

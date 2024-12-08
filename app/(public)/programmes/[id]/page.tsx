@@ -27,7 +27,7 @@ export default async function ProgrammePage({ params }: { params: Params }) {
 
   return (
     <div className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex-col items-center justify-between space-y-2 lg:flex-row">
         <Link
           href="/programmes"
           className="flex items-center text-sm text-muted-foreground hover:text-primary"

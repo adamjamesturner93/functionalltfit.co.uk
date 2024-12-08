@@ -90,8 +90,8 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
       type: ExerciseType.STRENGTH,
       mode: ExerciseMode.REPS,
       instructions: '',
-      thumbnailUrl: '',
-      videoUrl: '',
+      thumbnailUrl: './image.png',
+      videoUrl: './video.mp4',
     },
   });
 

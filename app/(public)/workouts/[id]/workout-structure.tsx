@@ -7,6 +7,16 @@ import {
 } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 
+function formatTarget(value: number, mode: string) {
+  if (mode === 'TIME') {
+    return value < 91 ? `${value}s` : `${Math.floor(value / 60)}min`;
+  }
+  if (mode === 'DISTANCE') {
+    return value >= 1000 ? `${(value / 1000).toFixed(2)}km` : `${value}m`;
+  }
+  return `${value} ${mode.toLowerCase()}`;
+}
+
 export function WorkoutStructure({ workout }: { workout: WorkoutWithSets }) {
   return (
     <div className="space-y-6">
@@ -28,9 +38,7 @@ export function WorkoutStructure({ workout }: { workout: WorkoutWithSets }) {
                 {set.exercises.map((exercise) => (
                   <li key={exercise.id} className="flex items-center justify-between">
                     <span>{exercise.exercise.name}</span>
-                    <Badge>
-                      {exercise.targetReps} {exercise.exercise.mode.toLowerCase()}
-                    </Badge>
+                    <Badge>{formatTarget(exercise.targetReps, exercise.exercise.mode)}</Badge>
                   </li>
                 ))}
               </ul>

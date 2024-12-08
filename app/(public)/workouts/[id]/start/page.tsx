@@ -71,6 +71,7 @@ export default function WorkoutPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userPreferences, setUserPreferences] = useState<{
     weightUnit: Unit;
@@ -79,6 +80,7 @@ export default function WorkoutPage() {
     weightUnit: Unit.METRIC,
     lengthUnit: Unit.METRIC,
   });
+  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     const begin = async () => {
@@ -137,8 +139,11 @@ export default function WorkoutPage() {
         }),
       );
 
-      await completeWorkout(workout.id, workout.workoutId, exercises, userId);
-      router.push('/workouts');
+      const result = await completeWorkout(workout.id, workout.workoutId, exercises, userId);
+      if (result.success && result.completed) {
+        setIsCompleted(true);
+        router.push(result.redirectUrl);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An error occurred while completing the workout',
@@ -286,11 +291,11 @@ export default function WorkoutPage() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isCompleted) {
     return (
       <Card className="mx-auto mt-8 max-w-lg">
         <CardContent>
-          <p className="text-center">Loading...</p>
+          <p className="text-center">{isCompleted ? 'Workout Completed!' : 'Loading...'}</p>
         </CardContent>
       </Card>
     );

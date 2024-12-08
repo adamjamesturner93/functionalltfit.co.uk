@@ -75,19 +75,20 @@ export default async function YogaVideoPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <Link
-            href="/yoga"
-            className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
-          >
-            <ArrowLeft className="mr-2 size-4" />
-            Back to Yoga Videos
-          </Link>
-          <h1 className="mb-2 text-3xl font-bold tracking-tight">{yogaVideo.title}</h1>
-          <p className="text-muted-foreground">{yogaVideo.description}</p>
-        </div>
+      <div className="flex-col items-center justify-between space-y-2 lg:flex-row">
+        <Link
+          href="/yoga"
+          className="mb-4 inline-flex items-center text-sm text-muted-foreground transition-colors hover:text-primary"
+        >
+          <ArrowLeft className="mr-2 size-4" />
+          Back to Yoga Videos
+        </Link>
+
         <YogaVideoActions yogaVideoId={id} userId={userId} isSaved={yogaVideo.isSaved} />
+      </div>
+      <div className="space-y-2">
+        <h1 className="mb-2 text-3xl font-bold tracking-tight">{yogaVideo.title}</h1>
+        <p className="text-muted-foreground">{yogaVideo.description}</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">

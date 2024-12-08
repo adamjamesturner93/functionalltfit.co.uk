@@ -13,6 +13,13 @@ import { Progress } from '@/components/ui/progress';
 import { convertDistance, convertWeight, formatDistance } from '@/lib/unit-conversion';
 import { cn } from '@/lib/utils';
 
+function formatTime(seconds: number) {
+  if (seconds < 91) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}min`;
+}
+
 interface Exercise {
   id: string;
   exerciseId: string;
@@ -147,7 +154,7 @@ export function WorkoutExercise({
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <Timer className="size-4" />
             <span>
-              Round {currentRound} of {totalRounds}
+              Set {currentRound} of {totalRounds}
             </span>
           </div>
         </div>
@@ -158,7 +165,7 @@ export function WorkoutExercise({
             <Label className="text-sm text-slate-400">Target</Label>
             <div className="text-2xl font-bold">
               {exercise.mode === ExerciseMode.REPS && `${exercise.targetReps} reps`}
-              {exercise.mode === ExerciseMode.TIME && `${exercise.targetTime}s`}
+              {exercise.mode === ExerciseMode.TIME && `${formatTime(exercise.targetTime || 0)}`}
               {exercise.mode === ExerciseMode.DISTANCE &&
                 formatDistance(exercise.targetDistance || 0, userPreferences.lengthUnit)}
             </div>
@@ -243,11 +250,11 @@ export function WorkoutExercise({
                 {countdown !== null && (
                   <div className="rounded-lg bg-slate-800 p-4 text-center">
                     <p className="mb-2 text-sm text-slate-400">Starting in...</p>
-                    <span className="font-mono text-4xl text-indigo-400">{countdown}</span>
+                    <span className="font-mono text-4xl text-indigo-400">{countdown}s</span>
                   </div>
                 )}
                 <div className="rounded-lg bg-slate-950 p-4 text-center">
-                  <span className="font-mono text-4xl">{time}s</span>
+                  <span className="font-mono text-4xl">{formatTime(time)}</span>
                 </div>
                 {exercise.targetTime && (
                   <Progress value={(time / exercise.targetTime) * 100} className="h-2" />
