@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { calculateImprovements, calculateNextWorkoutWeight } from '@/lib/workout-calculations';
 
+import { ExercisePerformance } from '../(public)/workouts/[id]/start/page';
+
 import { autoUpdateActivityCompletion } from './programmes';
 
 interface WorkoutActivityWithSets extends WorkoutActivity {
@@ -531,16 +533,13 @@ export async function startWorkout(workoutId: string, userId: string) {
 export async function completeWorkout(
   activityId: string,
   workoutId: string,
-  exercises: {
-    id: string;
-    exerciseId: string;
-    weight: { [roundNumber: number]: number };
-    reps?: { [roundNumber: number]: number };
-    time?: { [roundNumber: number]: number };
-    distance?: { [roundNumber: number]: number };
-  }[],
+  exercises: ExercisePerformance[],
   userId: string,
 ) {
+  console.log(
+    'COMPLETE WORKOUT',
+    JSON.stringify({ activityId, workoutId, userId, exercises }, null, 4),
+  );
   try {
     const result = await prisma.$transaction(
       async (tx) => {
@@ -564,7 +563,7 @@ export async function completeWorkout(
         });
 
         if (!workoutActivity) {
-          throw new Error('Workout activity not found');
+          throw new Error(`Workout activity not found for ID: ${activityId}`);
         }
 
         const endTime = new Date();
@@ -720,6 +719,7 @@ export async function completeWorkout(
     throw error;
   }
 }
+
 export async function updateWorkoutActivity(
   workoutActivityId: string,
   exercises: {
@@ -733,6 +733,7 @@ export async function updateWorkoutActivity(
     mode: ExerciseMode;
   }[],
 ) {
+  console.log(JSON.stringify({ workoutActivityId, exercises }, null, 4));
   try {
     const workoutActivity = await prisma.workoutActivity.findUnique({
       where: { id: workoutActivityId },
@@ -757,24 +758,30 @@ export async function updateWorkoutActivity(
       throw new Error('Workout activity not found');
     }
 
-    const { sets } = workoutActivity.workout;
+    const updatedExercises = await Promise.all(
+      exercises.map(async (exercise) => {
+        // First, check if the exercise exists
+        const existingExercise = await prisma.exercise.findUnique({
+          where: { id: exercise.exerciseId },
+        });
 
-    for (const exercise of exercises) {
-      const set = sets.find((s) => s.exercises.some((e) => e.exerciseId === exercise.exerciseId));
+        if (!existingExercise) {
+          console.error(`Exercise with id ${exercise.exerciseId} not found`);
+          return null; // Skip this exercise
+        }
 
-      if (set) {
         const workoutActivitySet = await prisma.workoutActivitySet.upsert({
           where: {
             workoutActivityId_setNumber_roundNumber: {
               workoutActivityId: workoutActivityId,
-              setNumber: 1, // Assuming one set per exercise, adjust if needed
+              setNumber: 1,
               roundNumber: exercise.roundNumber,
             },
           },
           update: {},
           create: {
             workoutActivityId: workoutActivityId,
-            setNumber: 1, // Assuming one set per exercise, adjust if needed
+            setNumber: 1,
             roundNumber: exercise.roundNumber,
           },
         });
@@ -786,7 +793,7 @@ export async function updateWorkoutActivity(
           distance: exercise.mode === ExerciseMode.DISTANCE ? exercise.distance : null,
         };
 
-        await prisma.workoutActivityExercise.upsert({
+        return prisma.workoutActivityExercise.upsert({
           where: {
             workoutActivitySetId_exerciseId_roundNumber: {
               workoutActivitySetId: workoutActivitySet.id,
@@ -803,10 +810,13 @@ export async function updateWorkoutActivity(
             ...exerciseData,
           },
         });
-      }
-    }
+      }),
+    );
 
-    return { success: true };
+    const validUpdatedExercises = updatedExercises.filter(Boolean);
+    console.log('Updated exercises:', JSON.stringify(validUpdatedExercises, null, 2));
+
+    return { success: true, updatedExercises: validUpdatedExercises };
   } catch (error) {
     console.error('Error updating workout activity:', error);
     throw error;
@@ -861,18 +871,6 @@ export async function updateUserExerciseWeight(
         weight: newWeight,
       },
     });
-
-    console.log('********');
-    console.log('********');
-    console.log('********');
-    console.log('********');
-    console.log('********');
-    console.log({ newWeight });
-    console.log('********');
-    console.log('********');
-    console.log('********');
-    console.log('********');
-    console.log('********');
   } catch (error) {
     console.error('Error updating user exercise weight:', error);
     throw error;

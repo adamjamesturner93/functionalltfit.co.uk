@@ -35,10 +35,10 @@ export function WorkoutStructure({ workout }: { workout: WorkoutWithSets }) {
             </AccordionTrigger>
             <AccordionContent>
               <ul className="space-y-2">
-                {set.exercises.map((exercise) => (
+                {set.exercises.map(({ exercise, targetReps }) => (
                   <li key={exercise.id} className="flex items-center justify-between">
-                    <span>{exercise.exercise.name}</span>
-                    <Badge>{formatTarget(exercise.targetReps, exercise.exercise.mode)}</Badge>
+                    <span>{exercise.name}</span>
+                    <Badge>{formatTarget(targetReps, exercise.mode)}</Badge>
                   </li>
                 ))}
               </ul>

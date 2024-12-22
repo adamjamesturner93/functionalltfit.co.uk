@@ -49,7 +49,7 @@ interface Workout {
   sets: Set[];
 }
 
-interface ExercisePerformance {
+export interface ExercisePerformance {
   id: string;
   exerciseId: string;
   weight: { [roundNumber: number]: number };

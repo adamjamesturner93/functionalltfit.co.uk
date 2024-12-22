@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { updateUserExerciseWeight } from '@/app/actions/workouts';
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
-import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await authorizeUser(request);
@@ -14,26 +14,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { exerciseId, newWeight } = await request.json();
 
   try {
-    const userExerciseWeight = await prisma.userExerciseWeight.upsert({
-      where: {
-        userId_workoutId_exerciseId: {
-          userId: session.user.id,
-          workoutId: id,
-          exerciseId: exerciseId,
-        },
-      },
-      update: {
-        weight: newWeight,
-      },
-      create: {
-        userId: session.user.id,
-        workoutId: id,
-        exerciseId: exerciseId,
-        weight: newWeight,
-      },
-    });
+    await updateUserExerciseWeight(id, exerciseId, newWeight, session.user.id);
 
-    return NextResponse.json(userExerciseWeight);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating exercise weight:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

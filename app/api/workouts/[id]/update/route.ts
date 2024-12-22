@@ -10,7 +10,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!session) {
     return unauthorizedResponse();
   }
-
   const { sets } = await request.json();
 
   try {
