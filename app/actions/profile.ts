@@ -12,19 +12,22 @@ const profileSchema = z.object({
   dateOfBirth: z.string().optional(),
   weightUnit: z.nativeEnum(Unit),
   lengthUnit: z.nativeEnum(Unit),
-  image: z.string().optional(),
+  // image: z.string().optional(),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export async function getCurrentUser() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return null;
+export async function getCurrentUser(userId?: string) {
+  if (!userId) {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return null;
+    }
+    userId = session.user.id;
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     include: { preferences: true },
   });
 
@@ -41,35 +44,30 @@ export async function getCurrentUser() {
   };
 }
 
-export async function updateProfile(formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { error: 'Not authenticated' };
-  }
-
+export async function updateProfile(userId: string, formData: FormData) {
   const validatedFields = profileSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
     dateOfBirth: formData.get('dateOfBirth'),
     weightUnit: formData.get('weightUnit'),
     lengthUnit: formData.get('lengthUnit'),
-    image: formData.get('image'),
+    // image: formData.get('image'),
   });
 
   if (!validatedFields.success) {
     return { error: 'Invalid fields' };
   }
 
-  const { name, email, dateOfBirth, weightUnit, lengthUnit, image } = validatedFields.data;
+  const { name, email, dateOfBirth, weightUnit, lengthUnit } = validatedFields.data;
 
   try {
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: {
         name,
         email,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
-        image,
+        // image,
         preferences: {
           upsert: {
             create: { weightUnit, lengthUnit },
@@ -85,12 +83,7 @@ export async function updateProfile(formData: FormData) {
   }
 }
 
-export async function uploadProfileImage(formData: FormData) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { error: 'Not authenticated' };
-  }
-
+export async function uploadProfileImage(userId: string, formData: FormData) {
   const file = formData.get('file') as File;
   if (!file) {
     return { error: 'No file provided' };
@@ -109,7 +102,7 @@ export async function uploadProfileImage(formData: FormData) {
     const { url } = await uploadResponse.json();
 
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { image: url },
     });
 

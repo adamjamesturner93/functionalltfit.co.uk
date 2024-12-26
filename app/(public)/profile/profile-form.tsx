@@ -47,7 +47,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       dateOfBirth: user.dateOfBirth,
       lengthUnit: user.lengthUnit,
       weightUnit: user.weightUnit,
-      image: user.image,
+      // image: user.image,
     },
   });
 
@@ -92,7 +92,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     });
     formData.append('profileImage', profileImage);
 
-    const result = await updateProfile(formData);
+    const result = await updateProfile(user.id, formData);
     if (result.error) {
       toast({
         title: 'Error',

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   try {
-    const workout = await getWorkoutById(id);
+    const workout = await getWorkoutById(id, session.user.id);
     return NextResponse.json(workout);
   } catch (error) {
     console.error('Error fetching workout:', error);

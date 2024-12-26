@@ -58,7 +58,7 @@ export type ProgrammeWithActivitiesAndSaved = Prisma.ProgrammeGetPayload<{
 export async function getProgramme(
   id: string,
   userId?: string,
-): Promise<ProgrammeWithActivitiesAndSaved | null> {
+): Promise<(ProgrammeWithActivitiesAndSaved & { isStarted: boolean }) | null> {
   const programme = await prisma.programme.findUnique({
     where: { id },
     include: {
@@ -93,16 +93,28 @@ export async function getProgramme(
 
   if (!programme) return null;
 
+  let isStarted = false;
+  if (userId) {
+    const userProgramme = await prisma.userProgramme.findFirst({
+      where: {
+        userId,
+        programmeId: id,
+        isActive: true,
+      },
+    });
+    isStarted = !!userProgramme;
+  }
+
   return {
     ...programme,
     isSaved: userId ? programme.savedBy.length > 0 : false,
+    isStarted,
     activities: programme.activities.map((activity) => ({
       ...activity,
       name: activity.workout?.name || activity.yogaVideo?.title || '',
     })),
   };
 }
-
 export async function toggleProgrammeSave(programmeId: string, userId: string) {
   const existingSave = await prisma.userProgrammeSave.findUnique({
     where: {
@@ -127,6 +139,19 @@ export async function toggleProgrammeSave(programmeId: string, userId: string) {
       },
     });
   }
+
+  const newSave = await prisma.userProgrammeSave.findUnique({
+    where: {
+      userId_programmeId: {
+        userId,
+        programmeId,
+      },
+    },
+  });
+
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
+  console.log({ newSave, programmeId, userId });
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
   revalidatePath('/programmes');
   revalidatePath(`/programmes/${programmeId}`);

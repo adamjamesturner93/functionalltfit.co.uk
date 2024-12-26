@@ -1,5 +1,3 @@
-'use server';
-
 import { prisma } from '@/lib/prisma';
 
 export type ActivityHistoryItem = {
@@ -10,22 +8,31 @@ export type ActivityHistoryItem = {
   duration: number;
 };
 
-export async function getActivityHistory(userId: string): Promise<ActivityHistoryItem[]> {
-  const workoutActivities = await prisma.workoutActivity.findMany({
-    where: { userId },
-    include: {
-      workout: true,
-    },
-    orderBy: { startedAt: 'desc' },
-  });
+export async function getActivityHistory(
+  userId: string,
+  page: number = 1,
+  pageSize: number = 10,
+): Promise<{ activities: ActivityHistoryItem[]; total: number }> {
+  const skip = (page - 1) * pageSize;
 
-  const yogaActivities = await prisma.yogaVideoActivity.findMany({
-    where: { userId },
-    include: {
-      yogaVideo: true,
-    },
-    orderBy: { watchedAt: 'desc' },
-  });
+  const [workoutActivities, yogaActivities, totalWorkouts, totalYoga] = await Promise.all([
+    prisma.workoutActivity.findMany({
+      where: { userId },
+      include: { workout: true },
+      orderBy: { startedAt: 'desc' },
+      skip,
+      take: pageSize,
+    }),
+    prisma.yogaVideoActivity.findMany({
+      where: { userId },
+      include: { yogaVideo: true },
+      orderBy: { watchedAt: 'desc' },
+      skip,
+      take: pageSize,
+    }),
+    prisma.workoutActivity.count({ where: { userId } }),
+    prisma.yogaVideoActivity.count({ where: { userId } }),
+  ]);
 
   const workoutHistory: ActivityHistoryItem[] = workoutActivities.map((activity) => ({
     id: activity.id,
@@ -45,5 +52,10 @@ export async function getActivityHistory(userId: string): Promise<ActivityHistor
     duration: activity.yogaVideo.duration / 60, // Convert seconds to minutes
   }));
 
-  return [...workoutHistory, ...yogaHistory].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const activities = [...workoutHistory, ...yogaHistory].sort(
+    (a, b) => b.date.getTime() - a.date.getTime(),
+  );
+  const total = totalWorkouts + totalYoga;
+
+  return { activities, total };
 }

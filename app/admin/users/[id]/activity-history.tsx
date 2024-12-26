@@ -27,7 +27,7 @@ export function ActivityHistory({ userId }: ActivityHistoryProps) {
       setIsLoading(true);
       try {
         const history = await getActivityHistory(userId);
-        setActivities(history);
+        setActivities(history.activities);
       } catch (error) {
         console.error('Failed to fetch activity history:', error);
       } finally {
