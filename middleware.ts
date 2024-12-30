@@ -13,6 +13,12 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/api/mux') ||
     pathname.startsWith('/api/upload-image') ||
+    pathname.startsWith('/api/auth/session') ||
+    pathname.startsWith('/api/auth/providers') ||
+    pathname.startsWith('/api/auth/csrf') ||
+    pathname.startsWith('/api/auth/signin') ||
+    pathname.startsWith('/api/auth/callback') ||
+    pathname.startsWith('/api/auth/error') ||
     pathname.startsWith('/api/auth/login') ||
     pathname.startsWith('/api/auth/token') ||
     pathname.startsWith('/api/auth/verify')
