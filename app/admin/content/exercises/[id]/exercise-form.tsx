@@ -26,8 +26,11 @@ import { useToast } from '@/hooks/use-toast';
 
 const exerciseSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  muscleGroups: z.array(z.string()).min(1, 'At least one muscle group is required'),
-  equipment: z.string().min(1, 'Equipment is required'),
+  primaryMuscles: z.array(z.string()).min(1, 'At least one muscle group is required'),
+  secondaryMuscles: z.array(z.string()),
+  equipment: z.array(z.string()),
+  muscleGroupCategories: z.array(z.string()),
+  contraindications: z.array(z.string()),
   type: z.nativeEnum(ExerciseType),
   mode: z.nativeEnum(ExerciseMode),
   instructions: z.string().min(1, 'Instructions are required'),
@@ -41,36 +44,84 @@ interface ExerciseFormProps {
   exercise?: Exercise | null;
 }
 
-const muscleGroups = [
-  { label: 'Obliques', value: 'Obliques' },
+const primaryMuscles = [
   { label: 'Abs', value: 'Abs' },
-  { label: 'Quadriceps', value: 'Quadriceps' },
-  { label: 'Hamstrings', value: 'Hamstrings' },
-  { label: 'Glutes', value: 'Glutes' },
+  { label: 'Adductors', value: 'Adductors' },
+  { label: 'Ankles', value: 'Ankles' },
+  { label: 'Biceps', value: 'Biceps' },
   { label: 'Calves', value: 'Calves' },
   { label: 'Chest', value: 'Chest' },
-  { label: 'Back', value: 'Back' },
-  { label: 'Shoulders', value: 'Shoulders' },
-  { label: 'Biceps', value: 'Biceps' },
-  { label: 'Triceps', value: 'Triceps' },
-  { label: 'Legs', value: 'Legs' },
   { label: 'Core', value: 'Core' },
+  { label: 'Forearms', value: 'Forearms' },
+  { label: 'Front Deltoids', value: 'Front Deltoids' },
   { label: 'Full Body', value: 'Full Body' },
+  { label: 'Glutes', value: 'Glutes' },
+  { label: 'Hamstrings', value: 'Hamstrings' },
+  { label: 'Hip Flexors', value: 'Hip Flexors' },
+  { label: 'Hips', value: 'Hips' },
+  { label: 'Inner Thighs', value: 'Inner Thighs' },
+  { label: 'Lats', value: 'Lats' },
+  { label: 'Lower Abs', value: 'Lower Abs' },
+  { label: 'Lower Back', value: 'Lower Back' },
+  { label: 'Obliques', value: 'Obliques' },
+  { label: 'Quadriceps', value: 'Quadriceps' },
+  { label: 'Rear Deltoids', value: 'Rear Deltoids' },
+  { label: 'Rotator Cuff', value: 'Rotator Cuff' },
+  { label: 'Serratus Anterior', value: 'Serratus Anterior' },
+  { label: 'Shoulders', value: 'Shoulders' },
+  { label: 'Spine', value: 'Spine' },
+  { label: 'Trapezius', value: 'Trapezius' },
+  { label: 'Triceps', value: 'Triceps' },
+  { label: 'Upper Back', value: 'Upper Back' },
+  { label: 'Upper Chest', value: 'Upper Chest' },
+  { label: 'Wrists', value: 'Wrists' },
 ];
 
-const equipmentOptions = [
-  'Ab Wheel',
-  'Bench',
-  'Cable Machine',
-  'Box',
-  'Dumbbell',
-  'Dumbbells',
-  'Barbell',
-  'Kettlebell',
-  'Resistance Bands',
-  'Pull-up Bar',
-  'Machine',
-  'Other',
+const equipment = [
+  { label: 'Ab Wheel', value: 'Ab Wheel' },
+  { label: 'Assisted Pull-up Machine', value: 'Assisted Pull-up Machine' },
+  { label: 'Barbell', value: 'Barbell' },
+  { label: 'Battle Ropes', value: 'Battle Ropes' },
+  { label: 'Bench', value: 'Bench' },
+  { label: 'Box', value: 'Box' },
+  { label: 'Cable Machine', value: 'Cable Machine' },
+  { label: 'Calf Raise Machine', value: 'Calf Raise Machine' },
+  { label: 'Chest Fly Machine', value: 'Chest Fly Machine' },
+  { label: 'Chest Press Machine', value: 'Chest Press Machine' },
+  { label: 'Dumbbell', value: 'Dumbbell' },
+  { label: 'EZ Bar', value: 'EZ Bar' },
+  { label: 'Foam Roller', value: 'Foam Roller' },
+  { label: 'Hack Squat Machine', value: 'Hack Squat Machine' },
+  { label: 'Incline Bench', value: 'Incline Bench' },
+  { label: 'Kettlebell', value: 'Kettlebell' },
+  { label: 'Landmine Attachment', value: 'Landmine Attachment' },
+  { label: 'Lat Pulldown Machine', value: 'Lat Pulldown Machine' },
+  { label: 'Leg Curl Machine', value: 'Leg Curl Machine' },
+  { label: 'Leg Extension Machine', value: 'Leg Extension Machine' },
+  { label: 'Leg Press Machine', value: 'Leg Press Machine' },
+  { label: 'Medicine Ball', value: 'Medicine Ball' },
+  { label: 'Pad for Ankles', value: 'Pad for Ankles' },
+  { label: 'Parallel Bars', value: 'Parallel Bars' },
+  { label: 'Pec Deck Machine', value: 'Pec Deck Machine' },
+  { label: 'Platform or Weight Plate', value: 'Platform or Weight Plate' },
+  { label: 'Plyo Box', value: 'Plyo Box' },
+  { label: 'Power Rack', value: 'Power Rack' },
+  { label: 'Preacher Bench', value: 'Preacher Bench' },
+  { label: 'Pull-up Bar', value: 'Pull-up Bar' },
+  { label: 'Raised Platform', value: 'Raised Platform' },
+  { label: 'Resistance Band', value: 'Resistance Band' },
+  { label: 'Reverse Fly Machine', value: 'Reverse Fly Machine' },
+  { label: 'Rowing Machine', value: 'Rowing Machine' },
+  { label: 'Seated Calf Raise Machine', value: 'Seated Calf Raise Machine' },
+  { label: 'Seated Leg Curl Machine', value: 'Seated Leg Curl Machine' },
+  { label: 'Seated Row Machine', value: 'Seated Row Machine' },
+  { label: 'Shoulder Press Machine', value: 'Shoulder Press Machine' },
+  { label: 'Ski Erg Machine', value: 'Ski Erg Machine' },
+  { label: 'Step or Platform', value: 'Step or Platform' },
+  { label: 'Straight Bar Attachment', value: 'Straight Bar Attachment' },
+  { label: 'TRX Suspension Trainer', value: 'TRX Suspension Trainer' },
+  { label: 'Trap Bar', value: 'Trap Bar' },
+  { label: 'Wobbleboard', value: 'Wobbleboard' },
 ];
 
 export function ExerciseForm({ exercise }: ExerciseFormProps) {
@@ -85,8 +136,11 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
     resolver: zodResolver(exerciseSchema),
     defaultValues: exercise || {
       name: '',
-      muscleGroups: [],
-      equipment: 'None',
+      primaryMuscles: [],
+      secondaryMuscles: [],
+      muscleGroupCategories: [],
+      contraindications: [],
+      equipment: [],
       type: ExerciseType.STRENGTH,
       mode: ExerciseMode.REPS,
       instructions: '',
@@ -131,21 +185,21 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
               </div>
 
               <div>
-                <Label htmlFor="muscleGroups">Muscle Groups</Label>
+                <Label htmlFor="primaryMuscles">Muscle Groups</Label>
                 <Controller
-                  name="muscleGroups"
+                  name="primaryMuscles"
                   control={control}
                   render={({ field }) => (
                     <MultiSelect
-                      options={muscleGroups}
+                      options={primaryMuscles}
                       selected={field.value}
                       onChange={field.onChange}
                       placeholder="Select muscle groups"
                     />
                   )}
                 />
-                {errors.muscleGroups && (
-                  <p className="text-sm text-red-500">{errors.muscleGroups.message}</p>
+                {errors.primaryMuscles && (
+                  <p className="text-sm text-red-500">{errors.primaryMuscles.message}</p>
                 )}
               </div>
               <div>
@@ -199,18 +253,12 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
                   name="equipment"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select equipment" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {equipmentOptions.map((equipment) => (
-                          <SelectItem key={equipment} value={equipment}>
-                            {equipment}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <MultiSelect
+                      options={equipment}
+                      selected={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select equipment groups"
+                    />
                   )}
                 />
                 {errors.equipment && (
@@ -231,7 +279,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
             </div>
           </div>
 
-          <div className="mt-6 space-y-4">
+          {/* <div className="mt-6 space-y-4">
             <div>
               <Label htmlFor="thumbnailUrl">Thumbnail Image</Label>
               <Controller
@@ -262,7 +310,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
               />
               {errors.videoUrl && <p className="text-sm text-red-500">{errors.videoUrl.message}</p>}
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 

@@ -40,6 +40,9 @@ model User {
   YogaVideoActivity      YogaVideoActivity[]
   Measurement            Measurement[]
   refreshTokens          RefreshToken[]
+
+  @@index([email])
+  @@index([membershipStatus, membershipPlan])
 }
 
 model RefreshToken {
@@ -58,7 +61,7 @@ model Preferences {
   userId     String @unique
   lengthUnit Unit   @default(METRIC)
   weightUnit Unit   @default(METRIC)
-  user       User   @relation(fields: [userId], references: [id])
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model HealthData {
@@ -73,7 +76,7 @@ model HealthData {
   stressLevel            Int?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  user                   User     @relation(fields: [userId], references: [id])
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, date])
 }
@@ -81,7 +84,7 @@ model HealthData {
 model Measurement {
   id                    String   @id @default(cuid())
   userId                String
-  user                  User     @relation(fields: [userId], references: [id])
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date                  DateTime @default(now())
   weight                Float?
   calfCircumference     Float?
@@ -117,6 +120,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -125,6 +129,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -150,6 +156,8 @@ model YogaVideo {
   ProgrammeActivity ProgrammeActivity[]
   savedBy           UserYogaVideoSave[]
   activities        YogaVideoActivity[]
+
+  @@index([type])
 }
 
 model YogaVideoActivity {
@@ -157,10 +165,12 @@ model YogaVideoActivity {
   userId    String
   videoId   String
   watchedAt DateTime  @default(now())
-  user      User      @relation(fields: [userId], references: [id])
-  yogaVideo YogaVideo @relation(fields: [videoId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  yogaVideo YogaVideo @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId, watchedAt])
+  @@index([userId])
+  @@index([videoId])
 }
 
 model Exercise {
@@ -168,8 +178,11 @@ model Exercise {
   name                    String
   thumbnailUrl            String
   videoUrl                String
-  muscleGroups            String[]
-  equipment               String                    @default("None")
+  primaryMuscles          String[]
+  secondaryMuscles        String[]
+  muscleGroupCategories   String[]
+  contraindications       String[]
+  equipment               String[]
   type                    ExerciseType
   mode                    ExerciseMode
   instructions            String
@@ -178,6 +191,12 @@ model Exercise {
   SetExercise             SetExercise[]
   UserExerciseWeight      UserExerciseWeight[]
   WorkoutActivityExercise WorkoutActivityExercise[]
+
+  @@index([type, mode])
+  @@index([primaryMuscles])
+  @@index([muscleGroupCategories])
+  @@index([contraindications])
+  @@index([equipment])
 }
 
 model Workout {
@@ -195,6 +214,10 @@ model Workout {
   UserExerciseWeight UserExerciseWeight[]
   savedBy            UserWorkoutSave[]
   WorkoutActivity    WorkoutActivity[]
+
+  @@index([name])
+  @@index([equipment])
+  @@index([muscleGroups])
 }
 
 model Set {
@@ -204,8 +227,10 @@ model Set {
   rest      Int
   gap       Int?
   workoutId String
-  workout   Workout       @relation(fields: [workoutId], references: [id])
+  workout   Workout       @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exercises SetExercise[]
+
+  @@index([workoutId])
 }
 
 model SetExercise {
@@ -214,8 +239,11 @@ model SetExercise {
   setId      String
   targetReps Int
   order      Int
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  set        Set      @relation(fields: [setId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  set        Set      @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId])
+  @@index([setId])
 }
 
 model WorkoutActivity {
@@ -224,10 +252,13 @@ model WorkoutActivity {
   workoutId               String
   startedAt               DateTime
   endedAt                 DateTime?
-  user                    User                      @relation(fields: [userId], references: [id])
-  workout                 Workout                   @relation(fields: [workoutId], references: [id])
+  user                    User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workout                 Workout                   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   WorkoutActivityExercise WorkoutActivityExercise[]
   sets                    WorkoutActivitySet[]
+
+  @@index([userId, startedAt])
+  @@index([workoutId])
 }
 
 model WorkoutActivitySet {
@@ -236,7 +267,7 @@ model WorkoutActivitySet {
   setNumber         Int
   roundNumber       Int
   exercises         WorkoutActivityExercise[]
-  workoutActivity   WorkoutActivity           @relation(fields: [workoutActivityId], references: [id])
+  workoutActivity   WorkoutActivity           @relation(fields: [workoutActivityId], references: [id], onDelete: Cascade)
 
   @@unique([workoutActivityId, setNumber, roundNumber])
 }
@@ -251,11 +282,13 @@ model WorkoutActivityExercise {
   time                 Int?
   distance             Float?
   roundNumber          Int
-  exercise             Exercise           @relation(fields: [exerciseId], references: [id])
-  workoutActivity      WorkoutActivity    @relation(fields: [workoutActivityId], references: [id])
-  workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id])
+  exercise             Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  workoutActivity      WorkoutActivity    @relation(fields: [workoutActivityId], references: [id], onDelete: Cascade)
+  workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id], onDelete: Cascade)
 
   @@unique([workoutActivitySetId, exerciseId, roundNumber])
+  @@index([exerciseId])
+  @@index([workoutActivityId])
 }
 
 model UserExerciseWeight {
@@ -264,11 +297,14 @@ model UserExerciseWeight {
   workoutId  String
   exerciseId String
   weight     Float
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
-  workout    Workout  @relation(fields: [workoutId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workoutId, exerciseId])
+  @@index([userId])
+  @@index([workoutId])
+  @@index([exerciseId])
 }
 
 model Programme {
@@ -284,6 +320,9 @@ model Programme {
   activities      ProgrammeActivity[]
   userProgrammes  UserProgramme[]
   savedBy         UserProgrammeSave[]
+
+  @@index([title])
+  @@index([intention])
 }
 
 model ProgrammeActivity {
@@ -296,9 +335,13 @@ model ProgrammeActivity {
   yogaVideoId  String?
   completed    Boolean    @default(false)
   completedAt  DateTime?  @default(now())
-  programme    Programme  @relation(fields: [programmeId], references: [id])
-  workout      Workout?   @relation(fields: [workoutId], references: [id])
-  yogaVideo    YogaVideo? @relation(fields: [yogaVideoId], references: [id])
+  programme    Programme  @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  workout      Workout?   @relation(fields: [workoutId], references: [id], onDelete: SetNull)
+  yogaVideo    YogaVideo? @relation(fields: [yogaVideoId], references: [id], onDelete: SetNull)
+
+  @@index([programmeId])
+  @@index([workoutId])
+  @@index([yogaVideoId])
 }
 
 model UserProgramme {
@@ -309,8 +352,11 @@ model UserProgramme {
   endDate     DateTime?
   isActive    Boolean   @default(true)
   progress    Json
-  programme   Programme @relation(fields: [programmeId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
+  programme   Programme @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([programmeId])
 }
 
 model Goal {
@@ -328,9 +374,10 @@ model Goal {
   title       String?
   description String?
   exerciseId  String?
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([type])
 }
 
 model UserWorkoutSave {
@@ -405,8 +452,9 @@ enum YogaType {
 enum ExerciseType {
   STRENGTH
   CARDIO
-  FLEXIBILITY
-  BALANCE
+  STATIC_STRETCH
+  DYNAMIC_STRETCH
+  MOBILITY
 }
 
 enum ExerciseMode {

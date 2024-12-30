@@ -13,7 +13,7 @@ interface WorkoutCardProps {
   thumbnail: string;
   totalLength: number;
   equipment: string[];
-  muscleGroups: string[];
+  primaryMuscles: string[];
   isSaved?: boolean;
   userId?: string | null;
   onSaveToggle?: () => Promise<void>;
@@ -25,7 +25,7 @@ export function WorkoutCard({
   description,
   totalLength,
   equipment,
-  muscleGroups,
+  primaryMuscles,
   isSaved = false,
   userId,
   onSaveToggle,
@@ -52,15 +52,15 @@ export function WorkoutCard({
       </CardHeader>
       <CardContent className="flex grow flex-col justify-end">
         <div className="space-y-4">
-          {muscleGroups.length > 0 && (
+          {primaryMuscles.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {muscleGroups.slice(0, 3).map((group) => (
+              {primaryMuscles.slice(0, 3).map((group) => (
                 <Badge key={group} variant="outline">
                   {group}
                 </Badge>
               ))}
-              {muscleGroups.length > 3 && (
-                <Badge variant="outline">+{muscleGroups.length - 3}</Badge>
+              {primaryMuscles.length > 3 && (
+                <Badge variant="outline">+{primaryMuscles.length - 3}</Badge>
               )}
             </div>
           )}

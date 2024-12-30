@@ -52,21 +52,37 @@ const fuzzyFilter: FilterFn<Exercise> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-const muscleGroups = [
+const primaryMuscles = [
+  'Abs',
+  'Adductors',
+  'Ankles',
   'Biceps',
-  'Triceps',
-  'Deltoids',
-  'Pectorals',
-  'Trapezius',
-  'Latissimus Dorsi',
-  'Rhomboids',
-  'Erector Spinae',
-  'Rectus Abdominis',
+  'Calves',
+  'Chest',
+  'Core',
+  'Forearms',
+  'Front Deltoids',
+  'Full Body',
+  'Glutes',
+  'Hamstrings',
+  'Hip Flexors',
+  'Hips',
+  'Inner Thighs',
+  'Lats',
+  'Lower Abs',
+  'Lower Back',
   'Obliques',
   'Quadriceps',
-  'Hamstrings',
-  'Calves',
-  'Gluteus Maximus',
+  'Rear Deltoids',
+  'Rotator Cuff',
+  'Serratus Anterior',
+  'Shoulders',
+  'Spine',
+  'Trapezius',
+  'Triceps',
+  'Upper Back',
+  'Upper Chest',
+  'Wrists',
 ];
 
 export default function ExercisesPage() {
@@ -84,6 +100,8 @@ export default function ExercisesPage() {
     };
     fetchExercises();
   }, [globalFilter, filters]);
+
+  console.log(JSON.stringify(exercises, null, 4));
 
   const columns = useMemo<ColumnDef<Exercise>[]>(
     () => [
@@ -130,9 +148,9 @@ export default function ExercisesPage() {
         },
       },
       {
-        accessorKey: 'muscleGroups',
+        accessorKey: 'primaryMuscles',
         header: 'Muscle Groups',
-        cell: ({ row }) => row.original.muscleGroups.join(', '),
+        cell: ({ row }) => row.original.primaryMuscles.join(', '),
       },
       {
         accessorKey: 'equipment',
@@ -274,7 +292,7 @@ export default function ExercisesPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Muscle Groups</SelectItem>
-                  {muscleGroups.map((group) => (
+                  {primaryMuscles.map((group) => (
                     <SelectItem key={group} value={group}>
                       {group}
                     </SelectItem>

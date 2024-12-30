@@ -32,7 +32,7 @@ const workoutSchema = z.object({
   description: z.string().optional(),
   totalLength: z.number().min(0, 'Total length cannot be negative'),
   equipment: z.array(z.string()),
-  muscleGroups: z.array(z.string()),
+  primaryMuscles: z.array(z.string()),
   sets: z.array(
     z.object({
       type: z.nativeEnum(SetType),
@@ -76,7 +76,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
           description: workout.description || '',
           totalLength: workout.totalLength,
           equipment: workout.equipment,
-          muscleGroups: workout.muscleGroups,
+          primaryMuscles: workout.primaryMuscles,
           sets: workout.sets.map((set) => ({
             type: set.type,
             rounds: set.rounds,
@@ -94,7 +94,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
           description: '',
           totalLength: 0,
           equipment: [],
-          muscleGroups: [],
+          primaryMuscles: [],
           sets: [
             {
               type: SetType.MULTISET,
@@ -153,10 +153,10 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
 
   const watchedSets = watch('sets');
 
-  const { totalTime, equipment, muscleGroups } = useMemo(() => {
+  const { totalTime, equipment, primaryMuscles } = useMemo(() => {
     let totalTime = 0;
     const equipmentSet = new Set<string>();
-    const muscleGroupsSet = new Set<string>();
+    const primaryMusclesSet = new Set<string>();
 
     watchedSets.forEach((set) => {
       const setTime =
@@ -164,7 +164,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
           (set.exercises.reduce((acc, exercise) => {
             const exerciseData = exercises.find((e) => e.id === exercise.exerciseId);
             if (exerciseData) {
-              exerciseData.muscleGroups.forEach((mg) => muscleGroupsSet.add(mg));
+              exerciseData.primaryMuscles.forEach((mg) => primaryMusclesSet.add(mg));
               if (exerciseData.equipment) equipmentSet.add(exerciseData.equipment);
             }
             return acc + exercise.targetReps * 3;
@@ -180,22 +180,22 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
         if (exercise.equipment) {
           equipmentSet.add(exercise.equipment);
         }
-        exercise.muscleGroups.forEach((mg) => muscleGroupsSet.add(mg));
+        exercise.primaryMuscles.forEach((mg) => primaryMusclesSet.add(mg));
       }
     });
 
     return {
       totalTime,
       equipment: Array.from(equipmentSet),
-      muscleGroups: Array.from(muscleGroupsSet),
+      primaryMuscles: Array.from(primaryMusclesSet),
     };
   }, [watchedSets, exercises]);
 
   useEffect(() => {
     setValue('totalLength', totalTime);
     setValue('equipment', equipment);
-    setValue('muscleGroups', Array.from(muscleGroups));
-  }, [totalTime, equipment, muscleGroups, setValue]);
+    setValue('primaryMuscles', Array.from(primaryMuscles));
+  }, [totalTime, equipment, primaryMuscles, setValue]);
 
   const toggleSet = (index: number) => {
     setOpenSets((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -409,7 +409,7 @@ export function WorkoutForm({ workout }: WorkoutFormProps) {
 
               <div>
                 <Label>Muscle Groups</Label>
-                <p>{Array.from(muscleGroups).join(', ') || 'None'}</p>
+                <p>{Array.from(primaryMuscles).join(', ') || 'None'}</p>
               </div>
             </CardContent>
           </Card>

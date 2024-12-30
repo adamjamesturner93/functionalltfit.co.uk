@@ -27,7 +27,7 @@ export async function getExercises(
     where.OR = searchTerms.map((term) => ({
       OR: [
         { name: { contains: term, mode: 'insensitive' } },
-        { muscleGroups: { hasSome: [term] } },
+        { primaryMuscles: { hasSome: [term] } },
       ],
     }));
   }
@@ -41,7 +41,7 @@ export async function getExercises(
   }
 
   if (filters.muscleGroup && filters.muscleGroup !== 'ALL') {
-    where.muscleGroups = { hasSome: [filters.muscleGroup] };
+    where.primaryMuscles = { hasSome: [filters.muscleGroup] };
   }
 
   const [exercises, total] = await Promise.all([
@@ -67,7 +67,7 @@ export type ExerciseInput = {
   name: string;
   thumbnailUrl: string;
   videoUrl: string;
-  muscleGroups: string[];
+  primaryMuscles: string[];
   type: ExerciseType;
   mode: ExerciseMode;
   instructions: string;

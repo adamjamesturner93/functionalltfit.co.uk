@@ -94,14 +94,14 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
           </div>
           <div className="flex items-center gap-2">
             <Target className="size-5 text-muted-foreground" />
-            <span>{workout.muscleGroups.join(', ')}</span>
+            <span>{workout.primaryMuscles.join(', ')}</span>
           </div>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold">Muscle Groups</h2>
           <div className="flex flex-wrap gap-2">
-            {workout.muscleGroups.map((group) => (
+            {workout.primaryMuscles.map((group) => (
               <Badge key={group} variant="secondary">
                 {group}
               </Badge>

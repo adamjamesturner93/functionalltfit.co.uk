@@ -60,7 +60,7 @@ const equipmentOptions = [
   'Jump Rope',
 ];
 
-const muscleGroups = [
+const primaryMuscles = [
   'Full Body',
   'Upper Body',
   'Lower Body',
@@ -130,9 +130,9 @@ export default function WorkoutsPage() {
         cell: ({ row }) => row.original.equipment.join(', '),
       },
       {
-        accessorKey: 'muscleGroups',
+        accessorKey: 'primaryMuscles',
         header: 'Muscle Groups',
-        cell: ({ row }) => row.original.muscleGroups.join(', '),
+        cell: ({ row }) => row.original.primaryMuscles.join(', '),
       },
       {
         accessorKey: '_count.WorkoutActivity',
@@ -269,7 +269,7 @@ export default function WorkoutsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">All Muscle Groups</SelectItem>
-                  {muscleGroups.map((group) => (
+                  {primaryMuscles.map((group) => (
                     <SelectItem key={group} value={group}>
                       {group}
                     </SelectItem>

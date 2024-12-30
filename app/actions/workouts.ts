@@ -117,7 +117,7 @@ export type WorkoutInput = {
   description?: string;
   totalLength: number;
   equipment: string[];
-  muscleGroups: string[];
+  primaryMuscles: string[];
   sets: {
     type: SetType;
     rounds: number;
@@ -272,7 +272,7 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
       description: data.description,
       totalLength: data.totalLength,
       equipment: data.equipment,
-      muscleGroups: data.muscleGroups,
+      muscleGroups: data.primaryMuscles,
       sets: {
         create: data.sets.map((set) => ({
           type: set.type,
@@ -327,7 +327,7 @@ export async function updateWorkout(id: string, data: WorkoutInput): Promise<Wor
       description: data.description,
       totalLength: data.totalLength,
       equipment: data.equipment,
-      muscleGroups: data.muscleGroups,
+      muscleGroups: data.primaryMuscles,
       sets: {
         create: data.sets.map((set) => ({
           type: set.type,
@@ -442,7 +442,7 @@ export async function startWorkout(workoutId: string, userId: string) {
       description: workout.description,
       totalLength: workout.totalLength,
       equipment: workout.equipment,
-      muscleGroups: workout.muscleGroups,
+      primaryMuscles: workout.muscleGroups,
       startedAt: workoutActivity.startedAt.toISOString(),
       endedAt: null,
       sets: workout.sets.map((set) => {
@@ -497,7 +497,7 @@ export async function startWorkout(workoutId: string, userId: string) {
             targetDistance,
             weight: weight,
             equipment: exerciseInSet.exercise.equipment,
-            muscleGroups: exerciseInSet.exercise.muscleGroups,
+            primaryMuscles: exerciseInSet.exercise.primaryMuscles,
             type: exerciseInSet.exercise.type,
             thumbnailUrl: exerciseInSet.exercise.thumbnailUrl,
             videoUrl: exerciseInSet.exercise.videoUrl,
@@ -508,11 +508,7 @@ export async function startWorkout(workoutId: string, userId: string) {
         });
 
         const setEquipment = Array.from(
-          new Set(
-            setExercises.flatMap((exercise) =>
-              exercise.equipment.split(',').map((item) => item.trim()),
-            ),
-          ),
+          new Set(setExercises.flatMap((exercise) => exercise.equipment)),
         ).sort();
 
         return {
@@ -884,10 +880,10 @@ export async function getUniqueBodyFocuses(): Promise<string[]> {
     },
   });
 
-  const allMuscleGroups = workouts.flatMap((workout) => workout.muscleGroups);
-  const uniqueMuscleGroups = Array.from(new Set(allMuscleGroups)).sort();
+  const allprimaryMuscles = workouts.flatMap((workout) => workout.muscleGroups);
+  const uniqueprimaryMuscles = Array.from(new Set(allprimaryMuscles)).sort();
 
-  return uniqueMuscleGroups;
+  return uniqueprimaryMuscles;
 }
 
 export async function getUniqueEquipment(): Promise<string[]> {
