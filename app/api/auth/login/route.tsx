@@ -28,8 +28,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const authCode = '123456';
-    // const authCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const authCode = Math.floor(100000 + Math.random() * 900000).toString();
     const authCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     await prisma.user.update({
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
       data: { authCode, authCodeExpiry },
     });
 
-    // await sendAuthCode(email, authCode);
+    await sendAuthCode(email, authCode);
 
     return NextResponse.json({
       userId: user.id,

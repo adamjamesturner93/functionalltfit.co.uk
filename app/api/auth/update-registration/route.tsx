@@ -22,25 +22,6 @@ export async function POST(request: NextRequest) {
     isRegistrationComplete,
   } = await request.json();
 
-  console.log(
-    'user: ',
-    JSON.stringify(
-      {
-        name,
-        dateOfBirth,
-        gender,
-        weightUnitPreference,
-        lengthUnitPreference,
-        height,
-        weight,
-        termsAgreed,
-        isRegistrationComplete,
-      },
-      null,
-      4,
-    ),
-  );
-
   try {
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       .setProtectedHeader({ alg: 'HS256' })
       .setJti(nanoid())
       .setIssuedAt()
-      .setExpirationTime('1h')
+      .setExpirationTime('24h')
       .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
 
     // Generate new refresh token
