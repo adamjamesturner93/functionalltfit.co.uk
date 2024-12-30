@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getYogaVideoById } from '@/app/actions/yoga-videos';
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const { id } = await params;
 
     const session = await authorizeUser(request);
 

@@ -51,7 +51,7 @@ export async function addGoal(data: z.infer<typeof goalSchema>) {
     // If it's a weight goal, use the latest weight as current
     let current = 0;
     if (validatedData.type === GoalType.WEIGHT) {
-      const latestMeasurement = await prisma.bodyMeasurement.findFirst({
+      const latestMeasurement = await prisma.measurement.findFirst({
         where: { userId: session.user.id },
         orderBy: { date: 'desc' },
       });
@@ -203,7 +203,7 @@ export async function updateGoalsProgress(userId: string) {
         break;
 
       case GoalType.WEIGHT:
-        const latestMeasurement = await prisma.bodyMeasurement.findFirst({
+        const latestMeasurement = await prisma.measurement.findFirst({
           where: { userId },
           orderBy: { date: 'desc' },
         });
@@ -383,7 +383,7 @@ export async function getGoalProgress(goalId: string) {
         break;
 
       case GoalType.WEIGHT:
-        const latestMeasurement = await prisma.bodyMeasurement.findFirst({
+        const latestMeasurement = await prisma.measurement.findFirst({
           where: { userId: session.user.id },
           orderBy: { date: 'desc' },
         });

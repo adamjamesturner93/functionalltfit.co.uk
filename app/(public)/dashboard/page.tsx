@@ -38,7 +38,6 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { auth } from '@/lib/auth';
 
-import { BodyMeasurementGraph } from '../components/body-measurement-graph';
 import { GoalsSection } from '../components/goals/goals-section';
 import { NextWorkoutCard } from '../components/next-workout-card';
 import { QuickAddForm } from '../components/quick-add-form';
@@ -70,7 +69,7 @@ export default async function Dashboard() {
     currentWeek = Math.min(Math.floor(daysSinceStart / 7) + 1, userProgramme.programme.weeks);
 
     thisWeeksSessions = userProgramme.programme.activities.filter(
-      (activity) => activity.week === currentWeek,
+      (activity: any) => activity.week === currentWeek,
     ) as ProgrammeActivityWithName[];
 
     nextSession = thisWeeksSessions.find((activity) => !activity.completed) || null;
@@ -264,9 +263,6 @@ export default async function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
-              <BodyMeasurementGraph data={bodyMeasurements} />
-            </Suspense>
             <div className="mt-4 flex justify-end">
               <Button variant="outline" asChild>
                 <Link href="/health/measurements" className="flex items-center gap-2">

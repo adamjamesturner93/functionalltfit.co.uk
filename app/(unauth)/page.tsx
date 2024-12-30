@@ -26,7 +26,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="space-y-4">
-                <p className="text-lg font-semibold text-primary">Launching January 2025</p>
+                <p className="text-lg font-semibold text-brand-orange">Launching January 2025</p>
                 <p className="text-muted-foreground">
                   Sign up for our beta release and get a 30% discount on annual memberships!
                 </p>
@@ -38,10 +38,10 @@ export default function Home() {
             </div>
             <Image
               alt="FunctionallyFit App Interface Preview"
-              className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center shadow-2xl sm:w-full lg:order-last"
-              height={550}
-              src="/placeholder.svg"
-              width={550}
+              className="mx-auto aspect-auto h-full overflow-hidden rounded-xl object-cover object-center shadow-2xl sm:w-1/3 lg:order-last"
+              height={10}
+              width={10}
+              src="/images/splash.png"
               loading="lazy"
             />
           </div>

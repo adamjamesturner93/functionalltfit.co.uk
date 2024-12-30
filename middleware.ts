@@ -1,10 +1,9 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export const config = {
   matcher: ['/api/:path*'],
-  runtime: 'experimental-edge',
 };
 
 export async function middleware(request: NextRequest) {
@@ -12,9 +11,11 @@ export async function middleware(request: NextRequest) {
 
   // Don't require authentication for auth endpoints or mux-upload
   if (
-    pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/mux') ||
-    pathname.startsWith('/api/upload-image')
+    pathname.startsWith('/api/upload-image') ||
+    pathname.startsWith('/api/auth/login') ||
+    pathname.startsWith('/api/auth/token') ||
+    pathname.startsWith('/api/auth/verify')
   ) {
     return NextResponse.next();
   }
@@ -24,7 +25,7 @@ export async function middleware(request: NextRequest) {
     const authHeader = request.headers.get('Authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('Invalid Authorization header');
+      console.log('Invalid Authorization header: ', { pathname, authHeader });
       return new NextResponse(JSON.stringify({ error: 'Invalid Authorization header' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
@@ -41,7 +42,6 @@ export async function middleware(request: NextRequest) {
       const session = {
         user: {
           id: payload.userId as string,
-          role: payload.role as string,
         },
         expires: new Date(payload.exp! * 1000).toISOString(),
       };

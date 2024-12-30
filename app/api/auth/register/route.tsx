@@ -1,45 +1,97 @@
-import { User } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { SignJWT } from 'jose';
+import { nanoid } from 'nanoid';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { generateAuthCode, sendAuthCode } from '@/lib/auth';
+import { authorizeUser, generateRefreshToken, unauthorizedResponse } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: Request) {
-  const { name, email } = await request.json();
+export async function POST(request: NextRequest) {
+  const session = await authorizeUser(request);
 
-  if (!name || !email) {
-    return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+  if (!session) {
+    return unauthorizedResponse();
+  }
+
+  const { email, name, dateOfBirth, gender, unitPreference, height, weight, termsAgreed } =
+    await request.json();
+
+  if (
+    !email ||
+    !name ||
+    !dateOfBirth ||
+    !gender ||
+    !unitPreference ||
+    !height ||
+    !weight ||
+    termsAgreed === undefined
+  ) {
+    return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
   }
 
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json({ message: 'User already exists' }, { status: 400 });
-    }
-
-    const authCode = generateAuthCode();
-    const authCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-
-    const user: User = await prisma.user.create({
+    const updatedUser = await prisma.user.update({
+      where: { id: session.user.id },
       data: {
-        name,
         email,
-        authCode,
-        authCodeExpiry,
-        role: 'USER',
+        name,
+        dateOfBirth: new Date(dateOfBirth),
+        gender,
+        height: parseFloat(height),
+        preferences: {
+          upsert: {
+            create: { weightUnit: unitPreference, lengthUnit: unitPreference },
+            update: { weightUnit: unitPreference, lengthUnit: unitPreference },
+          },
+        },
+        Measurement: {
+          create: { weight: parseFloat(weight), date: new Date() },
+        },
+        membershipStatus: 'ACTIVE',
+        membershipPlan: 'FREE',
+        isRegistrationComplete: true,
+        termsAgreed,
+      },
+      include: {
+        preferences: true,
+        Measurement: {
+          orderBy: { date: 'desc' },
+          take: 1,
+        },
       },
     });
 
-    await sendAuthCode(email, authCode);
+    // Generate new access token
+    const accessToken = await new SignJWT({ userId: updatedUser.id })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setJti(nanoid())
+      .setIssuedAt()
+      .setExpirationTime('1h')
+      .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
 
-    return NextResponse.json(
-      {
-        message: 'User created successfully. Check your email for the auth code.',
-        user,
+    // Generate new refresh token
+    const refreshToken = await generateRefreshToken(updatedUser.id);
+
+    return NextResponse.json({
+      accessToken,
+      refreshToken,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        dateOfBirth: updatedUser.dateOfBirth,
+        gender: updatedUser.gender,
+        unitPreference: updatedUser.preferences?.weightUnit,
+        height: updatedUser.height,
+        weight: updatedUser.Measurement[0]?.weight,
+        membershipStatus: updatedUser.membershipStatus,
+        membershipPlan: updatedUser.membershipPlan,
+        role: updatedUser.role,
+        isRegistrationComplete: updatedUser.isRegistrationComplete,
+        termsAgreed: updatedUser.termsAgreed,
       },
-      { status: 201 },
-    );
+    });
   } catch (error) {
-    return NextResponse.json({ message: 'Error creating user', error }, { status: 500 });
+    console.error('Error completing registration:', error);
+    return NextResponse.json({ error: 'Error completing registration' }, { status: 500 });
   }
 }

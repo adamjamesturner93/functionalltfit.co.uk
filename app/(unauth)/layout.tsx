@@ -25,7 +25,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             >
               Pricing
             </Link>
-            <Link href="/blog" className="text-sm font-medium underline-offset-4 hover:underline">
+            {/* <Link href="/blog" className="text-sm font-medium underline-offset-4 hover:underline">
               Blog
             </Link>
             <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
@@ -33,7 +33,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             </Link>
             <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
               Contact
-            </Link>
+            </Link> */}
           </nav>
         </div>
       </header>

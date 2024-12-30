@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -10,31 +10,47 @@ datasource db {
 }
 
 model User {
-  id                 String               @id @default(cuid())
-  name               String
-  image              String?
-  email              String               @unique
-  dateOfBirth        DateTime?
-  membershipStatus   MembershipStatus     @default(ACTIVE)
-  membershipPlan     MembershipPlan       @default(FREE)
-  role               UserRole             @default(USER)
-  authCode           String?
-  authCodeExpiry     DateTime?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  Account            Account[]
-  BodyMeasurement    BodyMeasurement[]
-  Goal               Goal[]
-  HealthData         HealthData[]
-  preferences        Preferences?
-  Session            Session[]
-  UserExerciseWeight UserExerciseWeight[]
-  UserProgramme      UserProgramme[]
-  savedProgrammes    UserProgrammeSave[]
-  savedWorkouts      UserWorkoutSave[]
-  savedYogaVideos    UserYogaVideoSave[]
-  WorkoutActivity    WorkoutActivity[]
-  YogaVideoActivity  YogaVideoActivity[]
+  id                     String               @id @default(cuid())
+  email                  String               @unique
+  name                   String?
+  image                  String?
+  dateOfBirth            DateTime?
+  gender                 String?
+  membershipStatus       MembershipStatus     @default(ACTIVE)
+  membershipPlan         MembershipPlan       @default(FREE)
+  role                   UserRole             @default(USER)
+  authCode               String?
+  authCodeExpiry         DateTime?
+  isRegistrationComplete Boolean              @default(false)
+  termsAgreed            Boolean              @default(false)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  Account                Account[]
+  height                 Float?
+  Goal                   Goal[]
+  HealthData             HealthData[]
+  preferences            Preferences?
+  Session                Session[]
+  UserExerciseWeight     UserExerciseWeight[]
+  UserProgramme          UserProgramme[]
+  savedProgrammes        UserProgrammeSave[]
+  savedWorkouts          UserWorkoutSave[]
+  savedYogaVideos        UserYogaVideoSave[]
+  WorkoutActivity        WorkoutActivity[]
+  YogaVideoActivity      YogaVideoActivity[]
+  Measurement            Measurement[]
+  refreshTokens          RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Preferences {
@@ -62,21 +78,25 @@ model HealthData {
   @@index([userId, date])
 }
 
-model BodyMeasurement {
-  id        String   @id @default(cuid())
-  userId    String
-  date      DateTime
-  weight    Float
-  calve     Float?
-  thigh     Float?
-  waist     Float?
-  hips      Float?
-  butt      Float?
-  chest     Float?
-  arm       Float?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+model Measurement {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  date                  DateTime @default(now())
+  weight                Float?
+  calfCircumference     Float?
+  thighCircumference    Float?
+  buttCircumference     Float?
+  hipsCircumference     Float?
+  waistCircumference    Float?
+  stomachCircumference  Float?
+  chestCircumference    Float?
+  upperArmCircumference Float?
+  bodyFatPercentage     Float?
+  bodyFatMass           Float?
+  leanBodyPercentage    Float?
+  leanBodyMass          Float?
+  hydrationPercentage   Float?
 
   @@index([userId, date])
 }

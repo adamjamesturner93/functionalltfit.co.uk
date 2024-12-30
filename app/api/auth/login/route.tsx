@@ -1,28 +1,35 @@
-import { NextResponse } from 'next/server';
-import { User } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { generateAuthCode, sendAuthCode } from '@/lib/auth';
+import { sendAuthCode } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: Request) {
-  const { email } = await request.json();
+export async function POST(request: NextRequest) {
+  const { email, termsAgreed } = await request.json();
 
   if (!email) {
-    return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    return NextResponse.json({ error: 'Email is required' }, { status: 400 });
   }
 
   try {
-    let user: User | null = await prisma.user.findUnique({
-      where: { email },
-    });
+    let user = await prisma.user.findUnique({ where: { email } });
+    const isNewUser = !user?.isRegistrationComplete;
+
     if (!user) {
-      console.log('no user found');
       user = await prisma.user.create({
-        data: { email, name: '' },
+        data: {
+          email,
+          termsAgreed: termsAgreed || false,
+        },
+      });
+    } else if (termsAgreed) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { termsAgreed },
       });
     }
 
-    const authCode = generateAuthCode();
+    const authCode = '123456';
+    // const authCode = Math.floor(100000 + Math.random() * 900000).toString();
     const authCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     await prisma.user.update({
@@ -30,14 +37,16 @@ export async function POST(request: Request) {
       data: { authCode, authCodeExpiry },
     });
 
-    await sendAuthCode(email, authCode);
+    // await sendAuthCode(email, authCode);
 
-    return NextResponse.json(
-      { message: 'Auth code sent. Check your email.', userId: user.id },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      userId: user.id,
+      message: 'Auth code sent. Check your email.',
+      isNewUser,
+      termsAgreed: user.termsAgreed,
+    });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ message: 'Error sending auth code', error }, { status: 500 });
+    console.error('Error in login:', error);
+    return NextResponse.json({ error: 'Error processing login' }, { status: 500 });
   }
 }

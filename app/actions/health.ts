@@ -63,7 +63,7 @@ export async function addBodyMeasurement(data: BodyMeasurementInput) {
 
   try {
     // Check if a measurement already exists for the given date
-    const existingMeasurement = await prisma.bodyMeasurement.findFirst({
+    const existingMeasurement = await prisma.measurement.findFirst({
       where: {
         userId: session.user.id,
         date: new Date(validatedData.date),
@@ -75,7 +75,7 @@ export async function addBodyMeasurement(data: BodyMeasurementInput) {
     }
 
     // If no existing measurement, create a new one
-    await prisma.bodyMeasurement.create({
+    await prisma.measurement.create({
       data: {
         ...validatedData,
         date: new Date(validatedData.date),
@@ -110,7 +110,7 @@ export async function getBodyMeasurements(userId: string, days: number) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
-  return prisma.bodyMeasurement.findMany({
+  return prisma.measurement.findMany({
     where: {
       userId,
       date: {

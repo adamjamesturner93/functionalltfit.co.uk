@@ -45,7 +45,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: user.name,
+      name: user.name || undefined,
       email: user.email,
       dateOfBirth: user.dateOfBirth,
       membershipStatus: user.membershipStatus,

@@ -45,9 +45,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
       name: user.name,
       email: user.email,
       dateOfBirth: user.dateOfBirth,
+      height: user.height,
       lengthUnit: user.lengthUnit,
       weightUnit: user.weightUnit,
-      // image: user.image,
+      image: user.image,
     },
   });
 
@@ -87,12 +88,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
   const onSubmit = async (data: ProfileFormValues) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
     formData.append('profileImage', profileImage);
 
-    const result = await updateProfile(user.id, formData);
+    const result = await updateProfile(user.id, data);
     if (result.error) {
       toast({
         title: 'Error',

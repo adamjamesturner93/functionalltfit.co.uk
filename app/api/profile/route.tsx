@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getCurrentUser, updateProfile } from '@/app/actions/profile';
+import {
+  getCurrentUser,
+  getExtendedUserProfile,
+  ProfileFormValues,
+  updateProfile,
+} from '@/app/actions/profile';
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
 export async function PUT(request: NextRequest) {
@@ -13,11 +18,14 @@ export async function PUT(request: NextRequest) {
   const userId = session.user.id;
 
   try {
-    const formData = await request.formData();
-    const result = await updateProfile(userId, formData);
+    const profileData: ProfileFormValues = await request.json();
+
+    console.log({ profileData });
+    const result = await updateProfile(userId, profileData);
+    console.log(JSON.stringify(result, null, 4));
 
     if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      return NextResponse.json({ error: result.error, details: result.details }, { status: 400 });
     }
 
     return NextResponse.json({ message: 'Profile updated successfully' });
@@ -35,18 +43,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const userProfile = await getCurrentUser(session.user.id);
+    const extendedProfile = await getExtendedUserProfile(session.user.id);
 
-    if (!userProfile) {
+    if (!extendedProfile) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
     }
 
-    // Remove sensitive information before sending the response
-    const { ...safeUserProfile } = userProfile;
-
-    return NextResponse.json(safeUserProfile);
+    return NextResponse.json(extendedProfile);
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    console.error('Error fetching extended user profile:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
