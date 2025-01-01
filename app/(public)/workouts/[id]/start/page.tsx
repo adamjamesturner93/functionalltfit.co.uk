@@ -2,19 +2,39 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ExerciseMode, Unit } from '@prisma/client';
-import { Clock } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 import { getCurrentUser } from '@/app/actions/profile';
 import { completeWorkout, startWorkout, updateWorkoutActivity } from '@/app/actions/workouts';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 import { getCurrentUserId } from '@/lib/auth-utils';
 
 import { SetRest } from './set-rest';
+import { WorkoutCompletionLoading } from './workout-completion-loading';
 import { WorkoutExercise } from './workout-exercise';
+import { WorkoutPhaseMessage } from './workout-phase-message';
 import { WorkoutProgress } from './workout-progress';
+
+interface Workout {
+  id: string;
+  workoutId: string;
+  name: string;
+  warmup: Exercise[];
+  sets: {
+    id: string;
+    type: string;
+    rounds: number;
+    rest: number;
+    gap?: number;
+    exercises: Exercise[];
+  }[];
+  cooldown: Exercise[];
+}
 
 interface Exercise {
   id: string;
@@ -25,62 +45,43 @@ interface Exercise {
   reps: number;
   time?: number;
   distance?: number;
-  equipment: string;
   targetReps: number;
   targetTime?: number;
   targetDistance?: number;
+  equipment: string[];
   instructions: string;
   videoUrl: string;
   thumbnailUrl: string;
-}
-
-interface Set {
-  type: string;
-  rounds: number;
-  rest: number;
-  gap: number;
-  exercises: Exercise[];
-}
-
-interface Workout {
-  id: string;
-  workoutId: string;
-  name: string;
-  sets: Set[];
-}
-
-export interface ExercisePerformance {
-  id: string;
-  exerciseId: string;
-  weight: { [roundNumber: number]: number };
-  reps?: { [roundNumber: number]: number };
-  time?: { [roundNumber: number]: number };
-  distance?: { [roundNumber: number]: number };
+  previousPerformance?: {
+    weight?: number;
+    reps?: number;
+    time?: number;
+    distance?: number;
+  } | null;
 }
 
 export default function WorkoutPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { toast } = useToast();
   const [workout, setWorkout] = useState<Workout | null>(null);
+  const [workoutActivityId, setWorkoutActivityId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [currentPhase, setCurrentPhase] = useState<'warmup' | 'main' | 'cooldown' | 'complete'>(
+    'warmup',
+  );
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
-  const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [isResting, setIsResting] = useState(false);
   const [isGap, setIsGap] = useState(false);
-  const [isSetRest, setIsSetRest] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userPreferences, setUserPreferences] = useState<{
-    weightUnit: Unit;
-    lengthUnit: Unit;
-  }>({
+  const [userPreferences, setUserPreferences] = useState<{ weightUnit: Unit; lengthUnit: Unit }>({
     weightUnit: Unit.METRIC,
     lengthUnit: Unit.METRIC,
   });
-  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     const begin = async () => {
@@ -93,11 +94,12 @@ export default function WorkoutPage() {
         }
         const user = await getCurrentUser();
         setUserPreferences({
-          weightUnit: user?.weightUnit || Unit.METRIC,
-          lengthUnit: user?.lengthUnit || Unit.METRIC,
+          weightUnit: user?.preferences?.weightUnit || Unit.METRIC,
+          lengthUnit: user?.preferences?.lengthUnit || Unit.METRIC,
         });
         const combinedWorkout = await startWorkout(id as string, currentUserId);
         setWorkout(combinedWorkout as unknown as Workout);
+        setWorkoutActivityId(combinedWorkout.id);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -108,153 +110,74 @@ export default function WorkoutPage() {
     begin();
   }, [id]);
 
-  const handleComplete = useCallback(async () => {
-    if (!workout || !userId) return;
-
-    try {
-      setIsLoading(true);
-      const exercises: ExercisePerformance[] = workout.sets.flatMap((set) =>
-        set.exercises.map((exercise) => {
-          const exerciseData: ExercisePerformance = {
-            id: exercise.id,
-            exerciseId: exercise.exerciseId,
-            weight: {},
-            reps: {},
-            time: {},
-            distance: {},
-          };
-
-          for (let round = 1; round <= set.rounds; round++) {
-            exerciseData.weight[round] = exercise.weight;
-            if (exercise.mode === ExerciseMode.REPS) {
-              exerciseData.reps![round] = exercise.reps;
-            } else if (exercise.mode === ExerciseMode.TIME) {
-              exerciseData.time![round] = exercise.time || 0;
-            } else if (exercise.mode === ExerciseMode.DISTANCE) {
-              exerciseData.distance![round] = exercise.distance || 0;
-            }
-          }
-
-          return exerciseData;
-        }),
-      );
-
-      const result = await completeWorkout(workout.id, workout.workoutId, exercises, userId);
-      if (result.success && result.completed) {
-        setIsCompleted(true);
-        router.push(result.redirectUrl);
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'An error occurred while completing the workout',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [workout, userId, router]);
-
-  const startSetRest = useCallback(() => {
-    if (!workout) return;
-    if (currentSetIndex < workout.sets.length - 1) {
-      setIsSetRest(true);
-      setTimeLeft(workout.sets[currentSetIndex].rest * 2); // Longer rest between sets
-    } else {
-      handleComplete();
-    }
-  }, [workout, currentSetIndex, handleComplete]);
-
-  const moveToNextRound = useCallback(() => {
-    if (!workout) return;
-    if (currentRoundIndex < workout.sets[currentSetIndex].rounds - 1) {
-      setCurrentRoundIndex((prevIndex) => prevIndex + 1);
-      setCurrentExerciseIndex(0);
-      setIsResting(true);
-      setTimeLeft(workout.sets[currentSetIndex].rest);
-    } else {
-      startSetRest();
-    }
-  }, [workout, currentRoundIndex, currentSetIndex, startSetRest]);
-
-  const moveToNextExercise = useCallback(() => {
-    if (!workout) return;
-    const currentSet = workout.sets[currentSetIndex];
-    if (currentExerciseIndex < currentSet.exercises.length - 1) {
-      setCurrentExerciseIndex((prevIndex) => prevIndex + 1);
-    } else {
-      moveToNextRound();
-    }
-  }, [workout, currentSetIndex, currentExerciseIndex, moveToNextRound]);
-
-  const moveToNextSet = useCallback(() => {
-    setCurrentSetIndex((prevIndex) => prevIndex + 1);
-    setCurrentRoundIndex(0);
-    setCurrentExerciseIndex(0);
-  }, []);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if ((isResting || isGap || isSetRest) && timeLeft > 0) {
-      timer = setTimeout(() => setTimeLeft((time) => time - 1), 1000);
-    } else if (timeLeft === 0) {
-      if (isResting) {
-        setIsResting(false);
-      } else if (isGap) {
-        setIsGap(false);
-        moveToNextExercise();
-      } else if (isSetRest) {
-        setIsSetRest(false);
-        moveToNextSet();
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [isResting, isGap, isSetRest, timeLeft, moveToNextExercise, moveToNextSet]);
-
   const handleUpdateExercise = async (
     exerciseId: string,
     performance: {
-      weight: number;
+      weight?: number;
       reps?: number;
       time?: number;
       distance?: number;
     },
   ) => {
-    if (!workout) return;
+    if (!workout || !workoutActivityId) return;
 
-    const updatedWorkout = {
-      ...workout,
-      sets: workout.sets.map((set) => ({
-        ...set,
-        exercises: set.exercises.map((exercise) =>
-          exercise.id === exerciseId
-            ? {
-                ...exercise,
-                ...performance,
-              }
-            : exercise,
+    let updatedWorkout: Workout;
+
+    if (currentPhase === 'warmup') {
+      updatedWorkout = {
+        ...workout,
+        warmup: workout.warmup.map((exercise) =>
+          exercise.id === exerciseId ? { ...exercise, ...performance } : exercise,
         ),
-      })),
-    };
+      };
+    } else if (currentPhase === 'cooldown') {
+      updatedWorkout = {
+        ...workout,
+        cooldown: workout.cooldown.map((exercise) =>
+          exercise.id === exerciseId ? { ...exercise, ...performance } : exercise,
+        ),
+      };
+    } else {
+      updatedWorkout = {
+        ...workout,
+        sets: workout.sets.map((set) => ({
+          ...set,
+          exercises: set.exercises.map((exercise) =>
+            exercise.id === exerciseId ? { ...exercise, ...performance } : exercise,
+          ),
+        })),
+      };
+    }
 
     setWorkout(updatedWorkout);
 
     try {
-      await updateWorkoutActivity(workout.id, [
+      const result = await updateWorkoutActivity(workoutActivityId, [
         {
           id: exerciseId,
           exerciseId,
           ...performance,
-          roundNumber: currentRoundIndex + 1,
+          roundNumber: currentPhase === 'main' ? currentRoundIndex + 1 : 1,
           mode:
-            workout.sets[currentSetIndex].exercises.find((e) => e.id === exerciseId)?.mode ||
-            ExerciseMode.REPS,
+            currentPhase === 'main'
+              ? workout.sets[currentSetIndex].exercises.find((e) => e.id === exerciseId)?.mode ||
+                ExerciseMode.REPS
+              : ExerciseMode.TIME,
         },
       ]);
 
-      // Start gap timer if there's a gap and it's not the last exercise
-      const currentSet = workout.sets[currentSetIndex];
-      if (currentSet.gap && currentExerciseIndex < currentSet.exercises.length - 1) {
-        setIsGap(true);
-        setTimeLeft(currentSet.gap);
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      if (currentPhase === 'main') {
+        const currentSet = workout.sets[currentSetIndex];
+        if (currentSet.gap && currentExerciseIndex < currentSet.exercises.length - 1) {
+          setIsGap(true);
+          setTimeLeft(currentSet.gap);
+        } else {
+          moveToNextExercise();
+        }
       } else {
         moveToNextExercise();
       }
@@ -265,121 +188,212 @@ export default function WorkoutPage() {
     }
   };
 
-  const handleSkipRest = () => {
-    if (isResting) {
+  const moveToNextExercise = useCallback(() => {
+    if (!workout) return;
+
+    if (currentPhase === 'warmup') {
+      if (currentExerciseIndex < workout.warmup.length - 1) {
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
+      } else {
+        setCurrentPhase('main');
+        setCurrentExerciseIndex(0);
+        setCurrentSetIndex(0);
+        setCurrentRoundIndex(0);
+      }
+    } else if (currentPhase === 'main') {
+      const currentSet = workout.sets[currentSetIndex];
+      if (currentExerciseIndex < currentSet.exercises.length - 1) {
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
+      } else if (currentRoundIndex < currentSet.rounds - 1) {
+        setCurrentRoundIndex(currentRoundIndex + 1);
+        setCurrentExerciseIndex(0);
+        setIsResting(true);
+        setTimeLeft(currentSet.rest);
+      } else if (currentSetIndex < workout.sets.length - 1) {
+        setCurrentSetIndex(currentSetIndex + 1);
+        setCurrentExerciseIndex(0);
+        setCurrentRoundIndex(0);
+        setIsResting(true);
+        setTimeLeft(workout.sets[currentSetIndex + 1].rest);
+      } else {
+        setCurrentPhase('cooldown');
+        setCurrentExerciseIndex(0);
+      }
+    } else if (currentPhase === 'cooldown') {
+      if (currentExerciseIndex < workout.cooldown.length - 1) {
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
+      } else {
+        setCurrentPhase('complete');
+      }
+    }
+  }, [workout, currentPhase, currentExerciseIndex, currentSetIndex, currentRoundIndex]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if ((isResting || isGap) && timeLeft > 0) {
+      timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if ((isResting || isGap) && timeLeft === 0) {
       setIsResting(false);
-    } else if (isSetRest) {
-      setIsSetRest(false);
-      moveToNextSet();
-    } else if (isGap) {
       setIsGap(false);
       moveToNextExercise();
     }
-    setTimeLeft(0);
-  };
+    return () => clearTimeout(timer);
+  }, [isResting, isGap, timeLeft, moveToNextExercise]);
+
+  useEffect(() => {
+    if (currentPhase === 'complete' && workout && workoutActivityId && userId) {
+      const finishWorkout = async () => {
+        try {
+          setIsLoading(true);
+          const result = await completeWorkout(workoutActivityId, workout.workoutId, userId);
+          if (result.success) {
+            router.push(result.redirectUrl);
+          } else {
+            throw new Error('Failed to complete workout');
+          }
+        } catch (err) {
+          console.error('Error completing workout:', err);
+          setError(
+            err instanceof Error ? err.message : 'An error occurred while completing the workout',
+          );
+          toast({
+            title: 'Error',
+            description: 'Failed to complete the workout. Please try again.',
+            variant: 'destructive',
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      finishWorkout();
+    }
+  }, [currentPhase, workout, workoutActivityId, userId, router, toast]);
+
+  if (isLoading) {
+    if (currentPhase === 'complete') {
+      return <WorkoutCompletionLoading />;
+    } else {
+      return <div>Loading...</div>;
+    }
+  }
 
   if (error) {
     return (
-      <Card className="mx-auto mt-8 max-w-lg">
-        <CardContent>
-          <p className="text-destructive">Error: {error}</p>
-          <Button onClick={() => router.push('/workouts')} className="mt-4">
-            Back to Workouts
-          </Button>
-        </CardContent>
-      </Card>
+      <Alert variant="destructive">
+        <AlertCircle className="size-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
-  if (isLoading || isCompleted) {
-    return (
-      <Card className="mx-auto mt-8 max-w-lg">
-        <CardContent>
-          <p className="text-center">{isCompleted ? 'Workout Completed!' : 'Loading...'}</p>
-        </CardContent>
-      </Card>
-    );
+  if (!workout) {
+    return <div>No workout found</div>;
   }
 
-  if (!workout || workout.sets.length === 0) {
-    return (
-      <Card className="mx-auto mt-8 max-w-lg">
-        <CardContent>
-          <p className="text-center">No workout data available.</p>
-          <Button onClick={() => router.push('/workouts')} className="mt-4">
-            Back to Workouts
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const currentExercise =
+    currentPhase === 'warmup'
+      ? workout.warmup[currentExerciseIndex]
+      : currentPhase === 'cooldown'
+        ? workout.cooldown[currentExerciseIndex]
+        : workout.sets[currentSetIndex].exercises[currentExerciseIndex];
 
-  const currentSet = workout.sets[currentSetIndex];
-  const currentExercise = currentSet.exercises[currentExerciseIndex];
-
-  const totalExercises = workout.sets.reduce(
-    (total, set) => total + set.exercises.length * set.rounds,
-    0,
-  );
-  const completedExercises =
-    workout.sets
-      .slice(0, currentSetIndex)
-      .reduce((total, set) => total + set.exercises.length * set.rounds, 0) +
-    currentSet.exercises.length * currentRoundIndex +
-    currentExerciseIndex;
-  const progress = (completedExercises / totalExercises) * 100;
-
-  const nextSetEquipment =
-    currentSetIndex < workout.sets.length - 1
-      ? [...new Set(workout.sets[currentSetIndex + 1].exercises.map((e) => e.equipment))]
-      : [];
+  const progress =
+    ((currentPhase === 'warmup'
+      ? currentExerciseIndex
+      : currentPhase === 'cooldown'
+        ? workout.warmup.length +
+          workout.sets.reduce((acc, set) => acc + set.exercises.length * set.rounds, 0) +
+          currentExerciseIndex
+        : workout.warmup.length +
+          workout.sets
+            .slice(0, currentSetIndex)
+            .reduce((acc, set) => acc + set.exercises.length * set.rounds, 0) +
+          currentRoundIndex * workout.sets[currentSetIndex].exercises.length +
+          currentExerciseIndex) /
+      (workout.warmup.length +
+        workout.sets.reduce((acc, set) => acc + set.exercises.length * set.rounds, 0) +
+        workout.cooldown.length)) *
+    100;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="mx-auto max-w-2xl">
-        <CardContent>
+    <div className="container mx-auto space-y-8 py-8">
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href={`/workouts/${workout.workoutId}`}
+          className="flex items-center text-sm text-muted-foreground hover:text-primary"
+        >
+          <ArrowLeft className="mr-2 size-4" />
+          Back to Workout
+        </Link>
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
           <WorkoutProgress
             workoutName={workout.name}
             progress={progress}
-            currentSet={currentSet}
+            currentPhase={currentPhase}
+            currentSet={currentPhase === 'main' ? workout.sets[currentSetIndex] : undefined}
             currentRoundIndex={currentRoundIndex}
             currentExerciseIndex={currentExerciseIndex}
           />
-          {isResting ? (
-            <div className="py-8 text-center">
-              <h3 className="mb-4 text-2xl font-bold">Rest Time</h3>
-              <div className="mb-4 flex items-center justify-center gap-2">
-                <Clock className="size-6" />
-                <p className="font-mono text-4xl">{timeLeft}s</p>
-              </div>
-              <Progress value={(1 - timeLeft / currentSet.rest) * 100} className="mb-4 w-full" />
-              <Button onClick={handleSkipRest}>Skip Rest</Button>
-            </div>
-          ) : isGap ? (
-            <div className="py-8 text-center">
-              <h3 className="mb-4 text-2xl font-bold">Gap Time</h3>
-              <div className="mb-4 flex items-center justify-center gap-2">
-                <Clock className="size-6" />
-                <p className="font-mono text-4xl">{timeLeft}s</p>
-              </div>
-              <Progress value={(1 - timeLeft / currentSet.gap) * 100} className="mb-4 w-full" />
-              <Button onClick={handleSkipRest}>Skip Gap</Button>
-            </div>
-          ) : isSetRest ? (
+
+          <WorkoutPhaseMessage
+            currentPhase={currentPhase}
+            isLastExercise={
+              currentPhase === 'warmup'
+                ? currentExerciseIndex === workout.warmup.length - 1
+                : currentPhase === 'cooldown'
+                  ? currentExerciseIndex === workout.cooldown.length - 1
+                  : false
+            }
+          />
+
+          {isResting && (
             <SetRest
               restTime={timeLeft}
-              nextSetEquipment={nextSetEquipment}
-              onSkipRest={handleSkipRest}
+              nextSetEquipment={
+                currentSetIndex < workout.sets.length - 1
+                  ? workout.sets[currentSetIndex + 1].exercises.flatMap((e) => e.equipment)
+                  : []
+              }
+              onSkipRest={() => {
+                setIsResting(false);
+                moveToNextExercise();
+              }}
             />
-          ) : (
+          )}
+
+          {!isResting && !isGap && currentExercise && (
             <WorkoutExercise
-              key={`${currentExercise.id}-${currentRoundIndex}`}
               exercise={currentExercise}
               currentRound={currentRoundIndex + 1}
-              totalRounds={currentSet.rounds}
+              totalRounds={currentPhase === 'main' ? workout.sets[currentSetIndex].rounds : 1}
               onComplete={handleUpdateExercise}
               userPreferences={userPreferences}
+              isWarmupOrCooldown={currentPhase === 'warmup' || currentPhase === 'cooldown'}
             />
+          )}
+
+          {isGap && (
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="mb-2 text-xl font-semibold">Rest between exercises</h3>
+                <p className="text-3xl font-bold">{timeLeft}s</p>
+                <Button
+                  onClick={() => {
+                    setIsGap(false);
+                    moveToNextExercise();
+                  }}
+                  className="mt-4"
+                >
+                  Skip Rest
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </CardContent>
       </Card>

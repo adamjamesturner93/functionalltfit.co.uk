@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 
 import { getCurrentUser } from '@/app/actions/profile';
 import { getWorkoutSummary } from '@/app/actions/workouts';
-
-import { WorkoutSummary } from './workout-summary';
+import { WorkoutSummary } from '@/components/workout-summary/workout-summary';
 
 export default async function WorkoutSummaryPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();

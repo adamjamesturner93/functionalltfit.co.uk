@@ -1,10 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getYogaVideos } from '@/app/actions/yoga-videos';
 import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
-
-const prisma = new PrismaClient();
 
 export const config = {
   runtime: 'edge',

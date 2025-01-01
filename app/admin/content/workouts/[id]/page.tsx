@@ -1,12 +1,15 @@
 import { notFound } from 'next/navigation';
 
+import { getExercises } from '@/app/actions/exercises';
 import { getWorkoutById } from '@/app/actions/workouts';
-
-import { WorkoutForm } from './workout-form';
+import { WorkoutForm } from '@/components/workout-builder/workout-form';
 
 export default async function EditWorkoutPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const workout = id === 'new' ? null : await getWorkoutById(id);
+  const [workout, { exercises }] = await Promise.all([
+    id === 'new' ? null : getWorkoutById(id),
+    getExercises(1, 1000),
+  ]);
 
   if (id !== 'new' && !workout) {
     notFound();
@@ -14,8 +17,7 @@ export default async function EditWorkoutPage({ params }: { params: Promise<{ id
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="mb-6 text-2xl font-bold">{workout ? 'Edit Workout' : 'Create New Workout'}</h1>
-      <WorkoutForm workout={workout} />
+      <WorkoutForm workout={workout} exercises={exercises} />
     </div>
   );
 }

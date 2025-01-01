@@ -84,6 +84,8 @@ export default function WorkoutsPage() {
   useEffect(() => {
     const fetchWorkouts = async () => {
       const { workouts } = await getWorkouts(1, 1000, globalFilter, filters);
+
+      console.log(JSON.stringify(workouts, null, 4));
       setWorkouts(workouts);
     };
     fetchWorkouts();
@@ -127,7 +129,8 @@ export default function WorkoutsPage() {
       {
         accessorKey: 'equipment',
         header: 'Equipment',
-        cell: ({ row }) => row.original.equipment.join(', '),
+        cell: ({ row }) =>
+          row.original.equipment.length === 0 ? 'Bodyweight' : row.original.equipment.join(', '),
       },
       {
         accessorKey: 'primaryMuscles',

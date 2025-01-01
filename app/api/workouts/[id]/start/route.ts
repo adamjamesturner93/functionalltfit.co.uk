@@ -11,17 +11,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return unauthorizedResponse();
   }
 
-  const workoutId = id;
-
-  if (!workoutId) {
-    return NextResponse.json({ error: 'Workout ID is required' }, { status: 400 });
-  }
-
   try {
-    const combinedWorkout = await startWorkout(workoutId, session.user.id);
-    return NextResponse.json(combinedWorkout);
+    const workout = await startWorkout(id, session.user.id);
+    return NextResponse.json(workout);
   } catch (error) {
     console.error('Error starting workout:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to start workout' }, { status: 500 });
   }
 }

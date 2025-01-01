@@ -15,7 +15,8 @@ interface Set {
 interface WorkoutProgressProps {
   workoutName: string;
   progress: number;
-  currentSet: Set;
+  currentPhase: 'warmup' | 'main' | 'cooldown' | 'complete';
+  currentSet?: Set;
   currentRoundIndex: number;
   currentExerciseIndex: number;
 }
@@ -23,6 +24,7 @@ interface WorkoutProgressProps {
 export function WorkoutProgress({
   workoutName,
   progress,
+  currentPhase,
   currentSet,
   currentRoundIndex,
   currentExerciseIndex,
@@ -37,16 +39,18 @@ export function WorkoutProgress({
         <p className="mt-1 text-sm text-muted-foreground">Progress: {progress.toFixed(2)}%</p>
       </div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">{currentSet.type}</h2>
-        <div className="text-sm text-muted-foreground">
-          <span>
-            Set {currentRoundIndex + 1} of {currentSet.rounds}
-          </span>
-          <span className="mx-2">|</span>
-          <span>
-            Exercise {currentExerciseIndex + 1} of {currentSet.exercises.length}
-          </span>
-        </div>
+        <h2 className="text-xl font-semibold capitalize">{currentPhase} Phase</h2>
+        {currentSet && (
+          <div className="text-sm text-muted-foreground">
+            <span>
+              Set {currentRoundIndex + 1} of {currentSet.rounds}
+            </span>
+            <span className="mx-2">|</span>
+            <span>
+              Exercise {currentExerciseIndex + 1} of {currentSet.exercises.length}
+            </span>
+          </div>
+        )}
       </div>
     </>
   );

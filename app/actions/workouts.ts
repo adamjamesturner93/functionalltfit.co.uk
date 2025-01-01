@@ -1,14 +1,12 @@
 'use server';
 
-import { ExerciseMode, Prisma, SetType, Workout } from '@prisma/client';
+import { ExerciseMode, Prisma, SetType, UserExerciseWeight, Workout } from '@prisma/client';
 import { WorkoutActivity, WorkoutActivityExercise, WorkoutActivitySet } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { prisma } from '@/lib/prisma';
 import { calculateImprovements, calculateNextWorkoutWeight } from '@/lib/workout-calculations';
-
-import { ExercisePerformance } from '../(public)/workouts/[id]/start/page';
 
 import { autoUpdateActivityCompletion } from './programmes';
 
@@ -101,6 +99,16 @@ export type WorkoutWithSets = Prisma.WorkoutGetPayload<{
         };
       };
     };
+    warmup: {
+      include: {
+        exercise: true;
+      };
+    };
+    cooldown: {
+      include: {
+        exercise: true;
+      };
+    };
   };
 }>;
 
@@ -118,6 +126,8 @@ export type WorkoutInput = {
   totalLength: number;
   equipment: string[];
   primaryMuscles: string[];
+  warmup: { exerciseId: string; duration: number }[];
+  cooldown: { exerciseId: string; duration: number }[];
   sets: {
     type: SetType;
     rounds: number;
@@ -125,7 +135,10 @@ export type WorkoutInput = {
     gap?: number;
     exercises: {
       exerciseId: string;
+      mode: ExerciseMode;
       targetReps: number;
+      targetTime: number;
+      targetDistance: number;
       order: number;
     }[];
   }[];
@@ -154,7 +167,7 @@ export async function getWorkouts(
   }
 
   if (filters.muscleGroup) {
-    where.muscleGroups = { has: filters.muscleGroup };
+    where.primaryMuscles = { has: filters.muscleGroup };
   }
 
   if (filters.minDuration || filters.maxDuration) {
@@ -219,6 +232,16 @@ export async function getWorkoutById(id: string, userId?: string | null) {
           },
         },
       },
+      warmup: {
+        include: {
+          exercise: true,
+        },
+      },
+      cooldown: {
+        include: {
+          exercise: true,
+        },
+      },
       savedBy: userId
         ? {
             where: { userId },
@@ -272,7 +295,19 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
       description: data.description,
       totalLength: data.totalLength,
       equipment: data.equipment,
-      muscleGroups: data.primaryMuscles,
+      primaryMuscles: data.primaryMuscles,
+      warmup: {
+        create: data.warmup.map((exercise) => ({
+          exercise: { connect: { id: exercise.exerciseId } },
+          duration: exercise.duration,
+        })),
+      },
+      cooldown: {
+        create: data.cooldown.map((exercise) => ({
+          exercise: { connect: { id: exercise.exerciseId } },
+          duration: exercise.duration,
+        })),
+      },
       sets: {
         create: data.sets.map((set) => ({
           type: set.type,
@@ -282,7 +317,10 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
           exercises: {
             create: set.exercises.map((exercise) => ({
               exercise: { connect: { id: exercise.exerciseId } },
+              mode: exercise.mode,
               targetReps: exercise.targetReps,
+              targetTime: exercise.targetTime,
+              targetDistance: exercise.targetDistance,
               order: exercise.order,
             })),
           },
@@ -290,6 +328,16 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
       },
     },
     include: {
+      warmup: {
+        include: {
+          exercise: true,
+        },
+      },
+      cooldown: {
+        include: {
+          exercise: true,
+        },
+      },
       sets: {
         include: {
           exercises: {
@@ -307,27 +355,35 @@ export async function createWorkout(data: WorkoutInput): Promise<Workout> {
 }
 
 export async function updateWorkout(id: string, data: WorkoutInput): Promise<Workout> {
-  await prisma.setExercise.deleteMany({
-    where: {
-      set: {
-        workoutId: id,
-      },
-    },
-  });
-  await prisma.set.deleteMany({
-    where: {
-      workoutId: id,
-    },
-  });
+  // Delete existing related data
+  await prisma.$transaction([
+    prisma.warmupExercise.deleteMany({ where: { workoutId: id } }),
+    prisma.cooldownExercise.deleteMany({ where: { workoutId: id } }),
+    prisma.setExercise.deleteMany({ where: { set: { workoutId: id } } }),
+    prisma.set.deleteMany({ where: { workoutId: id } }),
+  ]);
 
-  const workout = await prisma.workout.update({
+  // Update the workout with new data
+  const updatedWorkout = await prisma.workout.update({
     where: { id },
     data: {
       name: data.name,
       description: data.description,
       totalLength: data.totalLength,
       equipment: data.equipment,
-      muscleGroups: data.primaryMuscles,
+      primaryMuscles: data.primaryMuscles,
+      warmup: {
+        create: data.warmup.map((exercise) => ({
+          exercise: { connect: { id: exercise.exerciseId } },
+          duration: exercise.duration,
+        })),
+      },
+      cooldown: {
+        create: data.cooldown.map((exercise) => ({
+          exercise: { connect: { id: exercise.exerciseId } },
+          duration: exercise.duration,
+        })),
+      },
       sets: {
         create: data.sets.map((set) => ({
           type: set.type,
@@ -337,7 +393,10 @@ export async function updateWorkout(id: string, data: WorkoutInput): Promise<Wor
           exercises: {
             create: set.exercises.map((exercise) => ({
               exercise: { connect: { id: exercise.exerciseId } },
+              mode: exercise.mode,
               targetReps: exercise.targetReps,
+              targetTime: exercise.targetTime,
+              targetDistance: exercise.targetDistance,
               order: exercise.order,
             })),
           },
@@ -345,6 +404,16 @@ export async function updateWorkout(id: string, data: WorkoutInput): Promise<Wor
       },
     },
     include: {
+      warmup: {
+        include: {
+          exercise: true,
+        },
+      },
+      cooldown: {
+        include: {
+          exercise: true,
+        },
+      },
       sets: {
         include: {
           exercises: {
@@ -359,7 +428,7 @@ export async function updateWorkout(id: string, data: WorkoutInput): Promise<Wor
 
   revalidatePath('/admin/content/workouts');
   revalidatePath(`/admin/content/workouts/${id}`);
-  return workout;
+  return updatedWorkout;
 }
 
 export async function deleteWorkout(id: string): Promise<Workout> {
@@ -372,17 +441,19 @@ export async function deleteWorkout(id: string): Promise<Workout> {
 
 export async function startWorkout(workoutId: string, userId: string) {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
     const workout = await prisma.workout.findUnique({
       where: { id: workoutId },
       include: {
+        warmup: {
+          include: {
+            exercise: true,
+          },
+        },
+        cooldown: {
+          include: {
+            exercise: true,
+          },
+        },
         sets: {
           include: {
             exercises: {
@@ -399,6 +470,30 @@ export async function startWorkout(workoutId: string, userId: string) {
       throw new Error('Workout not found');
     }
 
+    const workoutActivity = await prisma.workoutActivity.create({
+      data: {
+        userId: userId,
+        workoutId: workoutId,
+        startedAt: new Date(),
+      },
+    });
+
+    // Fetch the most recent completed workout activity for this workout and user
+    const previousWorkoutActivity = await prisma.workoutActivity.findFirst({
+      where: {
+        userId: userId,
+        workoutId: workoutId,
+        endedAt: { not: null },
+      },
+      orderBy: {
+        endedAt: 'desc',
+      },
+      include: {
+        WorkoutActivityExercise: true,
+      },
+    });
+
+    // Fetch user's saved weights for exercises in this workout
     const userExerciseWeights = await prisma.userExerciseWeight.findMany({
       where: {
         userId: userId,
@@ -406,117 +501,76 @@ export async function startWorkout(workoutId: string, userId: string) {
       },
     });
 
-    const previousWorkoutActivity = await prisma.workoutActivity.findFirst({
-      where: {
-        userId: userId,
-        workoutId: workoutId,
-      },
-      orderBy: {
-        startedAt: 'desc',
-      },
-      include: {
-        sets: {
-          include: {
-            exercises: {
-              include: {
-                exercise: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    const workoutActivity = await prisma.workoutActivity.create({
-      data: {
-        workoutId: workout.id,
-        userId: userId,
-        startedAt: new Date(),
-      },
-    });
-
     const combinedWorkout = {
+      ...workout,
       id: workoutActivity.id,
       workoutId: workout.id,
-      name: workout.name,
-      description: workout.description,
-      totalLength: workout.totalLength,
-      equipment: workout.equipment,
-      primaryMuscles: workout.muscleGroups,
-      startedAt: workoutActivity.startedAt.toISOString(),
-      endedAt: null,
-      sets: workout.sets.map((set) => {
-        const setExercises = set.exercises.map((exerciseInSet) => {
-          const userWeight = userExerciseWeights.find(
-            (uw) => uw.exerciseId === exerciseInSet.exercise.id,
+      warmup: await Promise.all(
+        workout.warmup.map(async (warmupExercise) => {
+          const previousPerformance = previousWorkoutActivity?.WorkoutActivityExercise.find(
+            (e) => e.exerciseId === warmupExercise.exerciseId,
           );
-          const previousExercises = previousWorkoutActivity?.sets
-            .flatMap((set) => set.exercises)
-            .filter((wae) => wae.exerciseId === exerciseInSet.exercise.id);
-
-          let weight: number;
-          if (userWeight) {
-            weight = userWeight.weight;
-          } else if (previousExercises && previousExercises.length > 0) {
-            weight = previousExercises[0].weight;
-          } else {
-            weight = 0;
-          }
-
-          const previousPerformance =
-            previousExercises?.map((prev, index) => ({
-              round: index + 1,
-              weight: prev.weight,
-              reps: prev.reps,
-              time: prev.time,
-              distance: prev.distance,
-            })) || [];
-
-          let targetReps: number | undefined,
-            targetTime: number | undefined,
-            targetDistance: number | undefined;
-
-          switch (exerciseInSet.exercise.mode) {
-            case ExerciseMode.REPS:
-              targetReps = exerciseInSet.targetReps;
-              break;
-            case ExerciseMode.TIME:
-              targetTime = exerciseInSet.targetReps;
-              break;
-            case ExerciseMode.DISTANCE:
-              targetDistance = exerciseInSet.targetReps;
-              break;
-          }
-
           return {
-            id: exerciseInSet.id,
-            exerciseId: exerciseInSet.exercise.id,
-            name: exerciseInSet.exercise.name,
-            targetReps,
-            targetTime,
-            targetDistance,
-            weight: weight,
-            equipment: exerciseInSet.exercise.equipment,
-            primaryMuscles: exerciseInSet.exercise.primaryMuscles,
-            type: exerciseInSet.exercise.type,
-            thumbnailUrl: exerciseInSet.exercise.thumbnailUrl,
-            videoUrl: exerciseInSet.exercise.videoUrl,
-            mode: exerciseInSet.exercise.mode,
-            instructions: exerciseInSet.exercise.instructions,
-            previousPerformance,
+            ...warmupExercise.exercise,
+            exerciseId: warmupExercise.exerciseId,
+            duration: warmupExercise.duration,
+            previousPerformance: previousPerformance
+              ? {
+                  time: previousPerformance.time,
+                }
+              : null,
           };
-        });
-
-        const setEquipment = Array.from(
-          new Set(setExercises.flatMap((exercise) => exercise.equipment)),
-        ).sort();
-
-        return {
+        }),
+      ),
+      cooldown: await Promise.all(
+        workout.cooldown.map(async (cooldownExercise) => {
+          const previousPerformance = previousWorkoutActivity?.WorkoutActivityExercise.find(
+            (e) => e.exerciseId === cooldownExercise.exerciseId,
+          );
+          return {
+            ...cooldownExercise.exercise,
+            exerciseId: cooldownExercise.exerciseId,
+            duration: cooldownExercise.duration,
+            previousPerformance: previousPerformance
+              ? {
+                  time: previousPerformance.time,
+                }
+              : null,
+          };
+        }),
+      ),
+      sets: await Promise.all(
+        workout.sets.map(async (set) => ({
           ...set,
-          exercises: setExercises,
-          equipment: setEquipment,
-        };
-      }),
+          exercises: await Promise.all(
+            set.exercises.map(async (setExercise) => {
+              const userWeight = userExerciseWeights.find(
+                (uw) => uw.exerciseId === setExercise.exercise.id,
+              );
+              const previousPerformance = previousWorkoutActivity?.WorkoutActivityExercise.find(
+                (e) => e.exerciseId === setExercise.exercise.id,
+              );
+              return {
+                ...setExercise.exercise,
+                exerciseId: setExercise.exerciseId,
+                targetReps: setExercise.targetReps,
+                targetTime: setExercise.targetTime,
+                targetDistance: setExercise.targetDistance,
+                mode: setExercise.mode,
+                weight: userWeight?.weight || 0,
+                previousPerformance: previousPerformance
+                  ? {
+                      weight: previousPerformance.weight,
+                      reps: previousPerformance.reps,
+                      time: previousPerformance.time,
+                      distance: previousPerformance.distance,
+                    }
+                  : null,
+              };
+            }),
+          ),
+        })),
+      ),
     };
 
     return combinedWorkout;
@@ -527,201 +581,107 @@ export async function startWorkout(workoutId: string, userId: string) {
 }
 
 export async function completeWorkout(
-  activityId: string,
+  workoutActivityId: string,
   workoutId: string,
-  exercises: ExercisePerformance[],
   userId: string,
 ) {
-  console.log(
-    'COMPLETE WORKOUT',
-    JSON.stringify({ activityId, workoutId, userId, exercises }, null, 4),
-  );
   try {
-    const result = await prisma.$transaction(
-      async (tx) => {
-        const workoutActivity = await tx.workoutActivity.findUnique({
-          where: { id: activityId },
+    const workoutActivity = await prisma.workoutActivity.findUnique({
+      where: { id: workoutActivityId },
+      include: {
+        workout: {
           include: {
-            workout: {
+            sets: {
               include: {
-                sets: {
-                  include: {
-                    exercises: {
-                      include: {
-                        exercise: true,
-                      },
-                    },
-                  },
-                },
+                exercises: true,
               },
             },
           },
-        });
+        },
+        WorkoutActivityExercise: true,
+      },
+    });
 
-        if (!workoutActivity) {
-          throw new Error(`Workout activity not found for ID: ${activityId}`);
-        }
+    if (!workoutActivity) {
+      throw new Error('Workout activity not found');
+    }
 
-        const endTime = new Date();
-        let totalWeightLifted = 0;
+    const exercisesFromDb = workoutActivity.WorkoutActivityExercise;
 
-        const updatedExercises = exercises.map((exercise) => {
+    if (!exercisesFromDb || exercisesFromDb.length === 0) {
+      throw new Error('No exercises found for this workout activity');
+    }
+
+    const result = await prisma.$transaction(async (prisma) => {
+      let totalWeightLifted = 0;
+
+      const updatedExercises = exercisesFromDb
+        .map((exercise) => {
           const workoutExercise = workoutActivity.workout.sets
             .flatMap((set) => set.exercises)
             .find((e) => e.exerciseId === exercise.exerciseId);
 
-          if (!workoutExercise) {
-            throw new Error(`Exercise with id ${exercise.exerciseId} not found in workout`);
-          }
+          if (workoutExercise) {
+            if (exercise.weight && exercise.reps) {
+              totalWeightLifted += exercise.weight * exercise.reps;
+            }
 
-          const roundNumbers = Object.keys(exercise.weight).map(Number);
-          const totalRounds = Math.max(...roundNumbers);
-
-          let exerciseWeight = 0;
-          let exerciseReps = 0;
-          let exerciseTime = 0;
-          let exerciseDistance = 0;
-
-          const performanceByRound = [];
-
-          for (let round = 1; round <= totalRounds; round++) {
-            const roundWeight = exercise.weight[round] || 0;
-            const roundReps = exercise.reps?.[round] || 0;
-            const roundTime = exercise.time?.[round] || 0;
-            const roundDistance = exercise.distance?.[round] || 0;
-
-            exerciseWeight += roundWeight;
-            exerciseReps += roundReps;
-            exerciseTime += roundTime;
-            exerciseDistance += roundDistance;
-
-            performanceByRound.push({
-              round,
-              weight: roundWeight,
-              reps: roundReps,
-              time: roundTime,
-              distance: roundDistance,
-            });
-
-            totalWeightLifted += roundWeight * roundReps;
-          }
-
-          const averageWeight = exerciseWeight / totalRounds;
-          const averageReps = exerciseReps / totalRounds;
-          const averageTime = exerciseTime / totalRounds;
-          const averageDistance = exerciseDistance / totalRounds;
-
-          return {
-            id: exercise.id,
-            exerciseId: exercise.exerciseId,
-            name: workoutExercise.exercise.name,
-            weight: averageWeight,
-            reps: averageReps,
-            time: averageTime,
-            distance: averageDistance,
-            performanceByRound,
-            mode: workoutExercise.exercise.mode,
-          };
-        });
-
-        await tx.workoutActivity.update({
-          where: { id: activityId },
-          data: {
-            endedAt: endTime,
-          },
-        });
-
-        // Create or update WorkoutActivitySet entries
-        const workoutActivitySets = await Promise.all(
-          updatedExercises.flatMap((exercise) =>
-            exercise.performanceByRound.map((performance) =>
-              tx.workoutActivitySet.upsert({
-                where: {
-                  workoutActivityId_setNumber_roundNumber: {
-                    workoutActivityId: activityId,
-                    setNumber: 1,
-                    roundNumber: performance.round,
-                  },
-                },
-                update: {}, // No update needed if it exists
-                create: {
-                  workoutActivityId: activityId,
-                  setNumber: 1,
-                  roundNumber: performance.round,
-                },
-              }),
-            ),
-          ),
-        );
-
-        // Create or update WorkoutActivityExercise entries
-        await Promise.all(
-          updatedExercises.flatMap((exercise, exerciseIndex) =>
-            exercise.performanceByRound.map((performance, performanceIndex) =>
-              tx.workoutActivityExercise.upsert({
-                where: {
-                  workoutActivitySetId_exerciseId_roundNumber: {
-                    workoutActivitySetId:
-                      workoutActivitySets[
-                        exerciseIndex * exercise.performanceByRound.length + performanceIndex
-                      ].id,
-                    exerciseId: exercise.exerciseId,
-                    roundNumber: performance.round,
-                  },
-                },
-                update: {
-                  weight: performance.weight,
-                  reps: performance.reps,
-                  time: performance.time || null,
-                  distance: performance.distance || null,
-                },
-                create: {
-                  workoutActivityId: activityId,
-                  workoutActivitySetId:
-                    workoutActivitySets[
-                      exerciseIndex * exercise.performanceByRound.length + performanceIndex
-                    ].id,
+            return prisma.userExerciseWeight.upsert({
+              where: {
+                userId_workoutId_exerciseId: {
+                  userId: workoutActivity.userId,
+                  workoutId: workoutId,
                   exerciseId: exercise.exerciseId,
-                  weight: performance.weight,
-                  reps: performance.reps,
-                  time: performance.time || null,
-                  distance: performance.distance || null,
-                  roundNumber: performance.round,
                 },
-              }),
-            ),
-          ),
+              },
+              update: {
+                weight: exercise.weight,
+              },
+              create: {
+                userId: workoutActivity.userId,
+                workoutId: workoutId,
+                exerciseId: exercise.exerciseId,
+                weight: exercise.weight,
+              },
+            });
+          }
+          return null;
+        })
+        .filter(
+          (update): update is Prisma.Prisma__UserExerciseWeightClient<UserExerciseWeight> =>
+            update !== null,
         );
 
-        await autoUpdateActivityCompletion(userId, 'WORKOUT', workoutId);
+      await Promise.all(updatedExercises);
 
-        return {
-          success: true,
-          completed: true,
-          totalWeightLifted,
-          exercises: updatedExercises,
-          redirectUrl: `/workouts/${activityId}/summary`,
-        };
-      },
-      {
-        maxWait: 15000, // 15 seconds
-        timeout: 60000, // 60 seconds
-      },
-    );
+      await prisma.workoutActivity.update({
+        where: { id: workoutActivityId },
+        data: {
+          endedAt: new Date(),
+        },
+      });
 
-    return result;
+      // Call autoUpdateActivityCompletion
+      await autoUpdateActivityCompletion(userId, 'WORKOUT', workoutId);
+
+      return { success: true, message: 'Workout completed successfully' };
+    });
+
+    return {
+      ...result,
+      redirectUrl: `/workouts/${workoutActivityId}/summary`,
+    };
   } catch (error) {
     console.error('Error completing workout:', error);
     throw error;
   }
 }
-
 export async function updateWorkoutActivity(
   workoutActivityId: string,
   exercises: {
     id: string;
     exerciseId: string;
-    weight: number;
+    weight?: number;
     reps?: number;
     time?: number;
     distance?: number;
@@ -729,7 +689,6 @@ export async function updateWorkoutActivity(
     mode: ExerciseMode;
   }[],
 ) {
-  console.log(JSON.stringify({ workoutActivityId, exercises }, null, 4));
   try {
     const workoutActivity = await prisma.workoutActivity.findUnique({
       where: { id: workoutActivityId },
@@ -751,71 +710,74 @@ export async function updateWorkoutActivity(
     });
 
     if (!workoutActivity) {
-      throw new Error('Workout activity not found');
+      console.error(`Workout activity with id ${workoutActivityId} not found`);
+      return { error: 'Workout activity not found' };
     }
+
+    const { sets } = workoutActivity.workout;
 
     const updatedExercises = await Promise.all(
       exercises.map(async (exercise) => {
-        // First, check if the exercise exists
-        const existingExercise = await prisma.exercise.findUnique({
-          where: { id: exercise.exerciseId },
-        });
+        const set = sets.find((s) => s.exercises.some((e) => e.exerciseId === exercise.exerciseId));
 
-        if (!existingExercise) {
-          console.error(`Exercise with id ${exercise.exerciseId} not found`);
-          return null; // Skip this exercise
-        }
-
-        const workoutActivitySet = await prisma.workoutActivitySet.upsert({
-          where: {
-            workoutActivityId_setNumber_roundNumber: {
+        if (set) {
+          const workoutActivitySet = await prisma.workoutActivitySet.upsert({
+            where: {
+              workoutActivityId_setNumber_roundNumber: {
+                workoutActivityId: workoutActivityId,
+                setNumber: 1, // Assuming one set per exercise, adjust if needed
+                roundNumber: exercise.roundNumber,
+              },
+            },
+            update: {},
+            create: {
               workoutActivityId: workoutActivityId,
-              setNumber: 1,
+              setNumber: 1, // Assuming one set per exercise, adjust if needed
               roundNumber: exercise.roundNumber,
             },
-          },
-          update: {},
-          create: {
-            workoutActivityId: workoutActivityId,
-            setNumber: 1,
-            roundNumber: exercise.roundNumber,
-          },
-        });
+          });
 
-        const exerciseData = {
-          weight: exercise.weight,
-          reps: exercise.mode === ExerciseMode.REPS ? exercise.reps : null,
-          time: exercise.mode === ExerciseMode.TIME ? exercise.time : null,
-          distance: exercise.mode === ExerciseMode.DISTANCE ? exercise.distance : null,
-        };
+          const exerciseData: {
+            weight?: number;
+            reps?: number;
+            time?: number;
+            distance?: number;
+            mode: ExerciseMode;
+          } = {
+            mode: exercise.mode,
+          };
 
-        return prisma.workoutActivityExercise.upsert({
-          where: {
-            workoutActivitySetId_exerciseId_roundNumber: {
+          if (exercise.weight !== undefined) exerciseData.weight = exercise.weight;
+          if (exercise.reps !== undefined) exerciseData.reps = exercise.reps;
+          if (exercise.time !== undefined) exerciseData.time = exercise.time;
+          if (exercise.distance !== undefined) exerciseData.distance = exercise.distance;
+
+          return prisma.workoutActivityExercise.upsert({
+            where: {
+              workoutActivitySetId_exerciseId_roundNumber: {
+                workoutActivitySetId: workoutActivitySet.id,
+                exerciseId: exercise.exerciseId,
+                roundNumber: exercise.roundNumber,
+              },
+            },
+            update: exerciseData,
+            create: {
+              workoutActivityId: workoutActivityId,
               workoutActivitySetId: workoutActivitySet.id,
               exerciseId: exercise.exerciseId,
               roundNumber: exercise.roundNumber,
+              weight: exerciseData.weight || 0, // Provide a default value
+              ...exerciseData,
             },
-          },
-          update: exerciseData,
-          create: {
-            workoutActivityId: workoutActivityId,
-            workoutActivitySetId: workoutActivitySet.id,
-            exerciseId: exercise.exerciseId,
-            roundNumber: exercise.roundNumber,
-            ...exerciseData,
-          },
-        });
+          });
+        }
       }),
     );
 
-    const validUpdatedExercises = updatedExercises.filter(Boolean);
-    console.log('Updated exercises:', JSON.stringify(validUpdatedExercises, null, 2));
-
-    return { success: true, updatedExercises: validUpdatedExercises };
+    return { success: true, updatedExercises };
   } catch (error) {
     console.error('Error updating workout activity:', error);
-    throw error;
+    return { error: 'Failed to update workout activity' };
   }
 }
 
@@ -876,11 +838,11 @@ export async function updateUserExerciseWeight(
 export async function getUniqueBodyFocuses(): Promise<string[]> {
   const workouts = await prisma.workout.findMany({
     select: {
-      muscleGroups: true,
+      primaryMuscles: true,
     },
   });
 
-  const allprimaryMuscles = workouts.flatMap((workout) => workout.muscleGroups);
+  const allprimaryMuscles = workouts.flatMap((workout) => workout.primaryMuscles);
   const uniqueprimaryMuscles = Array.from(new Set(allprimaryMuscles)).sort();
 
   return uniqueprimaryMuscles;

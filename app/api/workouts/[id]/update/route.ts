@@ -10,13 +10,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!session) {
     return unauthorizedResponse();
   }
-  const { sets } = await request.json();
 
   try {
-    const updatedWorkoutActivity = await updateWorkoutActivity(id, sets);
-    return NextResponse.json(updatedWorkoutActivity);
+    const { exercises } = await request.json();
+
+    console.log(JSON.stringify(exercises, null, 4));
+    const result = await updateWorkoutActivity(id, exercises);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error('Error updating workout activity:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('Error updating workout:', error);
+    return NextResponse.json({ error: 'Failed to update workout' }, { status: 500 });
   }
 }

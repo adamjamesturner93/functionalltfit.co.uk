@@ -5,27 +5,20 @@ import { authorizeUser, unauthorizedResponse } from '@/lib/auth-utils';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await authorizeUser(request);
-  const { id: workoutId } = await params;
-
+  const { id } = await params;
   if (!session) {
     return unauthorizedResponse();
   }
 
   try {
-    const { activityId, exercises } = await request.json();
+    console.log('COMPLETE');
+    const { workoutId, ...rest } = await request.json();
+    console.log(JSON.stringify({ workoutId, ...rest }));
 
-    if (!activityId) {
-      return NextResponse.json({ error: 'Activity ID is required' }, { status: 400 });
-    }
-
-    console.log('workoutId: ', workoutId);
-    console.log('activityId: ', activityId);
-    console.log('userId: ', session.user.id);
-    console.log('exercises: ', JSON.stringify(exercises, null, 4));
-    const summary = await completeWorkout(activityId, workoutId, exercises, session.user.id);
-    return NextResponse.json(summary);
+    const result = await completeWorkout(id, workoutId, session.user.id);
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error completing workout:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to complete workout' }, { status: 500 });
   }
 }
