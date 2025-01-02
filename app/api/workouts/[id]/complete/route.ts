@@ -11,9 +11,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   try {
-    console.log('COMPLETE');
     const { workoutId, ...rest } = await request.json();
-    console.log(JSON.stringify({ workoutId, ...rest }));
 
     const result = await completeWorkout(id, workoutId, session.user.id);
     return NextResponse.json(result);

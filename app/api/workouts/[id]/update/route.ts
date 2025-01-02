@@ -14,7 +14,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     const { exercises } = await request.json();
 
-    console.log(JSON.stringify(exercises, null, 4));
     const result = await updateWorkoutActivity(id, exercises);
     return NextResponse.json(result);
   } catch (error) {

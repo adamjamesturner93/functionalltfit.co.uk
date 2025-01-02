@@ -47,6 +47,15 @@ export async function getCurrentUserId(): Promise<string | null> {
   return session?.user?.id || null;
 }
 
+export async function generateAccessToken(userId: string): Promise<string> {
+  return await new SignJWT({ userId })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setJti(nanoid())
+    .setIssuedAt()
+    .setExpirationTime('15m')
+    .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
+}
+
 export async function generateRefreshToken(userId: string): Promise<string> {
   const refreshToken = await new SignJWT({ userId })
     .setProtectedHeader({ alg: 'HS256' })

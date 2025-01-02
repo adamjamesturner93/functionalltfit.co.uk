@@ -2,7 +2,7 @@ import { SignJWT } from 'jose';
 import { nanoid } from 'nanoid';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { generateRefreshToken } from '@/lib/auth-utils';
+import { generateAccessToken, generateRefreshToken } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
@@ -40,12 +40,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Generate access token
-    const accessToken = await new SignJWT({ userId: user.id })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setJti(nanoid())
-      .setIssuedAt()
-      .setExpirationTime('24h')
-      .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
+    const accessToken = await generateAccessToken(user.id);
 
     // Generate refresh token
     const refreshToken = await generateRefreshToken(user.id);

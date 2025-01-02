@@ -1,8 +1,6 @@
-import { SignJWT } from 'jose';
-import { nanoid } from 'nanoid';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { generateRefreshToken, verifyRefreshToken } from '@/lib/auth-utils';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '@/lib/auth-utils';
 
 export async function POST(request: NextRequest) {
   const { grant_type, refresh_token } = await request.json();
@@ -19,12 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate new access token
-    const accessToken = await new SignJWT({ userId })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setJti(nanoid())
-      .setIssuedAt()
-      .setExpirationTime('24h')
-      .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
+    const accessToken = await generateAccessToken(userId);
 
     // Generate new refresh token
     const newRefreshToken = await generateRefreshToken(userId);
@@ -32,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       access_token: accessToken,
       refresh_token: newRefreshToken,
-      expires_in: 3600,
+      expires_in: 900,
       token_type: 'Bearer',
     });
   } catch (error) {
