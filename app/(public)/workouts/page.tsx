@@ -13,7 +13,7 @@ import { WorkoutCardSkeleton } from './workout-card-skeleton';
 import { WorkoutFilters } from './workout-filters';
 
 export const metadata: Metadata = {
-  title: 'Workouts | FunctionallyFit',
+  title: 'Workouts | Functionally Fit',
   description:
     'Browse and select from our collection of pre-built workouts to start your fitness journey.',
 };

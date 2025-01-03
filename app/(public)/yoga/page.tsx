@@ -13,7 +13,7 @@ import { YogaCardSkeleton } from './yoga-card-skeleton';
 import { YogaFilters } from './yoga-filters';
 
 export const metadata: Metadata = {
-  title: 'Yoga Videos | FunctionallyFit',
+  title: 'Yoga Videos | Functionally Fit',
   description:
     'Explore our collection of yoga videos for mindfulness, strength building, and flexibility.',
 };

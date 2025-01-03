@@ -30,7 +30,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${workout.name} | FunctionallyFit`,
+    title: `${workout.name} | Functionally Fit`,
     description: workout.description,
   };
 }

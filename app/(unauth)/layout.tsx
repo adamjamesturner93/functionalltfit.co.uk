@@ -7,7 +7,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold">FunctionallyFit</span>
+            <span className="font-bold">Functionally Fit</span>
           </Link>
           <nav className="ml-auto flex gap-4 sm:gap-6">
             <Link href="/" className="text-sm font-medium underline-offset-4 hover:underline">
@@ -41,13 +41,13 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <footer className="border-t">
         <div className="container flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} FunctionallyFit. All rights reserved.
+            © {new Date().getFullYear()} Functionally Fit. All rights reserved.
           </p>
           <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-            <Link href="#" className="text-xs underline-offset-4 hover:underline">
+            <Link href="/terms" className="text-xs underline-offset-4 hover:underline">
               Terms of Service
             </Link>
-            <Link href="#" className="text-xs underline-offset-4 hover:underline">
+            <Link href="/privacy" className="text-xs underline-offset-4 hover:underline">
               Privacy
             </Link>
           </nav>

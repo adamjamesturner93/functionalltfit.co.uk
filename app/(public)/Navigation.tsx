@@ -111,7 +111,7 @@ export function Navigation({ user }: { user: User }) {
         <div className="flex h-14 items-center border-b px-4">
           <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
             <Heart className="size-6 text-primary" />
-            <span>FunctionallyFit</span>
+            <span>Functionally Fit</span>
           </Link>
         </div>
         <ScrollArea className="flex-1 px-2">
@@ -151,7 +151,7 @@ export function Navigation({ user }: { user: User }) {
               <SheetTitle>
                 <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
                   <Heart className="size-6 text-primary" />
-                  <span>FunctionallyFit</span>
+                  <span>Functionally Fit</span>
                 </Link>
               </SheetTitle>
             </SheetHeader>

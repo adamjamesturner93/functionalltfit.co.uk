@@ -19,7 +19,7 @@ export function Navigation() {
   return (
     <nav className="w-64 bg-surface-grey shadow-md">
       <div className="p-4">
-        <h1 className="text-2xl font-bold text-foreground">FunctionallyFit Admin</h1>
+        <h1 className="text-2xl font-bold text-foreground">Functionally Fit Admin</h1>
       </div>
       <ul className="space-y-2 p-4">
         {navItems.map((item) => {

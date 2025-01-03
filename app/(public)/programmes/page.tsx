@@ -11,7 +11,7 @@ import { ProgrammeCard } from './programme-card';
 import { ProgrammeFilters } from './programme-filters';
 
 export const metadata: Metadata = {
-  title: 'Fitness Programmes | FunctionallyFit',
+  title: 'Fitness Programmes | Functionally Fit',
   description:
     'Explore our range of fitness programmes designed to help you achieve your health and fitness goals.',
 };

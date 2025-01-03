@@ -13,8 +13,8 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://functionallyfit.com'),
   title: {
-    default: 'FunctionallyFit | Adaptive Fitness for Every Body',
-    template: '%s | FunctionallyFit',
+    default: 'Functionally Fit | Adaptive Fitness for Every Body',
+    template: '%s | Functionally Fit',
   },
   description:
     'Tailored workouts and expert guidance for people with disabilities, long-term health conditions, busy parents, and time-strapped adults.',
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     'busy parent fitness',
     'health management',
   ],
-  authors: [{ name: 'FunctionallyFit Team' }],
-  creator: 'FunctionallyFit',
+  authors: [{ name: 'Functionally Fit Team' }],
+  creator: 'Functionally Fit',
   openGraph: {
     type: 'website',
     locale: 'en_GB',
     url: 'https://functionallyfit.com',
-    siteName: 'FunctionallyFit',
-    title: 'FunctionallyFit | Adaptive Fitness for Every Body',
+    siteName: 'Functionally Fit',
+    title: 'Functionally Fit | Adaptive Fitness for Every Body',
     description:
       'Tailored workouts and expert guidance for people with disabilities, long-term health conditions, busy parents, and time-strapped adults.',
     images: [
@@ -40,17 +40,17 @@ export const metadata: Metadata = {
         url: 'https://functionallyfit.com/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'FunctionallyFit App Interface',
+        alt: 'Functionally Fit App Interface',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FunctionallyFit | Adaptive Fitness for Every Body',
+    title: 'Functionally Fit | Adaptive Fitness for Every Body',
     description:
       'Tailored workouts and expert guidance for people with disabilities, long-term health conditions, busy parents, and time-strapped adults.',
     images: ['https://functionallyfit.com/twitter-image.jpg'],
-    creator: '@FunctionallyFit',
+    creator: '@Functionally Fit',
   },
   robots: {
     index: true,

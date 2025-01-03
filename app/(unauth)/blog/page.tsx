@@ -110,7 +110,7 @@ function BlogContent() {
       <section className="w-full bg-gradient-to-b from-secondary/20 to-background py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <h1 className="mb-4 text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-            FunctionallyFit Blog
+            Functionally Fit Blog
           </h1>
           <p className="mb-8 max-w-[700px] text-muted md:text-xl">
             Discover expert tips, inspiring stories, and the latest in adaptive fitness and health

@@ -24,7 +24,7 @@ export async function generateMetadata({
   const minutes = Math.floor(yogaVideo.duration / 60);
 
   return {
-    title: `${yogaVideo.title} - ${minutes} Minute Yoga Session | FunctionallyFit`,
+    title: `${yogaVideo.title} - ${minutes} Minute Yoga Session | Functionally Fit`,
     description: `${
       yogaVideo.description
     }. A ${minutes}-minute ${yogaVideo.type.toLowerCase()} yoga session with ${yogaVideo.props.join(
@@ -40,7 +40,7 @@ export async function generateMetadata({
       'mindfulness',
     ].join(', '),
     openGraph: {
-      title: `${yogaVideo.title} | FunctionallyFit Yoga`,
+      title: `${yogaVideo.title} | Functionally Fit Yoga`,
       description: yogaVideo.description,
       type: 'video.other',
       url: `https://functionalfitness.com/yoga/${id}`,
@@ -54,7 +54,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'player',
-      title: `${yogaVideo.title} | FunctionallyFit Yoga`,
+      title: `${yogaVideo.title} | Functionally Fit Yoga`,
       description: yogaVideo.description,
       images: [yogaVideo.thumbnailUrl],
     },
@@ -140,7 +140,7 @@ export default async function YogaVideoPage({ params }: { params: Promise<{ id: 
             contentUrl: `https://stream.mux.com/${yogaVideo.muxPlaybackId}.m3u8`,
             publisher: {
               '@type': 'Organization',
-              name: 'FunctionallyFit',
+              name: 'Functionally Fit',
               logo: {
                 '@type': 'ImageObject',
                 url: 'https://functionalfitness.com/logo.png',
