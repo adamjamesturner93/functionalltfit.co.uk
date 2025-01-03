@@ -35,8 +35,6 @@ export async function GET(request: NextRequest) {
 
   const result = await getMeasurementsAggregated(userId, period);
 
-  console.log(JSON.stringify(result, null, 4));
-
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }

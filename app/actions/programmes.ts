@@ -140,7 +140,7 @@ export async function toggleProgrammeSave(programmeId: string, userId: string) {
     });
   }
 
-  const newSave = await prisma.userProgrammeSave.findUnique({
+  await prisma.userProgrammeSave.findUnique({
     where: {
       userId_programmeId: {
         userId,
@@ -148,10 +148,6 @@ export async function toggleProgrammeSave(programmeId: string, userId: string) {
       },
     },
   });
-
-  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
-  console.log({ newSave, programmeId, userId });
-  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$');
 
   revalidatePath('/programmes');
   revalidatePath(`/programmes/${programmeId}`);

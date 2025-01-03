@@ -101,8 +101,6 @@ export default function ExercisesPage() {
     fetchExercises();
   }, [globalFilter, filters]);
 
-  console.log(JSON.stringify(exercises, null, 4));
-
   const columns = useMemo<ColumnDef<Exercise>[]>(
     () => [
       {

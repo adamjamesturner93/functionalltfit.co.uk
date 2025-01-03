@@ -85,7 +85,6 @@ export default function WorkoutsPage() {
     const fetchWorkouts = async () => {
       const { workouts } = await getWorkouts(1, 1000, globalFilter, filters);
 
-      console.log(JSON.stringify(workouts, null, 4));
       setWorkouts(workouts);
     };
     fetchWorkouts();

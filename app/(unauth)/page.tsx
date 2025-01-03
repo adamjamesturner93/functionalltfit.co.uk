@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { MailingListPopup } from './mailingList';
+// import { MailingListPopup } from './mailingList';
 
 export default function Home() {
   return (
@@ -31,8 +31,8 @@ export default function Home() {
             <Image
               alt="Functionally Fit App Interface Preview"
               className="mx-auto aspect-auto h-full overflow-hidden rounded-xl object-cover object-center shadow-2xl sm:w-1/3 lg:order-last"
-              height={10}
-              width={10}
+              height={1000}
+              width={1000}
               src="/images/splash.png"
               loading="lazy"
             />
@@ -73,7 +73,7 @@ export default function Home() {
           <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Activity className="size-12 text-primary" />
+                <Activity className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Personalised for You</h3>
                 <p className="text-center text-muted-foreground">
                   Our AI-driven algorithm adapts workouts to your specific needs, abilities, and
@@ -83,7 +83,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Clock className="size-12 text-primary" />
+                <Clock className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Flexible Scheduling</h3>
                 <p className="text-center text-muted-foreground">
                   From quick 10-minute sessions to comprehensive routines, fit exercise into your
@@ -93,7 +93,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Heart className="size-12 text-primary" />
+                <Heart className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Expert-Led Content</h3>
                 <p className="text-center text-muted-foreground">
                   Programmes designed by certified trainers and health professionals for safe,
@@ -120,7 +120,7 @@ export default function Home() {
           <div className="grid gap-6 lg:grid-cols-3">
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Activity className="size-12 text-primary" />
+                <Activity className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Adaptive Workouts</h3>
                 <p className="text-center text-muted-foreground">
                   Customised routines for all abilities and health conditions. Your fitness journey,
@@ -130,7 +130,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Clock className="size-12 text-primary" />
+                <Clock className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Quick Fitness Fixes</h3>
                 <p className="text-center text-muted-foreground">
                   Effective 10-minute workouts for busy parents and time-strapped adults. Every
@@ -140,7 +140,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center space-y-4 p-6">
-                <Heart className="size-12 text-primary" />
+                <Heart className="size-12 text-secondary" />
                 <h3 className="text-center text-2xl font-bold">Health-Focused Approach</h3>
                 <p className="text-center text-muted-foreground">
                   Programmes designed with your long-term health in mind, supporting you every step
@@ -239,7 +239,7 @@ export default function Home() {
                     </div>
                     {plan.title !== 'Free' && (
                       <div className="mb-4">
-                        <p className="text-xl font-bold text-primary">£{annualPrice}</p>
+                        <p className="text-xl font-bold text-secondary">£{annualPrice}</p>
                       </div>
                     )}
                     <ul className="space-y-2">
@@ -269,7 +269,7 @@ export default function Home() {
             Start your functional transformation now with Functionally Fit
           </h2>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Button variant={'secondary'} className="mt-4 h-16 w-1/2">
+            <Button variant={'secondary'} className="mt-4 h-16 w-full md:w-2/3 lg:w-1/2">
               Download now (Doesn&apos;t work yet)
             </Button>
           </div>
@@ -343,7 +343,7 @@ export default function Home() {
         </div>
       </section>
 
-      <MailingListPopup />
+      {/* <MailingListPopup /> */}
     </>
   );
 }

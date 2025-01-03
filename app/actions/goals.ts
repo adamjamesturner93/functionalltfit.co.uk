@@ -372,13 +372,6 @@ export async function getGoalProgress(goalId: string) {
           },
         });
 
-        console.log('Goal Progress Debug:', {
-          goalType: goal.type,
-          startDate,
-          sessionCount,
-          userId: session.user.id,
-        });
-
         current = sessionCount;
         break;
 

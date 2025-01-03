@@ -31,7 +31,6 @@ export async function middleware(request: NextRequest) {
     const authHeader = request.headers.get('Authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.log('Invalid Authorization header: ', { pathname, authHeader });
       return new NextResponse(JSON.stringify({ error: 'Invalid Authorization header' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
