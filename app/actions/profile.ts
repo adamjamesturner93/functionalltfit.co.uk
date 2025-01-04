@@ -11,11 +11,11 @@ import { getBodyMeasurements } from './health';
 import { getUserProgramme } from './programmes';
 
 const profileSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
+  name: z.string().min(1, 'Name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
   dateOfBirth: z.string().optional(),
-  weightUnit: z.nativeEnum(Unit),
-  lengthUnit: z.nativeEnum(Unit),
+  weightUnit: z.nativeEnum(Unit).optional(),
+  lengthUnit: z.nativeEnum(Unit).optional(),
   image: z.string().optional(),
   height: z.number().optional(),
 });

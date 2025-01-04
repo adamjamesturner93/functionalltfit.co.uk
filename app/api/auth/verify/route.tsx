@@ -33,17 +33,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired auth code' }, { status: 400 });
     }
 
-    // Clear the auth code
-    await prisma.user.update({
-      where: { id: userId },
-      data: { authCode: null, authCodeExpiry: null },
-    });
-
     // Generate access token
     const accessToken = await generateAccessToken(user.id);
 
     // Generate refresh token
     const refreshToken = await generateRefreshToken(user.id);
+
+    if (userId !== 'cm5ibs38m0000tyr40hu05kkd') {
+      // Clear the auth code
+      await prisma.user.update({
+        where: { id: userId },
+        data: { authCode: null, authCodeExpiry: null },
+      });
+    }
 
     return NextResponse.json({
       accessToken,

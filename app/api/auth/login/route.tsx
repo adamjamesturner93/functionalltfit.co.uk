@@ -28,6 +28,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    if (user.id === 'cm5ibs38m0000tyr40hu05kkd') {
+      return NextResponse.json({
+        userId: user.id,
+        message: 'Hi Playstore Reviewer, auth code provided in instructions.',
+        isNewUser: false,
+        termsAgreed: true,
+      });
+    }
+
     const authCode = Math.floor(100000 + Math.random() * 900000).toString();
     const authCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 

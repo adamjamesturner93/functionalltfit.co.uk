@@ -9,6 +9,7 @@ import {
   SetType,
   UserRole,
   YogaType,
+  YogaVideo,
 } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -2536,16 +2537,393 @@ const EXERCISES: Omit<Exercise, 'id' | 'createdAt' | 'updatedAt'>[] = [
   },
 ];
 
+const YOGA: Omit<YogaVideo, 'id' | 'createdAt' | 'updatedAt'>[] = [
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/a560df80-99be-11ef-9fff-4d1ee0421f45Youtube%20Thumbnails-yzsGPS6kocZ2n4L4T2aGZTkpydq9GT.png',
+    title: 'Reset With the Breath',
+    description:
+      'Take 10 mins to yourself, using your breath to give you a quick reset in your day whenever you need it. This practice can be repeated again and again to help you find calm.',
+    props: [],
+    muxPlaybackId: '6aDzKESynOF818yu9kwHLbOPZuWUbYCngxYLqieMTDY',
+    muxAssetId: '',
+    duration: 9,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/82a25f50-99be-11ef-9fff-4d1ee0421f45Youtube%20Thumbnails%20(1)-YhxtFCZ9hNQHfxvn0AT6QAOCpv3vuL.png',
+    title: 'Chair Yoga - Gentle Wake Up',
+    description:
+      'Start your day listening to your body, starting with some gentle movements before building some warmth in the body.',
+    props: ['Chair'],
+    muxPlaybackId: 'kwWyWoLczEj3d5rvPyH3TlkYE8YoeapPvqV9700aqNgI',
+    muxAssetId: '',
+    duration: 21,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/5b752ef0-7fd6-11ef-98e8-8f5fa30a069cYoutube%20Thumbnails-IWkkSqZRmYFf1WQHM9QOOYtHBm0HVg.png',
+    title: 'Full Body Mobilise',
+    description:
+      'Join me on the ground to stretch and mobile the body - we will work on shoulders, back, hips and legs. With options to progress your practice in a way that suits you in the moment. I invite you to challenge yourself mindfully.',
+    props: ['Block', 'Folded Blanket'],
+    muxPlaybackId: 'VDk7501jv31Qu776DI01yQfXXLQScXi9iMUm5zzeei43o',
+    muxAssetId: '',
+    duration: 36,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/4b832e50-7fd3-11ef-98e8-8f5fa30a069cYoutube%20Thumbnails-EwvRrcmzV3wOei4fdrXGdeyoPtQuMi.png',
+    title: 'Seated Full Body Strengthener',
+    description:
+      "In 30 mins, build strength across your whole body using the chair as a prop. Great for if you want to create a bit of warmth in your body but don't want to be coming down to the floor and back up again.",
+    props: ['Chair'],
+    muxPlaybackId: 'HB2L8BSZ3pE900oRKHN00TtCamWFpkcxTi1U2g2aaDJrc',
+    muxAssetId: '',
+    duration: 32,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/3b0a6830-66bb-11ef-94a0-570d6e45fa1dYoutube%20Thumbnails-5wTJaXJmOgWnLCoiYnf4JEriVK0Flg.png',
+    title: 'Chair Flow - Energise and Strengthen',
+    description:
+      "We've got a full body workout, all from a chair. There's no need to get up and down off the floor to build strength and move mindfully. Together we will warm up the body, create some energy from within, all whilst strengthening our bodies.",
+    props: ['Chair'],
+    muxPlaybackId: 'iD4oJV01pci1iGy02JL00b014ThpEcb3hARfTrhPnN5rvLA',
+    muxAssetId: '',
+    duration: 32,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/980fcd40-66de-11ef-94a0-570d6e45fa1dYoutube%20Thumbnails%20(1)-osU6k7LRADOAuit05IbhUWnKaIlOR6.png',
+    title: 'Processing Grief or Loss',
+    description:
+      'A meditation to help process grief or loss. This might be losing a loved one, grieving a change in circumstance or new diagnosis. This session gives you the space to feel the feelings and help to process the change in our lives.',
+    props: ['Folded Blanket'],
+    muxPlaybackId: '7fO021caokDmna701PKYmYd2NNv1FU65zcfxwSjichjmQ',
+    muxAssetId: '',
+    duration: 15,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/1de56620-4fdb-11ef-aaa5-2d68f27c4fdaThumbnail-1UziyV3g47lojc37kDWUKE9r0jE0B5.png',
+    title: 'Desk Yoga - Release the Day',
+    description:
+      "A full body release to leave the working day behind - helping to counter the stiffness we get in our bodies from sitting down all day!\n\nA great one, even if you haven't been at your desk but are feeling tension across your body or wanting some gentle movement from a seated position.",
+    props: ['Chair'],
+    muxPlaybackId: 'u9epe9uW9TAjDwzbciBe01vziLP7PlirFsWcmMrLmiws',
+    muxAssetId: '',
+    duration: 20,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/88e313f0-4fdb-11ef-87b5-27406a0f86b6Thumbnail-9hNC7hov0WBR8ix4v7LQ53ZrwVelNN.png',
+    title: 'Full Body Movement',
+    description:
+      'A longer practice incorporating breath work, yin (calming) and yang (dynamic, movement) elements. Together we will create calm and move mindfully, whilst also building strength across our body as we listen to the cues it gives us.',
+    props: ['Block'],
+    muxPlaybackId: 'zasSoTzblU027Lxpgv01bw3DxHm6BbOZ102QyVy012xxx2w',
+    muxAssetId: '',
+    duration: 67,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa9r0gr00008kbjmqwf6dxwWhatsApp%20Image%202024-06-16%20at%2015.24.05%20(1)-1SG9sLYipVi3vbFVGhkzU4oPvgIBMR.jpeg',
+    title: 'Time for you ',
+    description: '10 minutes to re-centre yourself and focus on you.',
+    props: ['Block', 'Blanket'],
+    muxPlaybackId: 'bkxjGIdu01JMG8Y5PGFdt01mC32qBKiOAR7LQPKx7VSW8',
+    muxAssetId: '',
+    duration: 11,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa9mqz800031kirxoymc826WhatsApp%20Image%202024-06-16%20at%2015.24.06-LSxt9vJwAVAi0XK7ljRi3BPQvlIvMG.jpeg',
+    title: 'Surya Namaskar A Flow',
+    description:
+      'A short flow, based around Surya Namaskar to get the blood flowing and creating your own energy to take with you into your day.',
+    props: [],
+    muxPlaybackId: 'jcN00s028seR2w02GEMPSkTCGPsYHcLYGAvK5m3vQ2bdaI',
+    muxAssetId: '',
+    duration: 13,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa9cyxq00021kirt0vlgjzjWhatsApp%20Image%202024-06-16%20at%2015.24.06%20(1)-OnTHGo7Yj8GkAuVEwuW029403qHAp8.jpeg',
+    title: 'Wrist Strength and Mobility',
+    description:
+      'A practice you can repeat over and over to build strength and mobility in your wrists, which can help alleviate pain and help you achieve your goals. Great for climbers, gym goers and those who sit at a computer all day alike!',
+    props: ['Folded Blanket', 'Blocks'],
+    muxPlaybackId: '019TqaPRc3X8E8xQNrjHnddedWLEiwS01sp01sT8nZeyGs',
+    muxAssetId: '',
+    duration: 22,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa906tu00001kir0nlosz6qWhatsApp%20Image%202024-06-16%20at%2015.24.07-ciW1zi7qyIdsrCKeI9eiaByFDNtoDL.jpeg',
+    title: 'Standing Flow (No Hands!)',
+    description:
+      "A flow where you're standing (or at least on one foot!) the whole time. You won't find a single downward facing dog or chaturanga in this flow. Great if your arms are tired or you just fancy a bit of a change.",
+    props: [],
+    muxPlaybackId: 'V9KmbajRHYhvrtN1gdbepm3Igr02qL5XJiFqcGLT4Rgg',
+    muxAssetId: '',
+    duration: 18,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa8r01h00002s8p8fzozsmtWhatsApp%20Image%202024-06-16%20at%2015.24.07%20(1)-GQPRpfjQOG9QU75Zj1d57jT3fhhDzC.jpeg',
+    title: 'Shoulder explore',
+    description:
+      'A full body flow designed to cultivate your own energy inside, but with a focus on what your shoulders are doing. I encourage you to stay curious and explore this part of your body and how it moves.',
+    props: [],
+    muxPlaybackId: 'L02vxiTuCFZrJxQjvhbAkV8I4Oseg6BJPM5VfwAoiL3k',
+    muxAssetId: '',
+    duration: 35,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clxa86szf0000py7ke75ye774WhatsApp%20Image%202024-06-16%20at%2015.24.05-fSgcqPmLNog0NprwymoDeP0NolC8hL.jpeg',
+    title: 'Post Leg Day',
+    description:
+      "A mix of active recovery and some yummy stretchy to tend to yourself if you're feeling leg day!",
+    props: [],
+    muxPlaybackId: 'yV3M89ziTOyoU4v005022fZOSjHlykFxUeej423sh4TUI',
+    muxAssetId: '',
+    duration: 26,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7juz1p0000v8roubkr8m4lWhatsApp%20Image%202024-06-16%20at%2015.24.01-dGkawHk1arP44QLIMKKo2MMjZTtKnS.jpeg',
+    title: 'Explore Virabhadrasana II (Warrior Two)',
+    description:
+      'Explore Virabhadrasana II (Warrior Two), and how you can make it work for your body.',
+    props: [],
+    muxPlaybackId: '9dpEQxdO3Y02L8HslvU009EfDNZf2I01GeaIjeg00Aq1ruQ',
+    muxAssetId: '',
+    duration: 7,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7joo600003xg9m3mon313jWhatsApp%20Image%202024-06-16%20at%2015.23.58%20(1)-4J3EgOaP4Qq9ZGnTMgALsFEiVnCvDw.jpeg',
+    title: 'Seated Neck and Shoulder Release',
+    description:
+      'A short practice to help release the tension in your neck and shoulders. A great one to do either seated on the floor or on a chair of your choice. Perfect for a mid-work break or to let go throughout your day.',
+    props: ['Block'],
+    muxPlaybackId: 'ZmG02fheprOi01hO00HSTjJ02E4ZfFV01kiy7TzdPlVE2kxQ',
+    muxAssetId: '',
+    duration: 15,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7jd5vt0000xg9megao4hlyWhatsApp%20Image%202024-06-16%20at%2015.23.58%20(2)-lYKEXLwJQnL103eWXPVEL4GsyjBiuC.jpeg',
+    title: 'Quick Energy Boost',
+    description:
+      'A short and fiery session to create your own energy to take with you for the rest of the day!',
+    props: [],
+    muxPlaybackId: 'GiCmUHPlVJW4C02WIxK8J2lI7TAH7F1PNHpQ4XiallR8',
+    muxAssetId: '',
+    duration: 18,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gxskf0001vrulpt5arfakYoutube%20Thumbnails-JCN48SpKUS7H3hNbk18viU1Flk785u.png',
+    title: 'Sunshine Meditation',
+    description:
+      'A guided meditation harnessing the powerful qualities of the sun for our every day.',
+    props: [],
+    muxPlaybackId: 'U62q6r6wjshEzg36BLUqRoZuBmL9KI9yTkUtTwsyxXM',
+    muxAssetId: '',
+    duration: 13,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gsezv0000vruli93iljiyWhatsApp%20Image%202024-06-16%20at%2015.23.59-005p8wKM5vVPYcsMtqaoiooGJWIYhz.jpeg',
+    title: 'Meditation to Inspire',
+    description: 'A visual meditation, taking a stroll from the mountains to the ocean.',
+    props: ['Block', 'Blanket'],
+    muxPlaybackId: '9YQNaL00Pw00m16XDnMvUkMFAWhoFaFO5y6ByV4M00k7b4',
+    muxAssetId: '',
+    duration: 17,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gpbvb00037or310k2pqfeWhatsApp%20Image%202024-06-16%20at%2015.23.59%20(1)-QVwbK9gtpqJ0KdKjCZFKxPSeINr8mk.jpeg',
+    title: 'Meditation to Ease Anxiety',
+    description:
+      'Combining empathy and science in a 15 minute practice aimed at reducing feelings of anxiety.',
+    props: ['Block', 'Blanket'],
+    muxPlaybackId: 'llNWXJVQIVmFDZUkgR01I7PHTu3wg7OzGCqcTqsgrkkg',
+    muxAssetId: '',
+    duration: 14,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gh6jn00016dn42egs5rwrWhatsApp%20Image%202024-06-16%20at%2015.24.01%20(1)-1PLiGhM6lCZgeobbVXIvdidbldHmPz.jpeg',
+    title: 'Explore Virabhadrasana I (Warrior One)',
+    description:
+      'Explore Virabhadrasana I (Warrior One), and how you can make it work for your body.',
+    props: [],
+    muxPlaybackId: 'RHOmobe01umMbUdbp6TiZ7019F1jM6qQqAwFfMFeXL6cw',
+    muxAssetId: '',
+    duration: 8,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gelba00017or33xmy1y60WhatsApp%20Image%202024-06-16%20at%2015.24.02-zJp4n34zkaSKwqw1eL8wkFJ3CYTuSA.jpeg',
+    title: 'Explore Vinyasa',
+    description: 'Explore the Vinyasa sequence, and how you can make it work for your body.',
+    props: [],
+    muxPlaybackId: 'lwRyt3xZc38vynWtachwovn8hMiPqK6f01kvk3xyP501k',
+    muxAssetId: '',
+    duration: 5,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7gbl8t0001dna5i1xy8zgkWhatsApp%20Image%202024-06-16%20at%2015.24.02%20(1)-KVvtWewqsiqAvQRRNO8pW0MKjgcUsp.jpeg',
+    title: 'Explore Surya Namaskar A (Sun Salutation A)',
+    description:
+      'Explore the Surya Namaskar A (Sun Salutation A) sequence, and how you can make it work for your body.',
+    props: ['Blocks'],
+    muxPlaybackId: 'CjfzXXnb4SxozRj02b2BD00ixz5DGQdXucsRAFht3YfuI',
+    muxAssetId: '',
+    duration: 6,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7g71tj00007or380estj1k17-nxIkw0Succ5RVHHZ5FwVjnbVwUeZYm.png',
+    title: 'Explore Chaturanga',
+    description: 'Explore Chaturanga, and how you can make it work for your body.',
+    props: ['Blocks'],
+    muxPlaybackId: 'a15vKXYJJbqz6PcfVcMID7So4cih02LUMXwCJ19PA2sA',
+    muxAssetId: '',
+    duration: 6,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7g4g3b0000dna5si2gnhn2WhatsApp%20Image%202024-06-16%20at%2015.24.03-7ABZmYs7nQ4c7tCFvkG3eJL3VLm3jB.jpeg',
+    title: "Explore Balasana (Child's Pose)",
+    description: "Explore Balasana (Child's pose), and how you can make it work for your body.",
+    props: ['Blocks', 'Folded Blanket'],
+    muxPlaybackId: 'hxNPeL00uO5VXI01kYTjy5w2Uw42JdpQcVP2atEVaU02C00',
+    muxAssetId: '',
+    duration: 5,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx7fyaew0000v4avfp0fmeouWhatsApp%20Image%202024-06-16%20at%2015.24.04-1cjCmE3oBOW3RWhtEIhVAjPxEWIPvP.jpeg',
+    title: 'Explore Adho Mukha Svanasana (Downward Facing Dog)',
+    description:
+      'Explore Adho Mukha Svanasana (Downward Facing Dog), and how you can make it work for your body.',
+    props: ['Blocks'],
+    muxPlaybackId: 'KEgEzwQ02tYos5xbr6i6PxowyopCCUC6l26eVRc9xTGo',
+    muxAssetId: '',
+    duration: 7,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx5vh11h0003ty6q5lbv2yktWhatsApp%20Image%202024-06-16%20at%2015.24.04%20(1)-rKNXC4pCxXG8R68VpxKfoVVuOwRW1k.jpeg',
+    title: 'Quick Full Body Build',
+    description: '15 minutes to move the body, building strength across the whole body.',
+    props: [],
+    muxPlaybackId: 'ubFcOZ53MTwacaIq00Cqd7PKAEP8SWrKcQNyOBtqITL4',
+    muxAssetId: '',
+    duration: 16,
+    isFree: false,
+    type: 'BUILD',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx5vbs8h0001fkwer1ozobekWhatsApp%20Image%202024-06-16%20at%2015.24.00%20(1)-bloBcZN21XzqYyTgem1Rm4MAkaEHNJ.jpeg',
+    title: 'Finding your Inner Power',
+    description:
+      'Short mindfulness/meditation session to help you recognise and embrace your inner strength.',
+    props: ['Block', 'Folded Blanket'],
+    muxPlaybackId: 'ky102A802L3GshGPgPVKGrMx73bu02wwlhVwGCodfll5z4',
+    muxAssetId: '',
+    duration: 12,
+    isFree: false,
+    type: 'MINDFULNESS',
+  },
+  {
+    thumbnailUrl:
+      'https://tmzhbryqsuuzspwa.public.blob.vercel-storage.com/thumbnail/on-demand/clx5v83g10001ty6qp2eb3fj7WhatsApp%20Image%202024-06-16%20at%2015.24.00-BOXOxOiZCKgCBcGemVoOWK8P5ihv6c.jpeg',
+    title: 'Low Slow Flow',
+    description:
+      "A gentle seated flow, perfect for bringing some light movement to the days you don't really want to move.",
+    props: ['Block'],
+    muxPlaybackId: '1nEcoUB01G7OlonrfI00gCn02Xbotp01DC300CXvLwKy1wwU',
+    muxAssetId: '',
+    duration: 20,
+    isFree: false,
+    type: 'EXPLORE',
+  },
+];
+
 async function main() {
   // Create exercises
-  const exercises = [];
-  for (const exercise of EXERCISES) {
-    const result = await prisma.exercise.create({
-      data: exercise,
-    });
-    exercises.push(result);
-  }
+  // for (const exercise of EXERCISES) {
+  //   await prisma.exercise.create({
+  //     data: exercise,
+  //   });
+  // }
 
+  for (const data of YOGA) {
+    await prisma.yogaVideo.create({
+      data,
+    });
+  }
   // Create workouts
   // const workouts = await Promise.all([
   //   prisma.workout.create({
@@ -3444,7 +3822,6 @@ async function main() {
   //     },
   //   }),
   // ]);
-
   // console.log(`Seeding completed:
   //   - ${allUsers.length} users created (1 admin, ${regularUsers.length} regular)
   //   - ${yogaVideos.length} yoga videos created

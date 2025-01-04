@@ -113,6 +113,7 @@ export function SetBuilder({ setIndex, exercises, onSetTypeChange }: SetBuilderP
                 <Input
                   type="number"
                   min={0}
+                  defaultValue={0}
                   {...control.register(`sets.${setIndex}.gap`, { valueAsNumber: true })}
                   className="pr-16"
                 />

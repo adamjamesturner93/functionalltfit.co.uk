@@ -23,6 +23,7 @@ export async function PUT(request: NextRequest) {
     const result = await updateProfile(userId, profileData);
 
     if (result.error) {
+      console.error(JSON.stringify(result, null, 4));
       return NextResponse.json({ error: result.error, details: result.details }, { status: 400 });
     }
 

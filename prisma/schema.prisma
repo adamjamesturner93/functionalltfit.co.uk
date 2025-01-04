@@ -156,6 +156,7 @@ model YogaVideo {
   ProgrammeActivity ProgrammeActivity[]
   savedBy           UserYogaVideoSave[]
   activities        YogaVideoActivity[]
+  isFree             Boolean              @default(false)
 
   @@index([type])
 }
@@ -191,14 +192,14 @@ model Exercise {
   SetExercise             SetExercise[]
   UserExerciseWeight      UserExerciseWeight[]
   WorkoutActivityExercise WorkoutActivityExercise[]
+  WarmupExercise          WarmupExercise[]
+  CooldownExercise        CooldownExercise[]
 
   @@index([type, mode])
   @@index([primaryMuscles])
   @@index([muscleGroupCategories])
   @@index([contraindications])
   @@index([equipment])
-  WarmupExercise WarmupExercise[]
-  CooldownExercise CooldownExercise[]
 }
 
 model Workout {
@@ -218,6 +219,7 @@ model Workout {
   UserExerciseWeight UserExerciseWeight[]
   savedBy            UserWorkoutSave[]
   WorkoutActivity    WorkoutActivity[]
+  isFree             Boolean              @default(false)
 
   @@index([name])
   @@index([equipment])
@@ -225,24 +227,24 @@ model Workout {
 }
 
 model WarmupExercise {
-  id        String   @id @default(cuid())
-  workoutId String
-  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseId String
-  exercise  Exercise @relation(fields: [exerciseId], references: [id])
-  duration  Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  duration   Int
 
   @@index([workoutId])
   @@index([exerciseId])
 }
 
 model CooldownExercise {
-  id        String   @id @default(cuid())
-  workoutId String
-  workout   Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseId String
-  exercise  Exercise @relation(fields: [exerciseId], references: [id])
-  duration  Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  duration   Int
 
   @@index([workoutId])
   @@index([exerciseId])
@@ -262,16 +264,16 @@ model Set {
 }
 
 model SetExercise {
-  id         String       @id @default(cuid())
-  exerciseId String
-  setId      String
-  mode       ExerciseMode
-  targetReps Int?
-  targetTime Int?
+  id             String       @id @default(cuid())
+  exerciseId     String
+  setId          String
+  mode           ExerciseMode
+  targetReps     Int?
+  targetTime     Int?
   targetDistance Float?
-  order      Int
-  exercise   Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  set        Set          @relation(fields: [setId], references: [id], onDelete: Cascade)
+  order          Int
+  exercise       Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  set            Set          @relation(fields: [setId], references: [id], onDelete: Cascade)
 
   @@index([exerciseId])
   @@index([setId])
@@ -313,7 +315,7 @@ model WorkoutActivityExercise {
   time                 Int?
   distance             Float?
   roundNumber          Int
-  mode                 ExerciseMode       
+  mode                 ExerciseMode
   exercise             Exercise           @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   workoutActivity      WorkoutActivity    @relation(fields: [workoutActivityId], references: [id], onDelete: Cascade)
   workoutActivitySet   WorkoutActivitySet @relation(fields: [workoutActivitySetId], references: [id], onDelete: Cascade)
@@ -517,4 +519,3 @@ enum GoalType {
   EXERCISE_REPS
   EXERCISE_DISTANCE
 }
-

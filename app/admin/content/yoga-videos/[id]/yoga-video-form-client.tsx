@@ -27,6 +27,7 @@ import { ImageUpload } from '@/components/image-upload';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MultiSelect } from '@/components/ui/multi-select';
@@ -58,6 +59,7 @@ const formSchema = z.object({
   thumbnailUrl: z.string().min(1, 'Thumbnail is required'),
   muxPlaybackId: z.string().min(1, 'Video is required'),
   muxAssetId: z.string().min(1, 'Video asset ID is required'),
+  isFree: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -96,6 +98,7 @@ export default function YogaVideoFormClient({ initialYogaVideo, id }: YogaVideoF
       thumbnailUrl: '',
       muxPlaybackId: '',
       muxAssetId: '',
+      isFree: false,
     },
   });
 
@@ -217,6 +220,25 @@ export default function YogaVideoFormClient({ initialYogaVideo, id }: YogaVideoF
                         />
                       )}
                     />
+                    {errors.props && (
+                      <p className="mt-1 text-sm text-destructive">{errors.props.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Controller
+                      name="isFree"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          id="isFree"
+                          checked={field.value}
+                          onCheckedChange={(checked) => field.onChange(checked as boolean)}
+                        />
+                      )}
+                    />
+
+                    <Label htmlFor="isFree">Is Free?</Label>
+
                     {errors.props && (
                       <p className="mt-1 text-sm text-destructive">{errors.props.message}</p>
                     )}
