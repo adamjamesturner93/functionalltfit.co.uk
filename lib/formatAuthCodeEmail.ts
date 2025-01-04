@@ -5,7 +5,7 @@ export function formatAuthCodeEmail(email: string, authCode: string): MailDataRe
     to: email,
     from: 'noreply@thechronicyogini.com',
     subject: 'Your Functionally Fit Authentication Code',
-    text: `Your Functionally Fit authentication code is: ${authCode}. If you didn't request this, please ignore this email.`,
+    text: `Your Functionally Fit authentication code is: ${authCode}. This code will expire in 10 minutes. If you didn't request this code, please ignore this email and contact support if you have concerns about your account security.`,
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -14,39 +14,58 @@ export function formatAuthCodeEmail(email: string, authCode: string): MailDataRe
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Functionally Fit Authentication Code</title>
       </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: hsl(207, 85%, 8%); background-color: hsl(220, 14%, 96%); margin: 0; padding: 0;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: hsl(0, 0%, 100%); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <body style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: hsl(207, 85%, 8%); background-color: hsl(220, 14%, 96%); margin: 0; padding: 16px;">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width: 600px; margin: 0 auto; background-color: hsl(0, 0%, 100%); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <tr>
-            <td style="padding: 40px 20px; text-align: center; background-color: hsl(225, 73%, 57%);">
-              <h1 style="color: hsl(0, 0%, 100%); margin: 0; font-size: 28px; font-weight: bold;">Functionally Fit</h1>
+            <td style="padding: 32px 20px; text-align: center; background-color: hsl(225, 73%, 57%); background-image: linear-gradient(135deg, hsl(225, 73%, 57%), hsl(225, 73%, 47%));">
+              <img src="https://functionallyfit.com/logo-white.png" alt="Functionally Fit" style="width: 180px; height: auto; margin-bottom: 8px;">
+              <h1 style="color: hsl(0, 0%, 100%); margin: 0; font-size: 28px; font-weight: bold;">Authentication Code</h1>
             </td>
           </tr>
           <tr>
-            <td style="padding: 40px 20px;">
-              <h2 style="color: hsl(300, 100%, 27%); margin-bottom: 20px; font-size: 24px;">Your Authentication Code</h2>
-              <p style="margin-bottom: 20px; font-size: 16px;">Here's your authentication code to access Functionally Fit:</p>
-              <div style="background-color: hsl(225, 35%, 91%); border-radius: 8px; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; margin-bottom: 20px; color: hsl(225, 73%, 57%);">
-                ${authCode}
+            <td style="padding: 32px 24px;">
+              <p style="margin-bottom: 24px; font-size: 16px; color: hsl(207, 85%, 8%);">
+                To complete your sign-in to Functionally Fit, please enter the following verification code:
+              </p>
+              <div style="background-color: hsl(225, 35%, 91%); border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: hsl(225, 73%, 57%); font-family: monospace;">
+                  ${authCode}
+                </div>
+                <p style="margin: 16px 0 0 0; font-size: 14px; color: hsl(215, 14%, 34%);">
+                  This code will expire in <strong>10 minutes</strong>
+                </p>
               </div>
-              <p style="margin-bottom: 20px; font-size: 16px;">This code will expire in 10 minutes for security reasons. Please enter it on the login page to complete your authentication.</p>
-              <p style="margin-bottom: 20px; font-weight: bold; font-size: 16px; color: hsl(3, 76%, 51%);">If you didn't request this code, please ignore this email.</p>
-              <div style="text-align: center; margin-top: 40px;">
-                <a href="https://functionallyfitapp.com" style="display: inline-block; padding: 12px 24px; background-color: hsl(36, 98%, 50%); color: hsl(207, 85%, 8%); text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">Visit Functionally Fit</a>
+              <div style="padding: 16px; background-color: hsl(48, 96%, 89%); border-radius: 8px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 14px; color: hsl(45, 100%, 22%); font-weight: 500;">
+                  🔒 Security Tip: Never share this code with anyone. Functionally Fit will never ask for this code outside of the app.
+                </p>
+              </div>
+              <div style="text-align: center; margin-top: 32px;">
+                <a href="https://functionallyfit.com" style="display: inline-block; padding: 14px 28px; background-color: hsl(225, 73%, 57%); color: hsl(0, 0%, 100%); text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                  Open Functionally Fit
+                </a>
               </div>
             </td>
           </tr>
           <tr>
-            <td style="background-color: hsl(225, 35%, 91%); padding: 20px; text-align: center;">
-              <p style="font-size: 14px; color: hsl(215, 14%, 34%); margin-bottom: 10px;">
-                This is an automated message from Functionally Fit. Please do not reply to this email.
+            <td style="background-color: hsl(225, 35%, 91%); padding: 24px; text-align: center;">
+              <p style="margin: 0 0 16px 0; font-size: 14px; color: hsl(215, 14%, 34%);">
+                If you didn't request this code, please ignore this email and
+                <a href="mailto:tech@thechronicyogini.com" style="color: hsl(225, 73%, 57%); text-decoration: none; font-weight: 500;">contact support</a>
+                if you have concerns about your account security.
               </p>
-              <p style="font-size: 14px; color: hsl(215, 14%, 34%); margin-bottom: 10px;">
-                &copy; 2024 Functionally Fit. All rights reserved.
+              <p style="margin: 0 0 16px 0; font-size: 14px; color: hsl(215, 14%, 34%);">
+                This is an automated message. Please do not reply.
               </p>
-              <p style="font-size: 14px; color: hsl(215, 14%, 34%);">
-                <a href="https://functionallyfitapp.com/privacy" style="color: hsl(225, 73%, 57%); text-decoration: none;">Privacy Policy</a> | 
-                <a href="https://functionallyfitapp.com/terms" style="color: hsl(225, 73%, 57%); text-decoration: none;">Terms of Service</a>
-              </p>
+              <div style="border-top: 1px solid hsl(225, 35%, 85%); padding-top: 16px; margin-top: 16px;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; color: hsl(215, 14%, 34%);">
+                  &copy; 2024 Functionally Fit. All rights reserved.
+                </p>
+                <p style="margin: 0; font-size: 12px;">
+                  <a href="https://functionallyfit.com/privacy" style="color: hsl(225, 73%, 57%); text-decoration: none; margin: 0 8px;">Privacy Policy</a>
+                  <a href="https://functionallyfit.com/terms" style="color: hsl(225, 73%, 57%); text-decoration: none; margin: 0 8px;">Terms of Service</a>
+                </p>
+              </div>
             </td>
           </tr>
         </table>

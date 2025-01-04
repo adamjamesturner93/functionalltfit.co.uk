@@ -4,53 +4,45 @@ import Link from 'next/link';
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold">Functionally Fit</span>
+      <nav className="fixed top-0 z-50 w-full bg-slate-950/95 backdrop-blur supports-[backdrop-filter]:bg-slate-950/75">
+        <div className="container flex h-16 items-center justify-between">
+          <Link href="/" className="text-lg font-semibold text-white">
+            Functionally Fit
           </Link>
-          <nav className="ml-auto flex gap-4 sm:gap-6">
-            <Link href="/" className="text-sm font-medium underline-offset-4 hover:underline">
+          <div className="hidden gap-6 md:flex">
+            <Link href="/" className="text-sm text-slate-200 transition-colors hover:text-white">
               Home
             </Link>
             <Link
               href="#features"
-              className="text-sm font-medium underline-offset-4 hover:underline"
+              className="text-sm text-slate-200 transition-colors hover:text-white"
             >
               Features
             </Link>
             <Link
               href="#pricing"
-              className="text-sm font-medium underline-offset-4 hover:underline"
+              className="text-sm text-slate-200 transition-colors hover:text-white"
             >
               Pricing
             </Link>
-            {/* <Link href="/blog" className="text-sm font-medium underline-offset-4 hover:underline">
-              Blog
-            </Link>
-            <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
-              About
-            </Link>
-            <Link href="#" className="text-sm font-medium underline-offset-4 hover:underline">
-              Contact
-            </Link> */}
-          </nav>
+          </div>
         </div>
-      </header>
+      </nav>
+
       <main>{children}</main>
-      <footer className="border-t">
-        <div className="container flex w-full shrink-0 flex-col items-center gap-2 px-4 py-6 sm:flex-row md:px-6">
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Functionally Fit. All rights reserved.
-          </p>
-          <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-            <Link href="/terms" className="text-xs underline-offset-4 hover:underline">
-              Terms of Service
-            </Link>
-            <Link href="/privacy" className="text-xs underline-offset-4 hover:underline">
-              Privacy
-            </Link>
-          </nav>
+      <footer className="w-full bg-slate-950 py-6">
+        <div className="container px-4 md:px-6">
+          <div className="flex w-full flex-col items-center justify-between text-sm text-slate-400 md:flex-row">
+            <p>© 2025 Functionally Fit. All rights reserved.</p>
+            <div className="mt-4 flex space-x-4 md:mt-0">
+              <Link href="/terms" className="transition-colors hover:text-amber-500">
+                Terms of Service
+              </Link>
+              <Link href="/privacy" className="transition-colors hover:text-amber-500">
+                Privacy
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
     </>
