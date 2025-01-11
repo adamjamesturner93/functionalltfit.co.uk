@@ -16,6 +16,13 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'Passwordless',
@@ -51,6 +58,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
     }),
   ],
+  logger: {
+    error(error) {
+      console.error(error);
+    },
+  },
   pages: {
     signIn: '/login',
   },
